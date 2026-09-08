@@ -60,6 +60,26 @@ fn normalize_audit_tsv(raw: &str) -> String {
         .join("\n")
 }
 
+/// Diff semántico de VCF: ignora timestamps de job (`X-ZEDAZO-DATE`) y orden de CATEGORIES.
+fn normalize_vcf(raw: &str) -> String {
+    raw.lines()
+        .map(|line| {
+            let line = line.trim_end_matches('\r');
+            if let Some(rest) = line.strip_prefix("X-ZEDAZO-DATE:") {
+                let _ = rest;
+                return "X-ZEDAZO-DATE:<TS>".to_string();
+            }
+            if let Some(cats) = line.strip_prefix("CATEGORIES:") {
+                let mut parts: Vec<&str> = cats.split(',').filter(|s| !s.is_empty()).collect();
+                parts.sort_unstable();
+                return format!("CATEGORIES:{}", parts.join(","));
+            }
+            line.to_string()
+        })
+        .collect::<Vec<_>>()
+        .join("\n")
+}
+
 fn normalize_stats_json(raw: &str) -> Value {
     let mut v: Value = serde_json::from_str(raw).expect("stats.json válido");
     if let Some(obj) = v.as_object_mut() {
@@ -383,7 +403,11 @@ async fn equivalence_cli_http_all_fixtures() {
         );
         assert_semantic_parity(name, &summary, &cli_stats);
 
-        assert_eq!(cli_vcf, api_vcf, "{name}: VCF semántico distinto");
+        assert_eq!(
+            normalize_vcf(&cli_vcf),
+            normalize_vcf(&api_vcf),
+            "{name}: VCF semántico distinto"
+        );
         assert_eq!(
             normalize_audit_tsv(&cli_audit),
             normalize_audit_tsv(&api_audit),
