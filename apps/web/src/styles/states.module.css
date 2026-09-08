@@ -1,0 +1,59 @@
+.state {
+  display: grid;
+  gap: var(--zed-space-3);
+  justify-items: start;
+  padding: var(--zed-space-8) var(--zed-space-4);
+  text-align: left;
+}
+
+.stateCenter {
+  justify-items: center;
+  text-align: center;
+}
+
+.stateTitle {
+  margin: 0;
+  color: var(--zed-fg-strong);
+  font-size: var(--zed-text-lg);
+  font-weight: var(--zed-weight-semibold);
+}
+
+.stateBody {
+  margin: 0;
+  color: var(--zed-fg-muted);
+  max-width: 36rem;
+}
+
+.skeleton {
+  display: grid;
+  gap: var(--zed-space-2);
+}
+
+.skeletonLine {
+  height: 0.85rem;
+  border-radius: var(--zed-radius-xs);
+  background: var(--zed-bg-muted);
+}
+
+.chipRow {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--zed-space-2);
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--zed-space-2);
+  min-height: 2rem;
+  padding: 0.25rem 0.6rem;
+  border-radius: var(--zed-radius-pill);
+  border: 1px solid var(--zed-border-default);
+  background: var(--zed-bg-subtle);
+  color: var(--zed-fg-default);
+  font-size: var(--zed-text-sm);
+}
+
+.live {
+  min-height: 1.25rem;
+}

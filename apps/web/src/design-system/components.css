@@ -1,0 +1,331 @@
+/* Semantic component surfaces — Archivo Vivo */
+
+.zed-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--zed-space-2);
+  min-height: 2.5rem;
+  min-width: 2.5rem;
+  padding: 0.5rem 1rem;
+  border-radius: var(--zed-radius-sm);
+  border: 1px solid transparent;
+  font-size: var(--zed-text-sm);
+  font-weight: var(--zed-weight-semibold);
+  line-height: 1.2;
+  text-decoration: none;
+  transition:
+    background-color var(--zed-transition-fast) var(--zed-ease-standard),
+    border-color var(--zed-transition-fast) var(--zed-ease-standard),
+    color var(--zed-transition-fast) var(--zed-ease-standard);
+}
+
+.zed-button--primary {
+  border-color: var(--zed-accent);
+  background: var(--zed-accent);
+  color: var(--zed-accent-on);
+}
+
+.zed-button--primary:hover:not(:disabled) {
+  border-color: var(--zed-accent-hover);
+  background: var(--zed-accent-hover);
+  color: var(--zed-accent-on);
+}
+
+.zed-button--primary:active:not(:disabled) {
+  border-color: var(--zed-accent-active);
+  background: var(--zed-accent-active);
+}
+
+.zed-button--secondary {
+  border-color: var(--zed-border-default);
+  background: var(--zed-bg-raised);
+  color: var(--zed-fg-strong);
+}
+
+.zed-button--secondary:hover:not(:disabled) {
+  border-color: var(--zed-border-strong);
+  background: var(--zed-bg-subtle);
+}
+
+.zed-button--tertiary {
+  border-color: transparent;
+  background: transparent;
+  color: var(--zed-accent);
+}
+
+.zed-button--tertiary:hover:not(:disabled) {
+  background: var(--zed-accent-soft);
+  color: var(--zed-accent-active);
+}
+
+.zed-button--danger {
+  border-color: var(--zed-danger);
+  background: var(--zed-danger);
+  color: var(--zed-accent-on);
+}
+
+.zed-button--danger:hover:not(:disabled) {
+  border-color: var(--zed-danger-hover);
+  background: var(--zed-danger-hover);
+}
+
+.zed-button--icon {
+  padding: 0.5rem;
+}
+
+.zed-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.zed-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--zed-space-1);
+  min-height: 1.75rem;
+  padding-inline: var(--zed-space-2);
+  border: 1px solid transparent;
+  border-radius: var(--zed-radius-pill);
+  font-size: var(--zed-text-sm);
+  font-weight: var(--zed-weight-semibold);
+  line-height: 1;
+  white-space: nowrap;
+}
+
+.zed-badge--neutral {
+  border-color: var(--zed-border-default);
+  background: var(--zed-bg-muted);
+  color: var(--zed-fg-default);
+}
+
+.zed-badge--technical {
+  border-color: var(--zed-border-default);
+  background: var(--zed-bg-subtle);
+  color: var(--zed-fg-muted);
+  font-family: var(--zed-font-mono);
+  font-size: var(--zed-text-xs);
+}
+
+.zed-badge--success {
+  border-color: color-mix(in oklch, var(--zed-success) 32%, transparent);
+  background: var(--zed-success-soft);
+  color: var(--zed-success-on-soft);
+}
+
+.zed-badge--warning {
+  border-color: color-mix(in oklch, var(--zed-warning) 35%, transparent);
+  background: var(--zed-warning-soft);
+  color: var(--zed-warning-on-soft);
+}
+
+.zed-badge--danger {
+  border-color: color-mix(in oklch, var(--zed-danger) 32%, transparent);
+  background: var(--zed-danger-soft);
+  color: var(--zed-danger-on-soft);
+}
+
+.zed-badge--info {
+  border-color: color-mix(in oklch, var(--zed-info) 30%, transparent);
+  background: var(--zed-info-soft);
+  color: var(--zed-info-on-soft);
+}
+
+.zed-card {
+  border: var(--zed-border-width) solid var(--zed-border-subtle);
+  border-radius: var(--zed-radius-lg);
+  background: var(--zed-bg-raised);
+  color: var(--zed-fg-default);
+  padding: var(--zed-space-5);
+}
+
+.zed-card--document {
+  box-shadow: none;
+}
+
+.zed-card--action {
+  box-shadow: var(--zed-shadow-xs);
+}
+
+.zed-card--action:hover {
+  border-color: var(--zed-border-strong);
+  box-shadow: var(--zed-shadow-sm);
+}
+
+.zed-card--metric {
+  padding: var(--zed-space-4);
+}
+
+.zed-card--outlined {
+  background: transparent;
+}
+
+.zed-card--interactive {
+  cursor: pointer;
+  transition:
+    border-color var(--zed-transition-base) var(--zed-ease-standard),
+    box-shadow var(--zed-transition-base) var(--zed-ease-standard),
+    transform var(--zed-transition-base) var(--zed-ease-standard);
+}
+
+.zed-card--interactive:hover {
+  transform: translateY(-1px);
+  border-color: var(--zed-border-strong);
+}
+
+.zed-callout {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: var(--zed-space-3);
+  padding: var(--zed-space-4);
+  border-radius: var(--zed-radius-md);
+  border: 1px solid transparent;
+}
+
+.zed-callout--info {
+  background: var(--zed-info-soft);
+  border-color: color-mix(in oklch, var(--zed-info) 28%, transparent);
+  color: var(--zed-info-on-soft);
+}
+
+.zed-callout--success {
+  background: var(--zed-success-soft);
+  border-color: color-mix(in oklch, var(--zed-success) 28%, transparent);
+  color: var(--zed-success-on-soft);
+}
+
+.zed-callout--warning {
+  background: var(--zed-warning-soft);
+  border-color: color-mix(in oklch, var(--zed-warning) 28%, transparent);
+  color: var(--zed-warning-on-soft);
+}
+
+.zed-callout--danger {
+  background: var(--zed-danger-soft);
+  border-color: color-mix(in oklch, var(--zed-danger) 28%, transparent);
+  color: var(--zed-danger-on-soft);
+}
+
+.zed-callout--privacy,
+.zed-callout--verification {
+  background: var(--zed-accent-soft);
+  border-color: color-mix(in oklch, var(--zed-accent) 28%, transparent);
+  color: var(--zed-accent-active);
+}
+
+.zed-field input,
+.zed-field textarea,
+.zed-field select,
+.zed-input {
+  width: 100%;
+  min-height: 2.5rem;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--zed-border-default);
+  border-radius: var(--zed-radius-sm);
+  background: var(--zed-bg-raised);
+  color: var(--zed-fg-default);
+}
+
+.zed-field textarea,
+.zed-textarea {
+  min-height: 10rem;
+  resize: vertical;
+  font-family: var(--zed-font-mono);
+  font-size: var(--zed-text-sm);
+  line-height: var(--zed-leading-relaxed);
+  background: var(--zed-code-bg);
+  color: var(--zed-code-fg);
+}
+
+.zed-dropzone {
+  display: grid;
+  place-items: center;
+  gap: var(--zed-space-3);
+  padding: var(--zed-space-10) var(--zed-space-6);
+  border: 1px solid var(--zed-border-default);
+  border-radius: var(--zed-radius-lg);
+  background: var(--zed-bg-subtle);
+  text-align: center;
+  color: var(--zed-fg-muted);
+  transition:
+    border-color var(--zed-transition-base) var(--zed-ease-standard),
+    background-color var(--zed-transition-base) var(--zed-ease-standard);
+}
+
+.zed-dropzone[data-active="true"],
+.zed-dropzone:focus-within {
+  border-color: var(--zed-accent);
+  background: var(--zed-accent-soft);
+  color: var(--zed-accent-active);
+}
+
+.zed-tabs {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--zed-space-2);
+  margin-bottom: var(--zed-space-5);
+  border-bottom: 1px solid var(--zed-border-subtle);
+  padding-bottom: var(--zed-space-2);
+}
+
+.zed-tabs button {
+  min-height: 2.5rem;
+  padding: 0.4rem 0.85rem;
+  border: 1px solid transparent;
+  border-radius: var(--zed-radius-sm);
+  background: transparent;
+  color: var(--zed-fg-muted);
+  font-weight: var(--zed-weight-medium);
+}
+
+.zed-tabs button[aria-selected="true"] {
+  color: var(--zed-accent-active);
+  background: var(--zed-accent-soft);
+  border-color: color-mix(in oklch, var(--zed-accent) 35%, transparent);
+}
+
+.zed-stepper {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--zed-space-2);
+  margin-bottom: var(--zed-space-6);
+}
+
+.zed-stepper__step {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--zed-space-2);
+  min-height: 2.25rem;
+  padding: 0.35rem 0.75rem;
+  border-radius: var(--zed-radius-pill);
+  border: 1px solid var(--zed-border-default);
+  color: var(--zed-fg-muted);
+  background: var(--zed-bg-raised);
+  font-size: var(--zed-text-sm);
+  font-weight: var(--zed-weight-medium);
+}
+
+.zed-stepper__step[data-state="current"] {
+  border-color: var(--zed-accent);
+  color: var(--zed-accent-active);
+  background: var(--zed-accent-soft);
+}
+
+.zed-stepper__step[data-state="done"] {
+  border-color: color-mix(in oklch, var(--zed-success) 40%, transparent);
+  color: var(--zed-success-on-soft);
+  background: var(--zed-success-soft);
+}
+
+.zed-bar {
+  height: 0.5rem;
+  border-radius: var(--zed-radius-pill);
+  background: var(--zed-bg-muted);
+  overflow: hidden;
+}
+
+.zed-bar__fill {
+  height: 100%;
+  background: var(--zed-accent);
+  border-radius: inherit;
+}

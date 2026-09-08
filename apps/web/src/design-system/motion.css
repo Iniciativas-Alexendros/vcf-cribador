@@ -1,0 +1,60 @@
+@media (prefers-reduced-motion: no-preference) {
+  .zed-animate-fade {
+    animation: zed-fade-in var(--zed-transition-base) var(--zed-ease-standard);
+  }
+
+  .zed-animate-slide {
+    animation: zed-slide-up var(--zed-transition-slow) var(--zed-ease-standard);
+  }
+}
+
+@keyframes zed-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes zed-slide-up {
+  from {
+    opacity: 0;
+    transform: translateY(0.35rem);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes zed-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.zed-spinner {
+  width: 1.25rem;
+  height: 1.25rem;
+  border: 2px solid var(--zed-border-default);
+  border-top-color: var(--zed-accent);
+  border-radius: 50%;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .zed-spinner {
+    animation: zed-spin 0.7s linear infinite;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}

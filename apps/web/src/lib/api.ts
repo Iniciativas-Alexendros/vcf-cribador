@@ -6,6 +6,9 @@ export type JobManifest = {
   status: string;
   display_name?: string | null;
   created_at: string;
+  started_at?: string | null;
+  completed_at?: string | null;
+  core_version?: string;
   summary?: {
     input_contacts: number;
     retained: number;
@@ -16,11 +19,18 @@ export type JobManifest = {
   } | null;
   artifacts: string[];
   error?: string | null;
+  retention_hours?: number;
+  rules?: {
+    mode: string;
+    sha256?: string | null;
+  };
   input: {
     original_name: string;
     sha256: string;
     bytes: number;
     upload_id: string;
+    source_detected?: string | null;
+    vcard_version?: string | null;
   };
 };
 
@@ -119,9 +129,9 @@ export async function listContacts(jobId: string, q?: string, result?: string) {
 
 export async function listDuplicates(jobId: string) {
   const res = await fetch(`${API_BASE}/api/v1/jobs/${jobId}/duplicates`);
-  return parseJson<{ groups: { canonical_uid: string; member_uids: string[] }[] }>(
-    res,
-  );
+  return parseJson<{
+    groups: { canonical_uid: string; member_uids: string[] }[];
+  }>(res);
 }
 
 export async function getAudit(jobId: string) {

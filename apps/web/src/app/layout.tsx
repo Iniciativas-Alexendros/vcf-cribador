@@ -1,21 +1,26 @@
 import type { Metadata } from "next";
-import Link from "next/link";
+import Script from "next/script";
+import { Providers } from "@/components/providers";
+import { THEME_BOOT_SCRIPT } from "@/lib/theme";
+import "@fontsource/atkinson-hyperlegible-next/400.css";
+import "@fontsource/atkinson-hyperlegible-next/600.css";
+import "@fontsource/atkinson-hyperlegible-next/700.css";
+import "@fontsource/ibm-plex-mono/400.css";
+import "@fontsource/ibm-plex-mono/500.css";
+import "@/design-system/reset.css";
+import "@/design-system/tokens.css";
+import "@/design-system/themes.css";
+import "@/design-system/typography.css";
+import "@/design-system/motion.css";
+import "@/design-system/utilities.css";
+import "@/design-system/components.css";
 import "./globals.css";
 
 export const metadata: Metadata = {
   title: "Zedazo",
-  description: "Cribado local de contactos VCF — self-hosted",
+  description:
+    "Ordena tus contactos. Conserva las decisiones. Procesamiento VCF local y trazable.",
 };
-
-const links = [
-  { href: "/", label: "Inicio" },
-  { href: "/procesar", label: "Procesar" },
-  { href: "/ejecuciones", label: "Ejecuciones" },
-  { href: "/auditar", label: "Auditoría" },
-  { href: "/reglas", label: "Reglas" },
-  { href: "/documentacion", label: "Documentación" },
-  { href: "/ajustes", label: "Ajustes" },
-];
 
 export default function RootLayout({
   children,
@@ -23,19 +28,16 @@ export default function RootLayout({
   children: React.ReactNode;
 }) {
   return (
-    <html lang="es">
+    <html lang="es" suppressHydrationWarning>
+      <head>
+        <Script
+          id="zedazo-theme-boot"
+          strategy="beforeInteractive"
+          dangerouslySetInnerHTML={{ __html: THEME_BOOT_SCRIPT }}
+        />
+      </head>
       <body>
-        <nav className="nav" aria-label="Principal">
-          <Link href="/" className="brand">
-            Zedazo
-          </Link>
-          {links.map((l) => (
-            <Link key={l.href} href={l.href}>
-              {l.label}
-            </Link>
-          ))}
-        </nav>
-        <main>{children}</main>
+        <Providers>{children}</Providers>
       </body>
     </html>
   );

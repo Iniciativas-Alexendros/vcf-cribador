@@ -12,6 +12,22 @@ import {
   type ContactView,
   type JobManifest,
 } from "@/lib/api";
+import { PageHeader } from "@/components/shell/page-header";
+import { JobSummary } from "@/components/jobs/job-summary";
+import { JobStatus } from "@/components/jobs/job-status";
+import { RetentionNotice } from "@/components/jobs/retention-notice";
+import { ContactTable } from "@/components/contacts/contact-table";
+import { ContactDrawer } from "@/components/contacts/contact-drawer";
+import { DuplicateGroup } from "@/components/contacts/duplicate-group";
+import { AuditTimeline } from "@/components/audit/audit-timeline";
+import { ArtifactDownload } from "@/components/ui/artifact-download";
+import { MetadataList } from "@/components/ui/metadata-list";
+import { Card } from "@/components/ui/card";
+import { Callout } from "@/components/ui/callout";
+import { ErrorState } from "@/components/ui/error-state";
+import { LoadingState } from "@/components/ui/loading-state";
+import { FilterBar } from "@/components/ui/filter-bar";
+import { Button } from "@/components/ui/button";
 
 type Tab =
   | "resumen"
@@ -22,24 +38,40 @@ type Tab =
   | "exportar"
   | "metadatos";
 
+const ARTIFACT_META: Record<string, { label: string; description: string }> = {
+  vcf: { label: "VCF", description: "Agenda resultante" },
+  audit_tsv: { label: "TSV auditoría", description: "Trazas de decisión" },
+  stats_json: { label: "JSON estadísticas", description: "Conteos estructurados" },
+  stats_markdown: { label: "Markdown", description: "Resumen legible" },
+  csv: { label: "CSV", description: "Contactos en CSV" },
+  json: { label: "JSON", description: "Contactos en JSON" },
+};
+
 export default function JobDetailPage() {
   const params = useParams();
   const jobId = String(params.jobId);
   const [tab, setTab] = useState<Tab>("resumen");
   const [job, setJob] = useState<JobManifest | null>(null);
   const [contacts, setContacts] = useState<ContactView[]>([]);
+  const [selected, setSelected] = useState<ContactView | null>(null);
+  const [drawerOpen, setDrawerOpen] = useState(false);
   const [q, setQ] = useState("");
   const [result, setResult] = useState("");
   const [dups, setDups] = useState<
     { canonical_uid: string; member_uids: string[] }[]
   >([]);
   const [audit, setAudit] = useState<{ cols: string[] }[]>([]);
+  const [auditTechnical, setAuditTechnical] = useState(false);
   const [stats, setStats] = useState<Record<string, unknown> | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [warnings, setWarnings] = useState<unknown[]>([]);
 
   useEffect(() => {
     void getJob(jobId)
-      .then((d) => setJob(d.job))
+      .then((d) => {
+        setJob(d.job);
+        setWarnings(d.warnings || []);
+      })
       .catch((e) => setError(String(e)));
   }, [jobId]);
 
@@ -80,18 +112,47 @@ export default function JobDetailPage() {
   );
 
   if (!job) {
-    return <p className="muted">{error || "Cargando…"}</p>;
+    return error ? (
+      <ErrorState message={error} />
+    ) : (
+      <LoadingState label="Cargando expediente…" />
+    );
   }
 
+  const numericStats = stats
+    ? Object.entries(stats).filter(
+        ([, v]) => typeof v === "number",
+      ) as [string, number][]
+    : [];
+  const maxStat = Math.max(1, ...numericStats.map(([, v]) => v));
+
   return (
-    <div>
-      <h1>{job.display_name || job.job_id}</h1>
-      <p className="muted mono">{job.job_id}</p>
-      {error && <p role="alert">{error}</p>}
-      <div className="tabs" role="tablist">
+    <div className="zed-stack">
+      <PageHeader
+        title={job.display_name || job.job_id}
+        description={`${job.created_at}${
+          job.input.source_detected ? ` · Fuente: ${job.input.source_detected}` : ""
+        }${job.input.vcard_version ? ` · vCard ${job.input.vcard_version}` : ""}`}
+        actions={
+          <>
+            <JobStatus status={job.status} />
+            <a
+              className="zed-button zed-button--primary"
+              href={artifactUrl(jobId, "vcf")}
+            >
+              Descargar VCF
+            </a>
+          </>
+        }
+      />
+
+      {error ? <ErrorState message={error} /> : null}
+
+      <div className="zed-tabs" role="tablist" aria-label="Secciones del expediente">
         {tabs.map((t) => (
           <button
             key={t.id}
+            type="button"
             role="tab"
             aria-selected={tab === t.id}
             onClick={() => setTab(t.id)}
@@ -102,131 +163,201 @@ export default function JobDetailPage() {
       </div>
 
       {tab === "resumen" && (
-        <div className="panel">
-          <p>
-            Estado: <span className="badge">{job.status}</span>
-          </p>
-          <ul>
-            <li>Entrada: {job.summary?.input_contacts ?? "—"}</li>
-            <li>Conservados: {job.summary?.retained ?? "—"}</li>
-            <li>Needs review: {job.summary?.needs_review ?? "—"}</li>
-            <li>Eliminados: {job.summary?.eliminated ?? "—"}</li>
-            <li>Cuarentena: {job.summary?.quarantine ?? "—"}</li>
-            <li>Grupos duplicados: {job.summary?.duplicate_groups ?? "—"}</li>
-            <li className="mono">SHA-256 input: {job.input.sha256}</li>
-          </ul>
+        <div className="zed-stack">
+          <JobSummary job={job} />
+          <RetentionNotice hours={job.retention_hours} />
+          {warnings.length > 0 ? (
+            <Callout variant="warning" title="Avisos">
+              {warnings.length} aviso(s) reportados por el pipeline.
+            </Callout>
+          ) : (
+            <Callout variant="verification" title="Verificación">
+              La verificación I1–I7 está integrada en el pipeline del core.
+            </Callout>
+          )}
+          <Card variant="document">
+            <h3>Artefactos</h3>
+            <p className="zed-muted">
+              {(job.artifacts.length
+                ? job.artifacts
+                : ["vcf", "audit_tsv", "stats_json", "csv", "json"]
+              ).join(", ")}
+            </p>
+          </Card>
         </div>
       )}
 
       {tab === "contactos" && (
-        <div className="panel">
-          <div style={{ display: "flex", gap: "0.75rem", marginBottom: "1rem" }}>
+        <div className="zed-stack">
+          <FilterBar>
+            <label className="zed-sr-only" htmlFor="contact-q">
+              Buscar contactos
+            </label>
             <input
-              placeholder="Buscar nombre/email/tel"
+              id="contact-q"
+              className="zed-input"
+              style={{ maxWidth: "18rem" }}
+              placeholder="Nombre, email o teléfono"
               value={q}
               onChange={(e) => setQ(e.target.value)}
             />
-            <select value={result} onChange={(e) => setResult(e.target.value)}>
+            <label className="zed-sr-only" htmlFor="contact-result">
+              Resultado
+            </label>
+            <select
+              id="contact-result"
+              className="zed-input"
+              style={{ width: "auto" }}
+              value={result}
+              onChange={(e) => setResult(e.target.value)}
+            >
               <option value="">Todos</option>
-              <option value="conserved">conserved</option>
-              <option value="needs_review">needs_review</option>
-              <option value="eliminated">eliminated</option>
-              <option value="quarantine">quarantine</option>
+              <option value="conserved">Conservado</option>
+              <option value="needs_review">Revisar</option>
+              <option value="eliminated">Descartado</option>
+              <option value="quarantine">Cuarentena</option>
             </select>
-          </div>
-          <table className="table">
-            <thead>
-              <tr>
-                <th>Nombre</th>
-                <th>Resultado</th>
-                <th>Regla</th>
-                <th>Emails</th>
-                <th>Tels</th>
-              </tr>
-            </thead>
-            <tbody>
-              {contacts.map((c) => (
-                <tr key={c.uid}>
-                  <td>{c.fn_value}</td>
-                  <td>
-                    <span className={`badge ${c.result}`}>{c.result}</span>
-                  </td>
-                  <td className="mono">{c.screening_rule}</td>
-                  <td className="mono">{c.emails.join(", ")}</td>
-                  <td className="mono">{c.tels.join(", ")}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+          </FilterBar>
+          <ContactTable
+            contacts={contacts}
+            onSelect={(c) => {
+              setSelected(c);
+              setDrawerOpen(true);
+            }}
+          />
+          <ContactDrawer
+            contact={selected}
+            open={drawerOpen}
+            onClose={() => setDrawerOpen(false)}
+          />
         </div>
       )}
 
-      {tab === "duplicados" && (
-        <div className="panel">
-          {dups.map((g) => (
-            <div key={g.canonical_uid} style={{ marginBottom: "1rem" }}>
-              <strong className="mono">Canónico: {g.canonical_uid}</strong>
-              <ul>
-                {g.member_uids.map((m) => (
-                  <li key={m} className="mono">
-                    {m}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          ))}
-          {dups.length === 0 && <p className="muted">Sin grupos.</p>}
-        </div>
-      )}
+      {tab === "duplicados" && <DuplicateGroup groups={dups} />}
 
       {tab === "auditoria" && (
-        <div className="panel" style={{ overflowX: "auto" }}>
-          <table className="table">
-            <tbody>
-              {audit.slice(0, 200).map((row, i) => (
-                <tr key={i}>
-                  {row.cols.map((c, j) => (
-                    <td key={j} className="mono">
-                      {c}
-                    </td>
-                  ))}
-                </tr>
-              ))}
-            </tbody>
-          </table>
-          <a href={artifactUrl(jobId, "audit_tsv")}>Descargar TSV</a>
+        <div className="zed-stack">
+          <div className="zed-row">
+            <Button
+              variant={auditTechnical ? "secondary" : "primary"}
+              onClick={() => setAuditTechnical(false)}
+            >
+              Vista humana
+            </Button>
+            <Button
+              variant={auditTechnical ? "primary" : "secondary"}
+              onClick={() => setAuditTechnical(true)}
+            >
+              Vista técnica
+            </Button>
+            <a
+              className="zed-button zed-button--tertiary"
+              href={artifactUrl(jobId, "audit_tsv")}
+            >
+              Descargar TSV
+            </a>
+          </div>
+          <AuditTimeline items={audit} technical={auditTechnical} />
         </div>
       )}
 
       {tab === "estadisticas" && (
-        <div className="panel">
-          <pre className="mono">{JSON.stringify(stats, null, 2)}</pre>
-        </div>
+        <Card variant="document">
+          {numericStats.length === 0 ? (
+            <pre className="zed-mono">{JSON.stringify(stats, null, 2)}</pre>
+          ) : (
+            <div className="zed-stack">
+              <table className="zed-sr-only">
+                <caption>Estadísticas numéricas</caption>
+                <tbody>
+                  {numericStats.map(([k, v]) => (
+                    <tr key={k}>
+                      <th scope="row">{k}</th>
+                      <td>{v}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+              {numericStats.map(([k, v]) => (
+                <div key={k}>
+                  <div className="zed-row" style={{ justifyContent: "space-between" }}>
+                    <span>{k}</span>
+                    <span className="zed-stat-value" style={{ fontSize: "1.1rem" }}>
+                      {v}
+                    </span>
+                  </div>
+                  <div className="zed-bar" aria-hidden>
+                    <div
+                      className="zed-bar__fill"
+                      style={{ width: `${(v / maxStat) * 100}%` }}
+                    />
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </Card>
       )}
 
       {tab === "exportar" && (
-        <div className="panel">
-          <ul>
-            {(job.artifacts.length
-              ? job.artifacts
-              : ["vcf", "audit_tsv", "stats_json", "csv", "json"]
-            ).map((k) => (
-              <li key={k}>
-                <a href={artifactUrl(jobId, k)}>Descargar {k}</a>
-              </li>
-            ))}
-          </ul>
-        </div>
+        <Card variant="document">
+          {(job.artifacts.length
+            ? job.artifacts
+            : ["vcf", "audit_tsv", "stats_json", "csv", "json"]
+          ).map((k) => (
+            <ArtifactDownload
+              key={k}
+              href={artifactUrl(jobId, k)}
+              label={ARTIFACT_META[k]?.label || k}
+              description={ARTIFACT_META[k]?.description}
+            />
+          ))}
+        </Card>
       )}
 
       {tab === "metadatos" && (
-        <div className="panel">
-          <pre className="mono">{JSON.stringify(job, null, 2)}</pre>
-          <p className="muted">
-            Verificación I1–I7 integrada en el pipeline del core (no es un sello
-            GUI independiente).
-          </p>
-        </div>
+        <Card variant="document">
+          <MetadataList
+            items={[
+              { label: "Job ID", value: job.job_id, mono: true, copyable: true },
+              {
+                label: "Hash input",
+                value: job.input.sha256,
+                mono: true,
+                copyable: true,
+              },
+              {
+                label: "Hash reglas",
+                value: job.rules?.sha256 || "—",
+                mono: true,
+                copyable: Boolean(job.rules?.sha256),
+              },
+              { label: "Core", value: job.core_version || "—", mono: true },
+              {
+                label: "Fuente",
+                value: job.input.source_detected || "—",
+              },
+              {
+                label: "vCard",
+                value: job.input.vcard_version || "—",
+                mono: true,
+              },
+              { label: "Creado", value: job.created_at, mono: true },
+              {
+                label: "Retención",
+                value:
+                  job.retention_hours != null
+                    ? `${job.retention_hours} h`
+                    : "—",
+              },
+              {
+                label: "Artefactos",
+                value: job.artifacts.join(", ") || "—",
+                mono: true,
+              },
+            ]}
+          />
+        </Card>
       )}
     </div>
   );
