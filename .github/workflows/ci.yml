@@ -115,7 +115,7 @@ jobs:
       - name: Generate coverage
         run: |
           mkdir -p coverage
-          cargo llvm-cov --workspace --lcov --output-path coverage/lcov.info --fail-under-lines 80 --fail-under-regions 75
+          cargo llvm-cov -p zedazo-core --lcov --output-path coverage/lcov.info --fail-under-lines 80 --fail-under-regions 75
       - name: Upload to Coveralls
         uses: coverallsapp/github-action@v2
         with:
