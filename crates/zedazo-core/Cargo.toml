@@ -1,0 +1,29 @@
+[package]
+name = "zedazo-core"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+description = "Núcleo de dominio y casos de uso de Zedazo (sin CLI/HTTP)"
+license.workspace = true
+repository.workspace = true
+homepage.workspace = true
+documentation = "https://docs.rs/zedazo-core"
+keywords = ["vcf", "vcard", "contacts", "deduplication"]
+categories = ["text-processing"]
+
+[dependencies]
+nom = { workspace = true }
+regex = { workspace = true }
+csv = { workspace = true }
+tracing = { workspace = true }
+strsim = { workspace = true }
+thiserror = { workspace = true }
+jiff = { workspace = true }
+chardetng = { workspace = true }
+encoding_rs = { workspace = true }
+toml = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+
+[dev-dependencies]
+tempfile = { workspace = true }

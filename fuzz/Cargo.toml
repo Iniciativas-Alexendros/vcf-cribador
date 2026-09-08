@@ -10,8 +10,8 @@ cargo-fuzz = true
 [dependencies]
 libfuzzer-sys = "0.4"
 
-[dependencies.zedazo]
-path = ".."
+[dependencies.zedazo-core]
+path = "../crates/zedazo-core"
 
 [[bin]]
 name = "fuzz_target_1"

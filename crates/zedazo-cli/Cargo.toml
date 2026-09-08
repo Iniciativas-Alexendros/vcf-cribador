@@ -1,0 +1,24 @@
+[package]
+name = "zedazo"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+description = "Zedazo CLI: criba, normaliza, clasifica y deduplica contactos VCF vCard 4.0/3.0"
+license.workspace = true
+repository.workspace = true
+homepage.workspace = true
+documentation = "https://docs.rs/zedazo"
+keywords = ["vcf", "vcard", "contacts", "cli", "deduplication"]
+categories = ["command-line-utilities", "text-processing"]
+
+[[bin]]
+name = "zedazo"
+path = "src/main.rs"
+
+[dependencies]
+zedazo-core = { workspace = true }
+clap = { workspace = true }
+clap_complete = { workspace = true }
+anyhow = { workspace = true }
+tracing = { workspace = true }
+tracing-subscriber = { workspace = true }

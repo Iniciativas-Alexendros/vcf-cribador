@@ -1,5 +1,5 @@
 [workspace]
-members = ["cargo:."]
+members = ["crates/zedazo-cli", "crates/zedazo-core", "crates/zedazo-api"]
 
 # Config for 'dist'
 [dist]

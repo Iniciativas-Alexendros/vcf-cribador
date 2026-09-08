@@ -1,16 +1,16 @@
 ---
-version: "0.3.0"
-date: "2026-09-02"
+version: "0.3.1"
+date: "2026-09-08"
 status: "Aprobado"
 canonical: true
-supersedes: "v0.2.0"
+supersedes: "v0.3.0"
 ---
 
 # SPECS.md
 
-**Versión:** 0.3.0  
-**Fecha:** 2026-09-02  
-**Estado:** Aprobado (v0.3.0 calidad y verificación)  
+**Versión:** 0.3.1  
+**Fecha:** 2026-09-08  
+**Estado:** Aprobado (v0.3.0 calidad; alcance web abierto por ADR-0015)  
 **Canónico:** este archivo. [`docs/spec.md`](docs/spec.md) redirige aquí.
 
 **Documentos relacionados:** [ROADMAP.md](./ROADMAP.md) · [DECISIONS.md](./DECISIONS.md) · [ARCHITECTURE.md](./ARCHITECTURE.md) · [AGENTS.md](./AGENTS.md)
@@ -19,7 +19,7 @@ supersedes: "v0.2.0"
 
 ## 1. Visión
 
-**Zedazo** (`zedazo`) es un CLI Rust que criba, normaliza, clasifica y deduplica contactos VCF (vCard 4.0/3.0) exportados desde ProtonMail, Google Contacts y Apple iCloud. Procesamiento 100 % local, sin telemetría ni APIs externas.
+**Zedazo** (`zedazo`) criba, normaliza, clasifica y deduplica contactos VCF (vCard 4.0/3.0) exportados desde ProtonMail, Google Contacts y Apple iCloud. El núcleo de dominio es compartido por la CLI y, desde v0.5.0 (ADR-0015), por una API HTTP + GUI web self-hosted. Procesamiento 100 % local, sin telemetría remota ni APIs externas por defecto.
 
 ## 2. Objetivos
 
@@ -34,13 +34,18 @@ supersedes: "v0.2.0"
 | **O7** | Detectar fuente y versión vCard | `source_detail` correcto en audit/stats |
 | **O8** | Exportar CSV y JSON además de VCF 4.0 | Formatos válidos y completos |
 | **O9** | Cargar reglas desde TOML | Append por defecto; `replace` para sustitución total |
+| **O10** | Paridad funcional CLI↔GUI self-hosted | Misma semántica de resultados sobre fixtures; ver [docs/gui/functional-parity-matrix.md](./docs/gui/functional-parity-matrix.md) |
 
-## 3. No-objetivos (hasta v1.0)
+## 3. No-objetivos
 
-- APIs externas (CardDAV, Proton, Google People) — v0.3.0+
-- GUI / TUI interactiva
+- APIs externas (CardDAV, Proton, Google People) — hito v0.4.0+ (requiere ADR de red)
+- TUI interactiva
+- Multiusuario / colaboración / edición manual de contactos en GUI (pospuesto post-V1 local)
 - Soporte vCard 2.1
 - Mutación de datos binarios (PHOTO, LOGO, SOUND, KEY): solo preservar u omitir
+- Sustituir la CLI: permanece canal oficial de automatización y rollback
+
+**En alcance (ADR-0015, hito v0.5.0):** GUI web + API HTTP local single-user sobre `zedazo-core`.
 
 ## 4. Invariantes de dominio
 

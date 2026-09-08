@@ -3,26 +3,26 @@
 
 set -eu
 
-echo "→ cargo fmt --check"
-cargo fmt --check || {
-    echo "⚠️  Formato incorrecto. Ejecuta 'cargo fmt' y vuelve a intentar."
+echo "→ cargo fmt --all -- --check"
+cargo fmt --all -- --check || {
+    echo "⚠️  Formato incorrecto. Ejecuta 'cargo fmt --all' y vuelve a intentar."
     exit 1
 }
 
-echo "→ cargo clippy --all-features -- -D warnings"
-cargo clippy --all-features -- -D warnings || {
+echo "→ cargo clippy --workspace --all-targets --all-features -- -D warnings"
+cargo clippy --workspace --all-targets --all-features -- -D warnings || {
     echo "⚠️  Clippy encontró problemas."
     exit 1
 }
 
-echo "→ cargo check --all-features"
-cargo check --all-features || {
+echo "→ cargo check --workspace --all-features"
+cargo check --workspace --all-features || {
     echo "⚠️  cargo check falló."
     exit 1
 }
 
-echo "→ cargo test --lib --all-features"
-cargo test --lib --all-features || {
+echo "→ cargo test --workspace --lib --all-features"
+cargo test --workspace --lib --all-features || {
     echo "⚠️  Tests unitarios fallaron."
     exit 1
 }

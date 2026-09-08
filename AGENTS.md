@@ -63,10 +63,11 @@ Criterio de cierre: CI verde + criterio SPECS
 ## 5. Working agreement
 
 - Capas: `domain` puro; sin I/O. `unwrap` solo en tests.
-- MSRV 1.80. `cargo clippy -- -D warnings`.
+- MSRV 1.80. Workspace: `cargo clippy --workspace -- -D warnings`.
 - Fixtures 100 % sintéticos; nunca PII real.
 - No mezclar upgrade de parser (nom 8) con features de dominio.
 - Hooks: `make hooks` instala pre-commit (fmt + clippy). Documentado en CONTRIBUTING.
+- GUI/API (ADR-0015): HTTP solo en `zedazo-api`; `zedazo-core` sin Axum/Tokio HTTP.
 
 ## 6. Comandos útiles
 
