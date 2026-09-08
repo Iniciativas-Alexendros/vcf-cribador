@@ -1,0 +1,219 @@
+.shell {
+  display: grid;
+  grid-template-rows: var(--zed-topbar-height) 1fr var(--zed-statusbar-height);
+  grid-template-columns: var(--zed-sidebar-width) 1fr;
+  grid-template-areas:
+    "topbar topbar"
+    "sidebar main"
+    "statusbar statusbar";
+  min-height: 100vh;
+  min-height: 100dvh;
+  background: var(--zed-bg-canvas);
+}
+
+.topbar {
+  grid-area: topbar;
+  display: flex;
+  align-items: center;
+  gap: var(--zed-space-4);
+  padding: 0 var(--zed-space-4);
+  border-bottom: 1px solid var(--zed-border-subtle);
+  background: var(--zed-bg-raised);
+  z-index: 20;
+}
+
+.sidebar {
+  grid-area: sidebar;
+  display: flex;
+  flex-direction: column;
+  gap: var(--zed-space-4);
+  width: var(--zed-sidebar-width);
+  max-width: 272px;
+  padding: var(--zed-space-5) var(--zed-space-4);
+  border-right: 1px solid var(--zed-border-subtle);
+  background: var(--zed-bg-subtle);
+  overflow-y: auto;
+}
+
+.main {
+  grid-area: main;
+  padding: var(--zed-space-8) var(--zed-space-6);
+  overflow: auto;
+}
+
+.mainInner {
+  width: min(100%, var(--zed-content-wide));
+  margin: 0 auto;
+}
+
+.statusbar {
+  grid-area: statusbar;
+  display: flex;
+  align-items: center;
+  gap: var(--zed-space-3);
+  padding: 0 var(--zed-space-4);
+  border-top: 1px solid var(--zed-border-subtle);
+  background: var(--zed-bg-subtle);
+  color: var(--zed-fg-muted);
+  font-size: var(--zed-text-sm);
+}
+
+.navList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--zed-space-1);
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.navLink {
+  display: flex;
+  align-items: center;
+  gap: var(--zed-space-3);
+  min-height: 2.5rem;
+  padding: 0.4rem 0.75rem;
+  border-radius: var(--zed-radius-sm);
+  color: var(--zed-fg-default);
+  text-decoration: none;
+  border-left: 3px solid transparent;
+  font-weight: var(--zed-weight-medium);
+}
+
+.navLink:hover {
+  background: var(--zed-bg-muted);
+  color: var(--zed-fg-strong);
+}
+
+.navLink[aria-current="page"] {
+  background: var(--zed-accent-soft);
+  color: var(--zed-accent-active);
+  border-left-color: var(--zed-accent);
+}
+
+.brandBlock {
+  display: flex;
+  flex-direction: column;
+  gap: var(--zed-space-1);
+  padding: 0 var(--zed-space-2) var(--zed-space-4);
+  border-bottom: 1px solid var(--zed-border-subtle);
+}
+
+.brandRow {
+  display: flex;
+  align-items: center;
+  gap: var(--zed-space-3);
+  color: var(--zed-fg-strong);
+  text-decoration: none;
+  font-weight: var(--zed-weight-bold);
+  font-size: var(--zed-text-lg);
+}
+
+.brandSub {
+  margin: 0;
+  color: var(--zed-fg-muted);
+  font-size: var(--zed-text-sm);
+}
+
+.sidebarFooter {
+  margin-top: auto;
+  padding-top: var(--zed-space-4);
+  border-top: 1px solid var(--zed-border-subtle);
+  color: var(--zed-fg-muted);
+  font-size: var(--zed-text-sm);
+}
+
+.menuButton {
+  display: none;
+}
+
+.overlay {
+  display: none;
+}
+
+.statusDot {
+  width: 0.5rem;
+  height: 0.5rem;
+  border-radius: 50%;
+  background: var(--zed-fg-subtle);
+  flex-shrink: 0;
+}
+
+.statusDot[data-ok="true"] {
+  background: var(--zed-success);
+}
+
+.statusDot[data-ok="false"] {
+  background: var(--zed-danger);
+}
+
+.topbarActions {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: var(--zed-space-2);
+}
+
+.breadcrumb {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--zed-space-2);
+  align-items: center;
+  color: var(--zed-fg-muted);
+  font-size: var(--zed-text-sm);
+}
+
+.breadcrumb a {
+  color: var(--zed-fg-muted);
+  text-decoration: none;
+}
+
+.breadcrumb a:hover {
+  color: var(--zed-accent);
+}
+
+.breadcrumbCurrent {
+  color: var(--zed-fg-strong);
+  font-weight: var(--zed-weight-medium);
+}
+
+@media (max-width: 900px) {
+  .shell {
+    grid-template-columns: 1fr;
+    grid-template-areas:
+      "topbar"
+      "main"
+      "statusbar";
+  }
+
+  .menuButton {
+    display: inline-flex;
+  }
+
+  .sidebar {
+    position: fixed;
+    inset: 0 auto 0 0;
+    z-index: 40;
+    transform: translateX(-105%);
+    transition: transform var(--zed-transition-base) var(--zed-ease-standard);
+    box-shadow: var(--zed-shadow-md);
+  }
+
+  .sidebar[data-open="true"] {
+    transform: translateX(0);
+  }
+
+  .overlay {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 30;
+    background: oklch(0.18 0.04 258 / 0.45);
+    border: 0;
+    padding: 0;
+  }
+
+  .main {
+    padding: var(--zed-space-5) var(--zed-space-4);
+  }
+}
