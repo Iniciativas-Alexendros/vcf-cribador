@@ -84,3 +84,13 @@ cargo llvm-cov --lcov --output-path coverage/lcov.info
 - `make ci` verde
 - Docs canónicos actualizados si cambia contrato
 - Sin secretos en el diff
+
+## Learned User Preferences
+
+- GUI V1 self-hosted: alcance single-user local (sin cuentas, sin colaboración, sin edición manual de contactos).
+- Paridad CLI↔GUI = casos de uso funcionales del binario; la CLI sigue siendo la interfaz oficial de automatización/scripting (p. ej. `completion` no requiere pantalla web).
+
+## Learned Workspace Facts
+
+- Workspace ADR-0015: `crates/zedazo-core`, `crates/zedazo-cli` (binario `zedazo`), `crates/zedazo-api` (Axum), `apps/web` (Next.js).
+- Jobs de la API aíslan datos por directorio de job; modo local sin red saliente por defecto; resultados GUI/API deben equivaler a CLI sobre los mismos fixtures.
