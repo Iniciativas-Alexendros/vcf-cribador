@@ -227,7 +227,12 @@ jobs:
         run: cargo install cargo-cyclonedx --locked
       - name: Generate SBOM
         run: |
-          cargo cyclonedx --format json --override-filename sbom
+          # Workspace: generar SBOM del paquete publicable (binario zedazo)
+          cargo cyclonedx --manifest-path crates/zedazo-cli/Cargo.toml --format json --override-filename sbom
+          if [ ! -f sbom.json ] && [ -f crates/zedazo-cli/sbom.json ]; then
+            mv crates/zedazo-cli/sbom.json sbom.json
+          fi
+          test -f sbom.json
           sha256sum sbom.json > sbom.json.sha256
       - name: Upload SBOM
         uses: actions/upload-artifact@v7
