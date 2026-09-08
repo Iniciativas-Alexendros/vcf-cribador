@@ -1,11 +1,18 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { eventsUrl, getJob, type JobManifest } from "@/lib/api";
+import {
+  eventsUrl,
+  getJob,
+  isTerminalStatus,
+  type JobManifest,
+} from "@/lib/api";
 
 export function useJobEvents(jobId: string | null) {
   const [job, setJob] = useState<JobManifest | null>(null);
   const [phases, setPhases] = useState<string[]>([]);
+  const [metrics, setMetrics] = useState<string[]>([]);
+  const [messages, setMessages] = useState<string[]>([]);
   const [reconnecting, setReconnecting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const lastEventId = useRef<string | null>(null);
@@ -15,20 +22,40 @@ export function useJobEvents(jobId: string | null) {
     let cancelled = false;
     let es: EventSource | null = null;
     let poll: number | undefined;
+    let reconnectTimer: number | undefined;
 
-    const connect = () => {
-      setReconnecting(false);
-      const url = eventsUrl(jobId);
-      es = new EventSource(url);
-      es.addEventListener("phase", (ev) => {
+    const attachListeners = (source: EventSource) => {
+      source.addEventListener("phase", (ev) => {
         const me = ev as MessageEvent;
         if (me.lastEventId) lastEventId.current = me.lastEventId;
         setPhases((prev) => [...prev, String(me.data)]);
+        setReconnecting(false);
       });
-      es.onerror = () => {
+      source.addEventListener("metric", (ev) => {
+        const me = ev as MessageEvent;
+        if (me.lastEventId) lastEventId.current = me.lastEventId;
+        setMetrics((prev) => [...prev, String(me.data)]);
+      });
+      source.addEventListener("message", (ev) => {
+        const me = ev as MessageEvent;
+        if (me.lastEventId) lastEventId.current = me.lastEventId;
+        setMessages((prev) => [...prev, String(me.data)]);
+      });
+      source.onerror = () => {
         setReconnecting(true);
-        es?.close();
+        source.close();
+        if (cancelled) return;
+        reconnectTimer = window.setTimeout(() => {
+          if (!cancelled) connect();
+        }, 800);
       };
+    };
+
+    const connect = () => {
+      es?.close();
+      const url = eventsUrl(jobId, lastEventId.current);
+      es = new EventSource(url);
+      attachListeners(es);
     };
 
     connect();
@@ -37,14 +64,9 @@ export function useJobEvents(jobId: string | null) {
         const j = await getJob(jobId);
         if (cancelled) return;
         setJob(j.job);
-        if (
-          j.job.status === "completed" ||
-          j.job.status === "failed" ||
-          j.job.status === "cancelled" ||
-          j.job.status === "expired" ||
-          j.job.status === "deleted"
-        ) {
+        if (isTerminalStatus(j.job.status)) {
           if (poll) window.clearInterval(poll);
+          if (reconnectTimer) window.clearTimeout(reconnectTimer);
           es?.close();
           setReconnecting(false);
         }
@@ -57,8 +79,9 @@ export function useJobEvents(jobId: string | null) {
       cancelled = true;
       es?.close();
       if (poll) window.clearInterval(poll);
+      if (reconnectTimer) window.clearTimeout(reconnectTimer);
     };
   }, [jobId]);
 
-  return { job, phases, reconnecting, error, setJob };
+  return { job, phases, metrics, messages, reconnecting, error, setJob };
 }

@@ -9,6 +9,10 @@ repository.workspace = true
 homepage.workspace = true
 publish = false
 
+[lib]
+name = "zedazo_api"
+path = "src/lib.rs"
+
 [[bin]]
 name = "zedazo-api"
 path = "src/main.rs"
@@ -33,3 +37,8 @@ futures-util = "0.3"
 chrono = { version = "0.4", default-features = false, features = ["clock", "std"] }
 mime_guess = "2"
 tempfile = { workspace = true }
+http-body-util = "0.1"
+
+[dev-dependencies]
+http-body-util = "0.1"
+bytes = "1"

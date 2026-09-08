@@ -72,6 +72,18 @@ impl Storage {
         Ok(())
     }
 
+    /// Borra todos los jobs, uploads y tmp bajo el data dir.
+    pub fn wipe_all(&self) -> anyhow::Result<()> {
+        for sub in ["jobs", "uploads", "tmp"] {
+            let p = self.root.join(sub);
+            if p.exists() {
+                fs::remove_dir_all(&p).with_context(|| format!("wipe {}", p.display()))?;
+            }
+            fs::create_dir_all(&p)?;
+        }
+        Ok(())
+    }
+
     pub fn sanitize_name(name: &str) -> String {
         name.chars()
             .map(|c| {

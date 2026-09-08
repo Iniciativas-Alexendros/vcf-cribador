@@ -17,7 +17,7 @@
 1. Cada job vive en `$ZEDAZO_DATA_DIR/jobs/{ulid}/`.
 2. Tras TTL, el worker marca `expired` y borra input, outputs, events y cache.
 3. `DELETE /api/v1/jobs/{id}` borra de inmediato (o programa si está en ejecución).
-4. Ajustes GUI: acción “borrar todos los datos locales” limpia `jobs/` y `tmp/`.
+4. Ajustes GUI: acción “borrar todos los datos locales” (`POST /api/v1/admin/wipe`) limpia `jobs/`, `uploads/` y `tmp/`.
 5. Backups bajo `$ZEDAZO_DATA_DIR/backups/` solo si el operador los crea explícitamente.
 
 ## Privacidad

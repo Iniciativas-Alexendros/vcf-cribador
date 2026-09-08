@@ -122,6 +122,12 @@ paths:
           in: header
           schema:
             type: string
+          description: Reanuda tras este id (también acepta query last_event_id)
+        - name: last_event_id
+          in: query
+          schema:
+            type: string
+          description: Alternativa a Last-Event-ID para EventSource del navegador
       responses:
         "200":
           description: text/event-stream
@@ -137,6 +143,26 @@ paths:
       responses:
         "202":
           description: Cancelación aceptada
+  /api/v1/admin/wipe:
+    post:
+      operationId: wipeAllData
+      summary: Borra todos los datos locales (jobs, uploads, tmp)
+      responses:
+        "200":
+          description: Wipe completado
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  wiped:
+                    type: boolean
+                  jobs:
+                    type: boolean
+                  uploads:
+                    type: boolean
+                  tmp:
+                    type: boolean
   /api/v1/jobs/{jobId}/contacts:
     get:
       operationId: listContacts

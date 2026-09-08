@@ -73,7 +73,7 @@ Criterio de cierre: CI verde + criterio SPECS
 
 ```bash
 make hooks    # .githooks/install.sh
-make ci       # fmt-check + clippy + test + check + doc
+make ci       # fmt-check + clippy + test + check + doc + docs-validate + parity + web-ci
 make release  # binario release
 cargo llvm-cov --lcov --output-path coverage/lcov.info
 ```
@@ -89,8 +89,12 @@ cargo llvm-cov --lcov --output-path coverage/lcov.info
 
 - GUI V1 self-hosted: alcance single-user local (sin cuentas, sin colaboración, sin edición manual de contactos).
 - Paridad CLI↔GUI = casos de uso funcionales del binario; la CLI sigue siendo la interfaz oficial de automatización/scripting (p. ej. `completion` no requiere pantalla web).
+- No mezclar CardDAV u otras features de red con cambios de dominio o UI en la misma unidad de trabajo/PR.
+- Identidad GUI «Archivo Vivo»: documental/preciso (no dashboard SaaS genérico); UI en español; temas claro/oscuro/sistema; colores de producción en `oklch()`.
 
 ## Learned Workspace Facts
 
 - Workspace ADR-0015: `crates/zedazo-core`, `crates/zedazo-cli` (binario `zedazo`), `crates/zedazo-api` (Axum), `apps/web` (Next.js).
 - Jobs de la API aíslan datos por directorio de job; modo local sin red saliente por defecto; resultados GUI/API deben equivaler a CLI sobre los mismos fixtures.
+- `make ci` = fmt-check + clippy + test + check + doc + `docs-validate` + `parity` (O10) + `web-ci` (`apps/web`).
+- O10: harness HTTP en `crates/zedazo-api/tests/equivalence_http.rs` vía `make parity`; matriz en `docs/gui/functional-parity-matrix.md`.

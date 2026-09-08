@@ -100,7 +100,10 @@ export async function listJobs() {
 
 export async function getJob(jobId: string) {
   const res = await fetch(`${API_BASE}/api/v1/jobs/${jobId}`);
-  return parseJson<{ job: JobManifest; warnings: unknown[] }>(res);
+  return parseJson<{
+    job: JobManifest;
+    warnings: { code: string; message: string }[];
+  }>(res);
 }
 
 export async function cancelJob(jobId: string) {
@@ -108,6 +111,13 @@ export async function cancelJob(jobId: string) {
     method: "POST",
   });
   if (!res.ok) throw new Error(await res.text());
+}
+
+export async function wipeAllData() {
+  const res = await fetch(`${API_BASE}/api/v1/admin/wipe`, {
+    method: "POST",
+  });
+  return parseJson<{ wiped: boolean }>(res);
 }
 
 export async function deleteJob(jobId: string) {
@@ -166,6 +176,21 @@ export async function validateRules(toml: string) {
   return parseJson<{ ok: boolean; diagnostics: { message: string }[] }>(res);
 }
 
-export function eventsUrl(jobId: string) {
-  return `${API_BASE}/api/v1/jobs/${jobId}/events`;
+export function eventsUrl(jobId: string, lastEventId?: string | null) {
+  const base = `${API_BASE}/api/v1/jobs/${jobId}/events`;
+  if (lastEventId) {
+    return `${base}?last_event_id=${encodeURIComponent(lastEventId)}`;
+  }
+  return base;
+}
+
+export function isTerminalStatus(status: string) {
+  return /^(completed|failed|cancelled|expired|deleted)$/i.test(status);
+}
+
+export function isCancellableStatus(status: string) {
+  return (
+    !isTerminalStatus(status) &&
+    !/^cancel_requested$/i.test(status)
+  );
 }

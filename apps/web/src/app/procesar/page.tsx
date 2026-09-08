@@ -1,15 +1,14 @@
 "use client";
 
-import { Icon } from "@/components/ui/icon";
-import { useCallback, useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
 import {
+  cancelJob,
   createJob,
-  eventsUrl,
-  getJob,
+  isCancellableStatus,
+  isTerminalStatus,
   uploadVcf,
   type JobManifest,
 } from "@/lib/api";
+import { useJobEvents } from "@/lib/hooks/use-job-events";
 import { PageHeader } from "@/components/shell/page-header";
 import { ProgressStepper } from "@/components/ui/progress-stepper";
 import { Button } from "@/components/ui/button";
@@ -22,7 +21,9 @@ import { TomlEditor } from "@/components/rules/toml-editor";
 import { RetentionNotice } from "@/components/jobs/retention-notice";
 import { JobProgress } from "@/components/jobs/job-progress";
 import formStyles from "@/styles/forms.module.css";
-
+import { useCallback, useState } from "react";
+import { useRouter } from "next/navigation";
+import { Icon } from "@/components/ui/icon";
 const ARTIFACTS = [
   { id: "vcf", label: "VCF" },
   { id: "audit_tsv", label: "TSV auditoría" },
@@ -62,10 +63,16 @@ export default function ProcesarPage() {
   const [name, setName] = useState("");
   const [retention, setRetention] = useState(24);
   const [job, setJob] = useState<JobManifest | null>(null);
-  const [phaseLog, setPhaseLog] = useState<string[]>([]);
-  const [reconnecting, setReconnecting] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
+  const {
+    job: liveJob,
+    phases: phaseLog,
+    reconnecting,
+    setJob: setLiveJob,
+  } = useJobEvents(job?.job_id ?? null);
+
+  const activeJob = liveJob ?? job;
 
   const onFile = useCallback((f: File) => {
     setFile(f);
@@ -105,6 +112,7 @@ export default function ProcesarPage() {
             : { mode: "builtin" },
       });
       setJob(j);
+      setLiveJob(j);
       setStep(4);
     } catch (e) {
       setError(String(e));
@@ -112,36 +120,6 @@ export default function ProcesarPage() {
       setBusy(false);
     }
   }
-
-  useEffect(() => {
-    if (!job?.job_id) return;
-    const jobId = job.job_id;
-    let es = new EventSource(eventsUrl(jobId));
-    es.addEventListener("phase", (ev) => {
-      setPhaseLog((prev) => [...prev, (ev as MessageEvent).data]);
-      setReconnecting(false);
-    });
-    es.onerror = () => setReconnecting(true);
-    const poll = setInterval(async () => {
-      try {
-        const d = await getJob(jobId);
-        setJob(d.job);
-        if (
-          /completed|failed|cancelled|expired|deleted/i.test(d.job.status)
-        ) {
-          clearInterval(poll);
-          es.close();
-          setReconnecting(false);
-        }
-      } catch {
-        setReconnecting(true);
-      }
-    }, 800);
-    return () => {
-      clearInterval(poll);
-      es.close();
-    };
-  }, [job?.job_id]);
 
   return (
     <div className="zed-stack">
@@ -334,23 +312,41 @@ export default function ProcesarPage() {
         </Card>
       )}
 
-      {step === 4 && job && (
+      {step === 4 && activeJob && (
         <Card variant="document">
           <h2 className="zed-title-section">Ejecución en curso</h2>
-          <p className="zed-mono zed-muted">{job.job_id}</p>
+          <p className="zed-mono zed-muted">{activeJob.job_id}</p>
           <JobProgress
-            status={job.status}
+            status={activeJob.status}
             phases={phaseLog}
             reconnecting={reconnecting}
           />
-          {/completed/i.test(job.status) ? (
-            <Button
-              style={{ marginTop: "1rem" }}
-              onClick={() => router.push(`/ejecuciones/${job.job_id}`)}
-            >
-              Ver resultados
-            </Button>
-          ) : null}
+          <div className={formStyles.actions} style={{ marginTop: "1rem" }}>
+            {isCancellableStatus(activeJob.status) ? (
+              <Button
+                variant="danger"
+                onClick={async () => {
+                  try {
+                    await cancelJob(activeJob.job_id);
+                    setJob({ ...activeJob, status: "cancel_requested" });
+                    setLiveJob({ ...activeJob, status: "cancel_requested" });
+                  } catch (e) {
+                    setError(String(e));
+                  }
+                }}
+              >
+                Cancelar
+              </Button>
+            ) : null}
+            {isTerminalStatus(activeJob.status) &&
+            /completed/i.test(activeJob.status) ? (
+              <Button
+                onClick={() => router.push(`/ejecuciones/${activeJob.job_id}`)}
+              >
+                Ver resultados
+              </Button>
+            ) : null}
+          </div>
         </Card>
       )}
     </div>

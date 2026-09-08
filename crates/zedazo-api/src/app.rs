@@ -36,6 +36,15 @@ impl AppState {
             .ok()
             .and_then(|s| s.parse().ok())
             .unwrap_or(24);
+        Self::new(data_dir, max_upload_bytes, retention_hours)
+    }
+
+    /// Estado para tests in-process (TempDir como data root).
+    pub fn new(
+        data_dir: PathBuf,
+        max_upload_bytes: usize,
+        retention_hours: u64,
+    ) -> anyhow::Result<Self> {
         let storage = Storage::new(data_dir)?;
         Ok(Self {
             storage,
@@ -86,6 +95,7 @@ pub fn router(state: AppState) -> Router {
         .route("/api/v1/audits", post(api::audit::create_audit))
         .route("/api/v1/rules/validate", post(api::rules::validate))
         .route("/api/v1/rules/preview", post(api::rules::preview))
+        .route("/api/v1/admin/wipe", post(api::admin::wipe_all))
         .layer(TraceLayer::new_for_http())
         .layer(RequestBodyLimitLayer::new(limit + 1024))
         .layer(

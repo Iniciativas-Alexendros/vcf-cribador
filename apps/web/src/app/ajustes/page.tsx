@@ -1,11 +1,12 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { API_BASE, getHealth } from "@/lib/api";
+import { API_BASE, getHealth, wipeAllData } from "@/lib/api";
 import { PageHeader } from "@/components/shell/page-header";
 import { Card } from "@/components/ui/card";
 import { Callout } from "@/components/ui/callout";
 import { MetadataList } from "@/components/ui/metadata-list";
+import { Button } from "@/components/ui/button";
 import { useTheme } from "@/lib/hooks/use-theme";
 import { useApiHealth } from "@/lib/hooks/use-api-health";
 import formStyles from "@/styles/forms.module.css";
@@ -14,6 +15,8 @@ export default function AjustesPage() {
   const { preference, setPreference } = useTheme();
   const { state, health, isLocalProcessing, refresh } = useApiHealth();
   const [raw, setRaw] = useState("");
+  const [wipeBusy, setWipeBusy] = useState(false);
+  const [wipeMsg, setWipeMsg] = useState<string | null>(null);
 
   useEffect(() => {
     void getHealth()
@@ -48,8 +51,9 @@ export default function AjustesPage() {
           </select>
         </div>
         <p className="zed-muted" style={{ margin: 0 }}>
-          El tamaño de texto respeta la preferencia del navegador. Usa zoom del
-          sistema o del navegador para ampliar.
+          La tipografía base ya es más amplia en tablas y fichas. El tamaño
+          global sigue el zoom del sistema o del navegador (sin toggle de
+          densidad).
         </p>
       </Card>
 
@@ -74,11 +78,37 @@ export default function AjustesPage() {
           ]}
         />
         <p className="zed-muted">
-          Borrado de datos: detén la API y elimina el directorio{" "}
-          <code className="zed-mono">ZEDAZO_DATA_DIR</code> (p. ej.{" "}
-          <code className="zed-mono">./data</code>). No hay telemetría remota por
-          defecto.
+          Borrar todos los datos locales limpia{" "}
+          <code className="zed-mono">jobs/</code>,{" "}
+          <code className="zed-mono">uploads/</code> y{" "}
+          <code className="zed-mono">tmp/</code> bajo{" "}
+          <code className="zed-mono">ZEDAZO_DATA_DIR</code>. No hay telemetría
+          remota por defecto.
         </p>
+        <Button
+          variant="danger"
+          loading={wipeBusy}
+          onClick={async () => {
+            const ok = window.confirm(
+              "¿Borrar todos los datos locales de esta instancia? Esta acción no se puede deshacer.",
+            );
+            if (!ok) return;
+            setWipeBusy(true);
+            setWipeMsg(null);
+            try {
+              await wipeAllData();
+              setWipeMsg("Datos locales borrados.");
+              void refresh();
+            } catch (e) {
+              setWipeMsg(String(e));
+            } finally {
+              setWipeBusy(false);
+            }
+          }}
+        >
+          Borrar todos los datos locales
+        </Button>
+        {wipeMsg ? <p className="zed-muted">{wipeMsg}</p> : null}
       </Card>
 
       <Card variant="document" className="zed-stack">

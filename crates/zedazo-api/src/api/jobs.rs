@@ -193,18 +193,58 @@ pub async fn cancel_job(
 pub async fn job_events(
     State(state): State<AppState>,
     Path(job_id): Path<String>,
+    headers: axum::http::HeaderMap,
+    Query(q): Query<EventsQuery>,
 ) -> Result<Sse<impl Stream<Item = Result<Event, axum::Error>>>, StatusCode> {
+    {
+        let jobs = state.jobs.read().await;
+        if !jobs.contains_key(&job_id) {
+            return Err(StatusCode::NOT_FOUND);
+        }
+    }
+
+    let after_id = q
+        .last_event_id
+        .as_deref()
+        .or_else(|| headers.get("last-event-id").and_then(|v| v.to_str().ok()))
+        .and_then(|s| s.parse::<u64>().ok())
+        .unwrap_or(0);
+
+    let events_path = state.storage.job_dir(&job_id).join("events.ndjson");
+    let replay = crate::jobs::read_events_after(&events_path, after_id);
+
     let rx = {
         let events = state.events.read().await;
         let tx = events.get(&job_id).ok_or(StatusCode::NOT_FOUND)?;
         tx.subscribe()
     };
-    let stream = BroadcastStream::new(rx).filter_map(|msg| match msg {
-        Ok(ev) => Some(Ok(Event::default()
+
+    let replay_stream = futures_util::stream::iter(replay.into_iter().map(|ev| {
+        Ok(Event::default()
             .id(ev.id.to_string())
             .event(ev.event)
-            .data(ev.data.to_string()))),
+            .data(ev.data.to_string()))
+    }));
+
+    let live = BroadcastStream::new(rx).filter_map(move |msg| match msg {
+        Ok(ev) => {
+            if ev.id <= after_id {
+                None
+            } else {
+                Some(Ok(Event::default()
+                    .id(ev.id.to_string())
+                    .event(ev.event)
+                    .data(ev.data.to_string())))
+            }
+        }
         Err(_) => None,
     });
+
+    let stream = replay_stream.chain(live);
     Ok(Sse::new(stream).keep_alive(KeepAlive::default()))
+}
+
+#[derive(Deserialize)]
+pub struct EventsQuery {
+    pub last_event_id: Option<String>,
 }

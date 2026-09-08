@@ -2,7 +2,13 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
-import { deleteJob, listJobs, type JobManifest } from "@/lib/api";
+import {
+  cancelJob,
+  deleteJob,
+  isCancellableStatus,
+  listJobs,
+  type JobManifest,
+} from "@/lib/api";
 import { PageHeader } from "@/components/shell/page-header";
 import { JobStatus } from "@/components/jobs/job-status";
 import { Button } from "@/components/ui/button";
@@ -96,6 +102,7 @@ export default function EjecucionesPage() {
           <option value="completed">Completado</option>
           <option value="failed">Fallido</option>
           <option value="queued">En cola</option>
+          <option value="cancel_requested">Cancelación pedida</option>
           <option value="cancelled">Cancelado</option>
         </select>
       </FilterBar>
@@ -167,6 +174,17 @@ export default function EjecucionesPage() {
                         >
                           Abrir
                         </Link>
+                        {isCancellableStatus(j.status) ? (
+                          <Button
+                            variant="secondary"
+                            onClick={async () => {
+                              await cancelJob(j.job_id);
+                              await refresh();
+                            }}
+                          >
+                            Cancelar
+                          </Button>
+                        ) : null}
                         <Button
                           variant="danger"
                           onClick={async () => {
@@ -203,6 +221,17 @@ export default function EjecucionesPage() {
                   >
                     Abrir
                   </Link>
+                  {isCancellableStatus(j.status) ? (
+                    <Button
+                      variant="secondary"
+                      onClick={async () => {
+                        await cancelJob(j.job_id);
+                        await refresh();
+                      }}
+                    >
+                      Cancelar
+                    </Button>
+                  ) : null}
                   <Button
                     variant="danger"
                     onClick={async () => {

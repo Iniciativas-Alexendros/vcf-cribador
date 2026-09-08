@@ -16,7 +16,7 @@ body {
 h1,
 .zed-title-page {
   color: var(--zed-fg-strong);
-  font-size: clamp(2rem, 3vw, 2.5rem);
+  font-size: clamp(2.125rem, 3.2vw, 2.75rem);
   font-weight: var(--zed-weight-bold);
   line-height: var(--zed-leading-tight);
   letter-spacing: -0.02em;
@@ -26,7 +26,7 @@ h1,
 h2,
 .zed-title-section {
   color: var(--zed-fg-strong);
-  font-size: clamp(1.25rem, 2vw, 1.5rem);
+  font-size: clamp(1.375rem, 2.1vw, 1.625rem);
   font-weight: var(--zed-weight-semibold);
   line-height: var(--zed-leading-snug);
   margin: 0 0 var(--zed-space-3);

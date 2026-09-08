@@ -301,10 +301,19 @@ pub fn run(req: &ProcessRequest) -> Result<ProcessResult, CribaError> {
     req.progress.phase(ProcessPhase::WritingArtifacts);
     req.progress.metric("contacts", contacts.len() as u64);
 
-    let warnings = Vec::new();
+    let mut warnings = Vec::new();
+    if let Some(ref p) = config_path {
+        if let Ok(cfg) = crate::infrastructure::config::load_config(Some(p)) {
+            for w in cfg.warnings {
+                warnings.push(ProcessWarning {
+                    code: w.code,
+                    message: w.message,
+                });
+            }
+        }
+    }
     let mut artifacts = Vec::new();
     let audit_entries: Vec<AuditEntry> = Vec::new();
-
     if audit_path.exists() {
         artifacts.push(ArtifactDescriptor {
             kind: ArtifactKind::AuditTsv,
