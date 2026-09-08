@@ -87,6 +87,47 @@ jobs:
       - uses: Swatinem/rust-cache@v2
       - run: cargo doc --workspace --no-deps --document-private-items
 
+  docs-validate:
+    name: Docs validate
+    needs: [health]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - run: make docs-validate
+
+  parity:
+    name: Parity CLI↔API (O10)
+    needs: [check]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+      - run: cargo test -p zedazo-api --test equivalence_http --all-features
+
+  web:
+    name: Web (apps/web)
+    needs: [health]
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: apps/web
+    steps:
+      - uses: actions/checkout@v7
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 9
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+          cache-dependency-path: apps/web/pnpm-lock.yaml
+      - run: pnpm install --frozen-lockfile
+      - run: ./node_modules/.bin/tsc --noEmit
+      - run: ./node_modules/.bin/next lint
+      - run: node --test src/lib/api.test.mjs
+      - run: ./node_modules/.bin/next build
+
   deny:
     name: Deny (cargo-deny)
     needs: [check]

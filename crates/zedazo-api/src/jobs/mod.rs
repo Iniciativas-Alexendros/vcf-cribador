@@ -1,6 +1,7 @@
-pub use crate::dto::{JobEvent, JobManifest, JobRecord, JobStatus};
-
 use std::collections::BTreeSet;
+use std::fs::OpenOptions;
+use std::io::Write;
+use std::path::PathBuf;
 use std::sync::Arc;
 
 use tokio::sync::broadcast;
@@ -10,27 +11,40 @@ use zedazo_core::application::process::{
 
 use crate::app::AppState;
 use crate::dto::artifact_kind_str;
+pub use crate::dto::{JobEvent, JobManifest, JobRecord, JobStatus};
 
 pub struct ApiProgress {
     tx: broadcast::Sender<JobEvent>,
     seq: std::sync::atomic::AtomicU64,
+    events_path: PathBuf,
 }
 
 impl ApiProgress {
-    pub fn new(tx: broadcast::Sender<JobEvent>) -> Self {
+    pub fn new(tx: broadcast::Sender<JobEvent>, events_path: PathBuf) -> Self {
         Self {
             tx,
             seq: std::sync::atomic::AtomicU64::new(1),
+            events_path,
         }
     }
 
     fn emit(&self, event: &str, data: serde_json::Value) {
         let id = self.seq.fetch_add(1, std::sync::atomic::Ordering::SeqCst);
-        let _ = self.tx.send(JobEvent {
+        let ev = JobEvent {
             id,
             event: event.to_string(),
-            data,
-        });
+            data: data.clone(),
+        };
+        if let Ok(line) = serde_json::to_string(&ev) {
+            if let Ok(mut f) = OpenOptions::new()
+                .create(true)
+                .append(true)
+                .open(&self.events_path)
+            {
+                let _ = writeln!(f, "{line}");
+            }
+        }
+        let _ = self.tx.send(ev);
     }
 }
 
@@ -50,6 +64,18 @@ impl ProgressReporter for ApiProgress {
     fn message(&self, msg: &str) {
         self.emit("message", serde_json::json!({ "message": msg }));
     }
+}
+
+/// Lee eventos persistidos con id > after_id.
+pub fn read_events_after(path: &std::path::Path, after_id: u64) -> Vec<JobEvent> {
+    let Ok(content) = std::fs::read_to_string(path) else {
+        return Vec::new();
+    };
+    content
+        .lines()
+        .filter_map(|line| serde_json::from_str::<JobEvent>(line).ok())
+        .filter(|ev| ev.id > after_id)
+        .collect()
 }
 
 pub fn spawn_job(state: AppState, job_id: String) {
@@ -96,6 +122,7 @@ fn run_job_sync(state: &AppState, job_id: &str) -> anyhow::Result<()> {
     }
 
     let job_dir = state.storage.ensure_job_dir(job_id)?;
+    let events_path = job_dir.join("events.ndjson");
     let input = job_dir.join("input.vcf");
     let upload_path = state
         .storage
@@ -120,7 +147,7 @@ fn run_job_sync(state: &AppState, job_id: &str) -> anyhow::Result<()> {
         arts.insert(ArtifactKind::Json);
     }
 
-    let progress: Arc<dyn ProgressReporter> = Arc::new(ApiProgress::new(tx.clone()));
+    let progress: Arc<dyn ProgressReporter> = Arc::new(ApiProgress::new(tx.clone(), events_path));
     let req = ProcessRequest {
         job_id: JobId(job_id.to_string()),
         input_path: input,
@@ -164,7 +191,6 @@ fn run_job_sync(state: &AppState, job_id: &str) -> anyhow::Result<()> {
                     .iter()
                     .map(|a| artifact_kind_str(a.kind).to_string())
                     .collect();
-                // Persistir contactos para consultas
                 let contacts_path = job_dir.join("contacts_view.json");
                 let _ = std::fs::write(
                     &contacts_path,

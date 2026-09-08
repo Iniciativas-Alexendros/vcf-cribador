@@ -4,9 +4,11 @@ import { useParams } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import {
   artifactUrl,
+  cancelJob,
   getAudit,
   getJob,
   getStats,
+  isCancellableStatus,
   listContacts,
   listDuplicates,
   type ContactView,
@@ -64,7 +66,9 @@ export default function JobDetailPage() {
   const [auditTechnical, setAuditTechnical] = useState(false);
   const [stats, setStats] = useState<Record<string, unknown> | null>(null);
   const [error, setError] = useState<string | null>(null);
-  const [warnings, setWarnings] = useState<unknown[]>([]);
+  const [warnings, setWarnings] = useState<
+    { code: string; message: string }[]
+  >([]);
 
   useEffect(() => {
     void getJob(jobId)
@@ -84,6 +88,9 @@ export default function JobDetailPage() {
     if (tab === "duplicados") {
       void listDuplicates(jobId)
         .then((d) => setDups(d.groups))
+        .catch((e) => setError(String(e)));
+      void getAudit(jobId)
+        .then((d) => setAudit(d.items))
         .catch((e) => setError(String(e)));
     }
     if (tab === "auditoria") {
@@ -136,6 +143,19 @@ export default function JobDetailPage() {
         actions={
           <>
             <JobStatus status={job.status} />
+            {isCancellableStatus(job.status) ? (
+              <Button
+                variant="secondary"
+                onClick={async () => {
+                  await cancelJob(jobId);
+                  const d = await getJob(jobId);
+                  setJob(d.job);
+                  setWarnings(d.warnings || []);
+                }}
+              >
+                Cancelar
+              </Button>
+            ) : null}
             <a
               className="zed-button zed-button--primary"
               href={artifactUrl(jobId, "vcf")}
@@ -168,7 +188,13 @@ export default function JobDetailPage() {
           <RetentionNotice hours={job.retention_hours} />
           {warnings.length > 0 ? (
             <Callout variant="warning" title="Avisos">
-              {warnings.length} aviso(s) reportados por el pipeline.
+              <ul style={{ margin: 0, paddingLeft: "1.25rem" }}>
+                {warnings.map((w) => (
+                  <li key={`${w.code}-${w.message}`}>
+                    <code className="zed-mono">{w.code}</code>: {w.message}
+                  </li>
+                ))}
+              </ul>
             </Callout>
           ) : (
             <Callout variant="verification" title="Verificación">
@@ -233,7 +259,9 @@ export default function JobDetailPage() {
         </div>
       )}
 
-      {tab === "duplicados" && <DuplicateGroup groups={dups} />}
+      {tab === "duplicados" && (
+        <DuplicateGroup groups={dups} auditRows={audit} />
+      )}
 
       {tab === "auditoria" && (
         <div className="zed-stack">

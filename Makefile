@@ -1,7 +1,8 @@
-.PHONY: all check test build release clean hooks version bump fmt clippy doc deny help docs-validate
+.PHONY: all check test build release clean hooks version bump fmt clippy doc deny help docs-validate parity web-ci
 
 CARGO := cargo
 BINARY := target/release/zedazo
+PNPM := pnpm --dir apps/web
 
 ##@ Desarrollo
 
@@ -12,6 +13,16 @@ check: ## Analiza el código sin compilar binario final
 
 test: ## Ejecuta todos los tests
 	$(CARGO) test --workspace --all-features
+
+parity: ## Tests de equivalencia CLI↔API HTTP (O10)
+	$(CARGO) test -p zedazo-api --test equivalence_http --all-features
+
+web-ci: ## Lint + typecheck + unit tests + build de apps/web
+	CI=true $(PNPM) install --frozen-lockfile || CI=true $(PNPM) install
+	cd apps/web && ./node_modules/.bin/tsc --noEmit
+	cd apps/web && ./node_modules/.bin/next lint
+	cd apps/web && node --test src/lib/api.test.mjs
+	cd apps/web && ./node_modules/.bin/next build
 
 build: ## Compila en modo debug
 	$(CARGO) build --workspace
@@ -105,7 +116,7 @@ bump-major: ## Incrementa versión major (0.1.0 → 1.0.0)
 
 ##@ CI local
 
-ci: fmt-check clippy test check doc docs-validate ## Simula CI completa
+ci: fmt-check clippy test check doc docs-validate parity web-ci ## Simula CI completa (Rust + O10 + web)
 
 doc: ## Genera documentación
 	$(CARGO) doc --workspace --no-deps --document-private-items
@@ -122,4 +133,4 @@ completions: ## Genera scripts de autocompletado (bash/zsh/fish)
 	@echo "Completions generados en completions/"
 
 help: ## Muestra esta ayuda
-	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
+	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\t\033[0m %s\n", $$1, $$2}'

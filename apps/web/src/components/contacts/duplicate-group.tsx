@@ -8,9 +8,10 @@ type Group = {
 
 type Props = {
   groups: Group[];
+  auditRows?: { cols: string[] }[];
 };
 
-export function DuplicateGroup({ groups }: Props) {
+export function DuplicateGroup({ groups, auditRows = [] }: Props) {
   if (groups.length === 0) {
     return <p className="zed-muted">Sin grupos de duplicados.</p>;
   }
@@ -30,7 +31,7 @@ export function DuplicateGroup({ groups }: Props) {
               </li>
             ))}
           </ul>
-          <DuplicateEvidence />
+          <DuplicateEvidence memberUids={g.member_uids} auditRows={auditRows} />
         </Card>
       ))}
     </div>

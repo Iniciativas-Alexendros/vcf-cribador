@@ -73,14 +73,14 @@ supersedes: "v0.3.0"
 
 ### v0.5.0 — Web self-hosted (GUI + API) — L
 
-- Workspace `zedazo-core` / `zedazo-cli` / `zedazo-api` (ADR-0015)
-- API HTTP `/api/v1` (Axum): jobs, uploads, SSE, artefactos
-- Frontend Next.js `apps/web`: paridad funcional con CLI (excluye `completions`)
-- Modo local single-user; storage efímero FS+manifest; sin telemetría remota por defecto
-- Matriz de paridad + tests de equivalencia CLI↔API sobre fixtures
-- Docs: [docs/gui/](./docs/gui/), [docs/api/openapi.yaml](./docs/api/openapi.yaml)
+- [x] Workspace `zedazo-core` / `zedazo-cli` / `zedazo-api` (ADR-0015)
+- [x] API HTTP `/api/v1` (Axum): jobs, uploads, SSE, artefactos
+- [x] Frontend Next.js `apps/web`: paridad funcional con CLI (excluye `completions`)
+- [x] Modo local single-user; storage efímero FS+manifest; sin telemetría remota por defecto
+- [x] Matriz de paridad + tests de equivalencia CLI↔API sobre fixtures (`make parity`)
+- [x] Docs: [docs/gui/](./docs/gui/), [docs/api/openapi.yaml](./docs/api/openapi.yaml)
 
-**Criterio de salida:** criterios V1 local en ADR-0015 / plan GUI; `make ci` verde incluyendo contrato API.
+**Criterio de salida:** criterios V1 local en ADR-0015 / plan GUI; `make ci` verde incluyendo contrato API y O10. Tag/release a confirmación humana.
 
 ### v1.0.0 — Producción — L
 

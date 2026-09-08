@@ -13,7 +13,10 @@ y este proyecto adhiere a [Semantic Versioning](https://semver.org/lang/es/).
 - API HTTP `/api/v1` (uploads, jobs, SSE, contactos, duplicados, audit, stats, artefactos, reglas)
 - Frontend Next.js `apps/web` (flujo Procesar + Ejecuciones + exploración)
 - Docs GUI: matriz de paridad, threat model, retención, estados de job, OpenAPI, deploy
-- Test de equivalencia CLI/core `equivalence_cli_api`
+- Test de equivalencia CLI/core `equivalence_cli_api` (multi-fixture + artefactos)
+- Harness O10 CLI↔API HTTP `zedazo-api/tests/equivalence_http.rs` + `make parity` en CI
+- Jobs CI: `docs-validate`, `parity`, `web` (`apps/web`)
+- GUI/API V1: cancelación en UI, SSE con `events.ndjson` + `last_event_id`, wipe en Ajustes, warnings `[cribado]`, evidencias dedup, tipografía ampliada (tokens)
 - `deploy/docker-compose.yml` + Dockerfiles
 
 ## [0.3.0] - 2026-09-02

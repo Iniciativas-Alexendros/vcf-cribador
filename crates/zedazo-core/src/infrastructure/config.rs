@@ -53,6 +53,15 @@ struct ReglaToml {
 pub struct AppConfig {
     pub screening: ScreeningConfig,
     pub classification_rules: Vec<ClassificationRule>,
+    /// Avisos de carga (p. ej. sección `[cribado]` deprecada).
+    pub warnings: Vec<ConfigWarning>,
+}
+
+/// Aviso producido al cargar TOML (propagable a API/UI).
+#[derive(Debug, Clone)]
+pub struct ConfigWarning {
+    pub code: String,
+    pub message: String,
 }
 
 impl Default for AppConfig {
@@ -60,6 +69,7 @@ impl Default for AppConfig {
         Self {
             screening: ScreeningConfig::default(),
             classification_rules: crate::domain::rules::CLASSIFICATION_RULES.clone(),
+            warnings: Vec::new(),
         }
     }
 }
@@ -84,13 +94,18 @@ pub fn load_config(path: Option<&Path>) -> Result<AppConfig, CribaError> {
 
     let mut screening = ScreeningConfig::default();
 
+    let mut warnings = Vec::new();
     let section = match (config.zedazo, config.cribado) {
         (Some(z), _) => Some(z),
         (None, Some(c)) => {
-            tracing::warn!(
-                "La sección [cribado] está deprecada; migra a [zedazo] (ADR-0014). \
+            let message = "La sección [cribado] está deprecada; migra a [zedazo] (ADR-0014). \
                  Seguirás funcionando en esta versión."
-            );
+                .to_string();
+            tracing::warn!("{message}");
+            warnings.push(ConfigWarning {
+                code: "deprecated_cribado_section".into(),
+                message,
+            });
             Some(c)
         }
         (None, None) => None,
@@ -145,6 +160,7 @@ pub fn load_config(path: Option<&Path>) -> Result<AppConfig, CribaError> {
     Ok(AppConfig {
         screening,
         classification_rules,
+        warnings,
     })
 }
 
@@ -291,6 +307,8 @@ e2_keywords = ["legacy"]
             vec!["@legacy.fr".to_string()]
         );
         assert_eq!(config.screening.e2_keywords, vec!["legacy".to_string()]);
+        assert_eq!(config.warnings.len(), 1);
+        assert_eq!(config.warnings[0].code, "deprecated_cribado_section");
 
         let _ = std::fs::remove_file(&path);
     }

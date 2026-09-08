@@ -31,4 +31,14 @@ La GUI debe cubrir la **paridad de casos de uso**, no sustituir artefactos propi
 
 ## Test de equivalencia (CI)
 
-Para cada fixture en `tests/fixtures/*.vcf` relevante: ejecutar CLI y API con la misma config; normalizar IDs/timestamps; comparar VCF, TSV, CSV, JSON y conteos. Criterio: **misma semántica**, no “ambos funcionan”.
+Para cada fixture en `crates/zedazo-core/tests/fixtures/*.vcf` relevante: ejecutar CLI (`cribar`) y API HTTP con la misma config; normalizar timestamps y orden de categorías; comparar VCF, TSV, CSV, JSON y conteos. Criterio: **misma semántica**, no “ambos funcionan”.
+
+**Cobertura CI:** `make parity` → `cargo test -p zedazo-api --test equivalence_http` (fixtures: sample-contacts, google_*, proton_sample, iso_sample, duplicates, edge_cases). Smoke core: `equivalence_cli_api`.
+
+| Capacidad (filas pipeline) | Cubierta por harness O10 |
+|----------------------------|--------------------------|
+| Lectura VCF 3/4, encoding ISO | sí (fixtures Google/Proton/iso) |
+| Cribado / conteos / export VCF+audit+CSV+JSON+stats | sí |
+| Dedup grupos (conteos + artifacts) | sí (`duplicates.vcf`) |
+| Warning `[cribado]` / cancelación UI / evidencias D1-D2 en GUI | sí (API+UI V1 endurecido) |
+| Shell completions | N/A (sin pantalla) |

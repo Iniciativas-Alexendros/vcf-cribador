@@ -35,3 +35,15 @@ export interface Health {
   core_version: string;
   storage_mode: string;
 }
+
+export interface ProcessWarning {
+  code: string;
+  message: string;
+}
+
+export interface WipeResponse {
+  wiped: boolean;
+  jobs?: boolean;
+  uploads?: boolean;
+  tmp?: boolean;
+}

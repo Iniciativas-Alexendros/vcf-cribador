@@ -1,9 +1,52 @@
-export function DuplicateEvidence() {
+type AuditRow = { cols: string[] };
+
+type Props = {
+  memberUids: string[];
+  auditRows?: AuditRow[];
+};
+
+/** Evidencia D1/D2 desde filas de auditoría (FUSIONADO / merged). */
+export function DuplicateEvidence({ memberUids, auditRows = [] }: Props) {
+  const uidSet = new Set(memberUids);
+  const evidence = auditRows
+    .map((row) => row.cols)
+    .filter((cols) => cols.length >= 7)
+    .filter((cols) => {
+      const uid = cols[1] || "";
+      const action = (cols[4] || "").toUpperCase();
+      return uidSet.has(uid) && (action === "FUSIONADO" || action === "MERGED");
+    })
+    .map((cols) => ({
+      uid: cols[1],
+      action: cols[4],
+      reason: cols[5] || "",
+      rule: cols[6] || "",
+    }));
+
+  if (evidence.length === 0) {
+    return (
+      <p className="zed-muted" style={{ fontSize: "var(--zed-text-sm)", marginBottom: 0 }}>
+        Sin filas FUSIONADO en auditoría para este grupo. Descarga audit.tsv si
+        necesitas la traza completa.
+      </p>
+    );
+  }
+
   return (
-    <p className="zed-muted" style={{ fontSize: "0.875rem", marginBottom: 0 }}>
-      La evidencia de unión (UID, teléfono, email o similitud de nombre) está en
-      el artefacto de auditoría cuando el pipeline la registra. Esta vista no
-      inventa puntuaciones de confianza.
-    </p>
+    <div className="zed-stack" style={{ gap: "var(--zed-space-2)" }}>
+      <p className="zed-label" style={{ margin: 0 }}>
+        Evidencia de fusión (auditoría)
+      </p>
+      <ul style={{ margin: 0, paddingLeft: "1.25rem" }}>
+        {evidence.map((e) => (
+          <li key={`${e.uid}-${e.rule}-${e.reason}`}>
+            <span className="zed-mono">{e.uid}</span>
+            {" — "}
+            <strong>{e.rule || "regla"}</strong>
+            {e.reason ? `: ${e.reason}` : null}
+          </li>
+        ))}
+      </ul>
+    </div>
   );
 }

@@ -9,7 +9,11 @@
     "lint": "next lint",
     "test": "node --test src/lib/api.test.mjs",
     "test:e2e": "playwright test",
-    "test:a11y": "playwright test e2e/a11y.spec.ts"
+    "test:a11y": "playwright test e2e/a11y.spec.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "pnpm": {
+    "ignoredBuiltDependencies": ["unrs-resolver"]
   },
   "dependencies": {
     "@awesome.me/webawesome": "^3.12.0",

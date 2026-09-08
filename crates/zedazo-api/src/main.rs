@@ -1,12 +1,9 @@
 //! Zedazo API — adaptador HTTP sobre zedazo-core (ADR-0015).
 
-mod api;
-mod app;
-mod dto;
-mod jobs;
-mod storage;
-
 use tracing_subscriber::EnvFilter;
+use zedazo_api::app;
+use zedazo_api::dto::JobStatus;
+use zedazo_api::jobs::now_rfc3339;
 
 #[tokio::main]
 async fn main() -> anyhow::Result<()> {
@@ -36,8 +33,6 @@ async fn main() -> anyhow::Result<()> {
 }
 
 async fn retention_sweep(state: &app::AppState) {
-    use crate::dto::JobStatus;
-    use crate::jobs::now_rfc3339;
     let now = chrono::Utc::now();
     let mut to_expire = Vec::new();
     {

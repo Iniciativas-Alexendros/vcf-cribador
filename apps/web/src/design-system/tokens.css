@@ -6,19 +6,19 @@
   --zed-font-mono: "IBM Plex Mono", "JetBrains Mono", ui-monospace,
     SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 
-  --zed-text-xs: 0.75rem;
-  --zed-text-sm: 0.875rem;
-  --zed-text-base: 1rem;
-  --zed-text-md: 1.125rem;
-  --zed-text-lg: 1.25rem;
-  --zed-text-xl: 1.5rem;
-  --zed-text-2xl: 2rem;
-  --zed-text-3xl: 2.5rem;
+  --zed-text-xs: 0.8125rem;
+  --zed-text-sm: 0.9375rem;
+  --zed-text-base: 1.0625rem;
+  --zed-text-md: 1.1875rem;
+  --zed-text-lg: 1.375rem;
+  --zed-text-xl: 1.625rem;
+  --zed-text-2xl: 2.125rem;
+  --zed-text-3xl: 2.75rem;
 
-  --zed-leading-tight: 1.15;
-  --zed-leading-snug: 1.3;
-  --zed-leading-normal: 1.5;
-  --zed-leading-relaxed: 1.65;
+  --zed-leading-tight: 1.2;
+  --zed-leading-snug: 1.35;
+  --zed-leading-normal: 1.55;
+  --zed-leading-relaxed: 1.7;
 
   --zed-weight-regular: 400;
   --zed-weight-medium: 500;
