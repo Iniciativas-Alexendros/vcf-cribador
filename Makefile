@@ -8,16 +8,16 @@ BINARY := target/release/zedazo
 all: check test build
 
 check: ## Analiza el código sin compilar binario final
-	$(CARGO) check --all-features
+	$(CARGO) check --workspace --all-features
 
 test: ## Ejecuta todos los tests
-	$(CARGO) test --all-features
+	$(CARGO) test --workspace --all-features
 
 build: ## Compila en modo debug
-	$(CARGO) build
+	$(CARGO) build --workspace
 
 release: ## Compila en modo release
-	$(CARGO) build --release --locked
+	$(CARGO) build -p zedazo --release --locked
 
 clean: ## Limpia artefactos de compilación
 	$(CARGO) clean
@@ -71,16 +71,16 @@ docs-validate: ## Valida documentación canónica (frontmatter, enlaces, stubs, 
 	@echo "✓ docs-validate completado"
 
 traceability: ## Genera matriz de trazabilidad SPECS→Módulo→Test
-	@sh scripts/traceability.sh
+	@bash scripts/traceability.sh
 
 fmt: ## Formatea el código
-	$(CARGO) fmt
+	$(CARGO) fmt --all
 
 fmt-check: ## Verifica el formateo (CI)
 	$(CARGO) fmt --all -- --check
 
 clippy: ## Linter estricto
-	$(CARGO) clippy --all-features -- -D warnings
+	$(CARGO) clippy --workspace --all-targets --all-features -- -D warnings
 
 lint: fmt clippy ## Formatea + linter
 
@@ -92,7 +92,7 @@ hooks: ## Instala hooks pre-commit
 ##@ Versionado
 
 version: ## Muestra la versión actual desde Cargo.toml
-	@grep '^version' Cargo.toml | head -1 | sed 's/version = "\(.*\)"/\1/'
+	@grep '^version' crates/zedazo-cli/Cargo.toml 2>/dev/null | head -1 || grep 'version.workspace' -A0 crates/zedazo-cli/Cargo.toml; grep '^version' Cargo.toml | head -1 | sed 's/version = "\(.*\)"/\1/'
 
 bump-patch: ## Incrementa versión patch (0.1.0 → 0.1.1)
 	@sh scripts/bump.sh patch
@@ -108,21 +108,18 @@ bump-major: ## Incrementa versión major (0.1.0 → 1.0.0)
 ci: fmt-check clippy test check doc docs-validate ## Simula CI completa
 
 doc: ## Genera documentación
-	$(CARGO) doc --no-deps --document-private-items
+	$(CARGO) doc --workspace --no-deps --document-private-items
 	@echo "Documentación generada en target/doc/"
 
 ##@ Otros
 
 completions: ## Genera scripts de autocompletado (bash/zsh/fish)
-	$(CARGO) build --release
+	$(CARGO) build -p zedazo --release
 	mkdir -p completions
 	$(BINARY) completions bash > completions/zedazo.bash
 	$(BINARY) completions zsh  > completions/_zedazo
 	$(BINARY) completions fish > completions/zedazo.fish
 	@echo "Completions generados en completions/"
-	@echo "  bash: source completions/zedazo.bash"
-	@echo "  zsh:  fpath+=(completions/_zedazo)"
-	@echo "  fish: cp completions/zedazo.fish ~/.config/fish/completions/"
 
 help: ## Muestra esta ayuda
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'

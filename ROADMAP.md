@@ -1,15 +1,15 @@
 ---
-version: "0.3.0"
-date: "2026-09-02"
+version: "0.3.1"
+date: "2026-09-08"
 status: "Activo"
 canonical: true
-supersedes: "v0.2.0"
+supersedes: "v0.3.0"
 ---
 
 # ROADMAP.md
 
-**Versión:** 0.3.0  
-**Fecha:** 2026-09-02  
+**Versión:** 0.3.1  
+**Fecha:** 2026-09-08  
 **Canónico:** este archivo. [`docs/tasks.md`](docs/tasks.md) redirige aquí.
 
 ---
@@ -62,7 +62,7 @@ supersedes: "v0.2.0"
 - [x] Documentación canónica raíz alineada (SPECS/ROADMAP/DECISIONS/AGENTS → 0.3.0 2026-09-02)
 - [x] Issues #21/#25/#26/#27/#35 documentados para cierre en PR 0.3.0
 
-**Fuera de alcance v0.3.0:** CardDAV, watch mode, GUI.
+**Fuera de alcance v0.3.0:** CardDAV, watch mode, GUI (GUI abierta en v0.5.0 vía ADR-0015).
 
 ### v0.4.0 — Integraciones — L
 
@@ -71,12 +71,24 @@ supersedes: "v0.2.0"
 - CardDAV sync, watch mode, filtros por categoría
 - Requiere ADR de proveedor/red antes de implementar
 
+### v0.5.0 — Web self-hosted (GUI + API) — L
+
+- Workspace `zedazo-core` / `zedazo-cli` / `zedazo-api` (ADR-0015)
+- API HTTP `/api/v1` (Axum): jobs, uploads, SSE, artefactos
+- Frontend Next.js `apps/web`: paridad funcional con CLI (excluye `completions`)
+- Modo local single-user; storage efímero FS+manifest; sin telemetría remota por defecto
+- Matriz de paridad + tests de equivalencia CLI↔API sobre fixtures
+- Docs: [docs/gui/](./docs/gui/), [docs/api/openapi.yaml](./docs/api/openapi.yaml)
+
+**Criterio de salida:** criterios V1 local en ADR-0015 / plan GUI; `make ci` verde incluyendo contrato API.
+
 ### v1.0.0 — Producción — L
 
-- API estable (semver estricto)
+- API de crate estable (semver estricto del core/CLI)
 - Benchmarks (criterion)
 - Cross-compile macOS/Windows — **bloqueado por decisión de release** (ADR pendiente: matrix GitHub-hosted vs `cargo-dist`)
 - Corpus de regresión >10k contactos
+- GUI/API maduras (post-v0.5.0) opcionales en distribución Docker
 
 ## Dependencias congeladas (ver DECISIONS)
 

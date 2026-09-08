@@ -1,15 +1,15 @@
 ---
-version: "0.2.0"
-date: "2026-08-15"
+version: "0.3.1"
+date: "2026-09-08"
 status: "Activo"
 canonical: true
-supersedes: "v0.1.x"
+supersedes: "v0.2.0"
 ---
 
 # Zedazo — Arquitectura
 
-**Versión:** 0.2.0
-**Fecha:** 2026-08-15
+**Versión:** 0.3.1
+**Fecha:** 2026-09-08
 **Canónico:** este archivo. [`docs/architecture.md`](docs/architecture.md) redirige aquí.
 
 ---
@@ -47,8 +47,32 @@ El proyecto usa **GitHub Actions** con **runners self-hosted** (`[self-hosted, t
 ## Capas
 
 ```
+┌─────────────────────────────────────────────────────────────┐
+│  interfaces: zedazo-cli (Clap)  │  zedazo-api (Axum /api/v1) │
+│  apps/web (Next.js) → solo HTTP; sin lógica de dominio       │
+├─────────────────────────────────────────────────────────────┤
+│           application/ (zedazo-core)                         │
+│           Cribar, Audit, Stats, Export + ProcessRequest      │
+├─────────────────────────────────────────────────────────────┤
+│  domain/ (puro)          │  infrastructure/ (I/O reutilizable)│
+└─────────────────────────────────────────────────────────────┘
+
+Regla de dependencia:
+  domain ← application ← interfaces (cli | http)
+  domain ← infrastructure
+  zedazo-core NO depende de Axum, Tokio HTTP, cookies ni DB
+```
+
+Workspace (ADR-0015): `crates/zedazo-core`, `crates/zedazo-cli`, `crates/zedazo-api`.
+Jobs web: directorio aislado por ULID bajo `$ZEDAZO_DATA_DIR` con `manifest.json` y `events.ndjson`.
+
+→ Ver [ROADMAP.md](./ROADMAP.md) v0.5.0 y [DECISIONS.md](./DECISIONS.md) (ADR-0015).
+
+## Capas (histórico v0.2 — CLI única)
+
+```
 ┌──────────────────────────────────────┐
-│           interfaces/cli.rs           │  ← Clap (único punto de entrada)
+│           interfaces/cli.rs           │  ← Clap (punto de entrada CLI)
 ├──────────────────────────────────────┤
 │           application/                │  ← Casos de uso (Cribar, Audit, Stats, Export)
 ├──────────────────────────────────────┤

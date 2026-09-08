@@ -1,0 +1,19 @@
+# API Zedazo
+FROM rust:1.80-bookworm AS build
+WORKDIR /app
+COPY Cargo.toml Cargo.lock ./
+COPY crates ./crates
+RUN cargo build -p zedazo-api --release
+
+FROM debian:bookworm-slim
+RUN useradd -r -u 10001 zedazo && mkdir -p /var/lib/zedazo && chown zedazo:zedazo /var/lib/zedazo
+COPY --from=build /app/target/release/zedazo-api /usr/local/bin/zedazo-api
+USER zedazo
+ENV ZEDAZO_BIND=0.0.0.0:8080 \
+    ZEDAZO_DATA_DIR=/var/lib/zedazo \
+    ZEDAZO_STORAGE_MODE=ephemeral \
+    ZEDAZO_AUTH_MODE=disabled \
+    ZEDAZO_OTEL_ENABLED=false
+EXPOSE 8080
+VOLUME ["/var/lib/zedazo"]
+CMD ["zedazo-api"]

@@ -1,0 +1,439 @@
+openapi: 3.1.0
+info:
+  title: Zedazo API
+  version: 0.5.0-draft
+  description: |
+    API HTTP self-hosted sobre zedazo-core (ADR-0015).
+    Prefijo /api/v1. Modo V1 local: auth disabled en loopback.
+servers:
+  - url: http://127.0.0.1:8080
+    description: Local single-user
+paths:
+  /api/v1/health:
+    get:
+      operationId: getHealth
+      summary: Disponibilidad y versiones
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Health"
+  /api/v1/version:
+    get:
+      operationId: getVersion
+      summary: Versión semántica y build
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Version"
+  /api/v1/uploads:
+    post:
+      operationId: createUpload
+      summary: Subida multipart streaming de VCF
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [file]
+              properties:
+                file:
+                  type: string
+                  format: binary
+      responses:
+        "201":
+          description: Upload creado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Upload"
+        "413":
+          description: Excede ZEDAZO_MAX_UPLOAD_BYTES
+  /api/v1/jobs:
+    get:
+      operationId: listJobs
+      summary: Lista jobs (sin contactos)
+      parameters:
+        - name: cursor
+          in: query
+          schema:
+            type: string
+        - name: status
+          in: query
+          schema:
+            $ref: "#/components/schemas/JobStatus"
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/JobList"
+    post:
+      operationId: createJob
+      summary: Crea y encola job desde upload
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/CreateJobRequest"
+      responses:
+        "201":
+          description: Job creado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Job"
+  /api/v1/jobs/{jobId}:
+    get:
+      operationId: getJob
+      parameters:
+        - $ref: "#/components/parameters/jobId"
+      responses:
+        "200":
+          description: Detalle
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Job"
+        "404":
+          description: No encontrado
+    delete:
+      operationId: deleteJob
+      parameters:
+        - $ref: "#/components/parameters/jobId"
+      responses:
+        "204":
+          description: Eliminado
+  /api/v1/jobs/{jobId}/events:
+    get:
+      operationId: jobEvents
+      summary: SSE de progreso
+      parameters:
+        - $ref: "#/components/parameters/jobId"
+        - name: Last-Event-ID
+          in: header
+          schema:
+            type: string
+      responses:
+        "200":
+          description: text/event-stream
+          content:
+            text/event-stream:
+              schema:
+                type: string
+  /api/v1/jobs/{jobId}/cancel:
+    post:
+      operationId: cancelJob
+      parameters:
+        - $ref: "#/components/parameters/jobId"
+      responses:
+        "202":
+          description: Cancelación aceptada
+  /api/v1/jobs/{jobId}/contacts:
+    get:
+      operationId: listContacts
+      parameters:
+        - $ref: "#/components/parameters/jobId"
+        - name: cursor
+          in: query
+          schema:
+            type: string
+        - name: q
+          in: query
+          schema:
+            type: string
+        - name: result
+          in: query
+          schema:
+            type: string
+            enum: [conserved, eliminated, needs_review, quarantine, merged]
+      responses:
+        "200":
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ContactList"
+  /api/v1/jobs/{jobId}/contacts/{contactId}:
+    get:
+      operationId: getContact
+      parameters:
+        - $ref: "#/components/parameters/jobId"
+        - name: contactId
+          in: path
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Ficha
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Contact"
+  /api/v1/jobs/{jobId}/duplicates:
+    get:
+      operationId: listDuplicates
+      parameters:
+        - $ref: "#/components/parameters/jobId"
+      responses:
+        "200":
+          description: Grupos
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/DuplicateList"
+  /api/v1/jobs/{jobId}/audit:
+    get:
+      operationId: getAudit
+      parameters:
+        - $ref: "#/components/parameters/jobId"
+      responses:
+        "200":
+          description: Eventos de auditoría
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/AuditList"
+  /api/v1/jobs/{jobId}/stats:
+    get:
+      operationId: getStats
+      parameters:
+        - $ref: "#/components/parameters/jobId"
+      responses:
+        "200":
+          description: Stats estructuradas
+          content:
+            application/json:
+              schema:
+                type: object
+  /api/v1/jobs/{jobId}/artifacts/{kind}:
+    get:
+      operationId: downloadArtifact
+      parameters:
+        - $ref: "#/components/parameters/jobId"
+        - name: kind
+          in: path
+          required: true
+          schema:
+            $ref: "#/components/schemas/ArtifactKind"
+      responses:
+        "200":
+          description: Descarga
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        "409":
+          description: Job no completed o artefacto incompleto
+  /api/v1/audits:
+    post:
+      operationId: createAudit
+      summary: Auditoría aislada sin VCF de salida
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [upload_id]
+              properties:
+                upload_id:
+                  type: string
+                config_toml:
+                  type: string
+      responses:
+        "201":
+          description: Audit job
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Job"
+  /api/v1/rules/validate:
+    post:
+      operationId: validateRules
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [toml]
+              properties:
+                toml:
+                  type: string
+      responses:
+        "200":
+          description: Diagnósticos
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  ok:
+                    type: boolean
+                  diagnostics:
+                    type: array
+                    items:
+                      type: object
+  /api/v1/rules/preview:
+    post:
+      operationId: previewRules
+      summary: Preview limitada; no crea resultados definitivos
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        "200":
+          description: Preview
+components:
+  parameters:
+    jobId:
+      name: jobId
+      in: path
+      required: true
+      schema:
+        type: string
+  schemas:
+    Health:
+      type: object
+      properties:
+        status:
+          type: string
+          enum: [ok]
+        api_version:
+          type: string
+        core_version:
+          type: string
+        storage_mode:
+          type: string
+    Version:
+      type: object
+      properties:
+        version:
+          type: string
+        git_sha:
+          type: string
+        build_date:
+          type: string
+        schema_version:
+          type: string
+    Upload:
+      type: object
+      properties:
+        upload_id:
+          type: string
+        original_name:
+          type: string
+        bytes:
+          type: integer
+        sha256:
+          type: string
+    CreateJobRequest:
+      type: object
+      required: [upload_id]
+      properties:
+        upload_id:
+          type: string
+        display_name:
+          type: string
+        rules:
+          type: object
+          properties:
+            mode:
+              type: string
+              enum: [builtin, toml_inline]
+            toml:
+              type: string
+        artifacts:
+          type: array
+          items:
+            $ref: "#/components/schemas/ArtifactKind"
+        retention_hours:
+          type: integer
+    JobStatus:
+      type: string
+      enum:
+        - created
+        - uploading
+        - uploaded
+        - queued
+        - validating
+        - parsing
+        - screening
+        - normalizing
+        - classifying
+        - deduplicating
+        - verifying
+        - writing_artifacts
+        - completed
+        - failed
+        - cancel_requested
+        - cancelled
+        - expired
+        - deleted
+    Job:
+      type: object
+      properties:
+        job_id:
+          type: string
+        status:
+          $ref: "#/components/schemas/JobStatus"
+        summary:
+          type: object
+        warnings:
+          type: array
+          items:
+            type: string
+    JobList:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/Job"
+        next_cursor:
+          type: string
+          nullable: true
+    ArtifactKind:
+      type: string
+      enum: [vcf, audit_tsv, stats_json, stats_markdown, csv, json]
+    Contact:
+      type: object
+      additionalProperties: true
+    ContactList:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            $ref: "#/components/schemas/Contact"
+        next_cursor:
+          type: string
+          nullable: true
+    DuplicateList:
+      type: object
+      properties:
+        groups:
+          type: array
+          items:
+            type: object
+    AuditList:
+      type: object
+      properties:
+        items:
+          type: array
+          items:
+            type: object

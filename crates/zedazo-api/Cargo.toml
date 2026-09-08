@@ -1,0 +1,35 @@
+[package]
+name = "zedazo-api"
+version.workspace = true
+edition.workspace = true
+rust-version.workspace = true
+description = "API HTTP self-hosted de Zedazo (Axum)"
+license.workspace = true
+repository.workspace = true
+homepage.workspace = true
+publish = false
+
+[[bin]]
+name = "zedazo-api"
+path = "src/main.rs"
+
+[dependencies]
+zedazo-core = { workspace = true }
+anyhow = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+tracing = { workspace = true }
+tracing-subscriber = { workspace = true }
+thiserror = { workspace = true }
+tokio = { version = "1", features = ["full"] }
+axum = { version = "0.8", features = ["multipart"] }
+tower = "0.5"
+tower-http = { version = "0.6", features = ["cors", "limit", "trace"] }
+uuid = { version = "1", features = ["v7", "serde"] }
+sha2 = "0.10"
+hex = "0.4"
+tokio-stream = { version = "0.1", features = ["sync"] }
+futures-util = "0.3"
+chrono = { version = "0.4", default-features = false, features = ["clock", "std"] }
+mime_guess = "2"
+tempfile = { workspace = true }

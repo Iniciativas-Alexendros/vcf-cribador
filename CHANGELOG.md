@@ -7,6 +7,15 @@ y este proyecto adhiere a [Semantic Versioning](https://semver.org/lang/es/).
 
 ## [Unreleased]
 
+### Añadido (v0.5.0-draft — ADR-0015)
+- Workspace Rust: `zedazo-core`, `zedazo-cli` (binario `zedazo`), `zedazo-api` (Axum)
+- Contrato `ProcessRequest` / `ProcessResult`, progress y cancelación cooperativa
+- API HTTP `/api/v1` (uploads, jobs, SSE, contactos, duplicados, audit, stats, artefactos, reglas)
+- Frontend Next.js `apps/web` (flujo Procesar + Ejecuciones + exploración)
+- Docs GUI: matriz de paridad, threat model, retención, estados de job, OpenAPI, deploy
+- Test de equivalencia CLI/core `equivalence_cli_api`
+- `deploy/docker-compose.yml` + Dockerfiles
+
 ## [0.3.0] - 2026-09-02
 
 ### Añadido

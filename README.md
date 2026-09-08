@@ -37,6 +37,24 @@ zedazo export limpio.vcf -o contactos.csv
 zedazo export limpio.vcf -o contactos.json -f json
 ```
 
+## GUI / API self-hosted (ADR-0015, hito v0.5.0)
+
+Workspace: `crates/zedazo-core` · `crates/zedazo-cli` · `crates/zedazo-api` · `apps/web`.
+
+```bash
+# API local
+ZEDAZO_DATA_DIR=./data ZEDAZO_BIND=127.0.0.1:8080 cargo run -p zedazo-api
+
+# Frontend
+pnpm --dir apps/web install
+pnpm --dir apps/web dev
+
+# Docker
+docker compose -f deploy/docker-compose.yml up --build
+```
+
+Docs: [docs/gui/](docs/gui/) · OpenAPI [docs/api/openapi.yaml](docs/api/openapi.yaml).
+
 ## Configuración
 
 Opcional: crea un archivo TOML para personalizar el cribado.

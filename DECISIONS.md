@@ -1,15 +1,15 @@
 ---
-version: "0.3.0"
-date: "2026-09-02"
+version: "0.3.1"
+date: "2026-09-08"
 status: "Activo"
 canonical: true
-supersedes: "v0.1.x"
+supersedes: "v0.3.0"
 ---
 
 # DECISIONS.md
 
-**Versión:** 0.3.0  
-**Fecha:** 2026-09-02  
+**Versión:** 0.3.1  
+**Fecha:** 2026-09-08  
 **Canónico:** este archivo. [`docs/adr/README.md`](docs/adr/README.md) conserva el texto histórico de ADR-0001…0005 y apunta aquí para IDs nuevos.
 
 ---
@@ -185,5 +185,24 @@ supersedes: "v0.1.x"
 
 - Roadmap en el mismo PR: calidad (ex-v0.2.0) → **v0.3.0**; CardDAV/watch → **v0.4.0**.
 - Consecuencias: Breaking en crate name, props VCF y campo JSON; configs `[cribado]` siguen funcionando con deprecación; repo GitHub → `zedazo` (redirects).
+
+</details>
+
+<details>
+<summary><strong>ADR-0015</strong> — GUI web self-hosted + API HTTP sobre core compartido</summary>
+
+- Estado: aceptada
+- Fecha: 2026-09-08
+- Contexto: La CLI es el único punto de entrada. Se necesita paridad funcional desde browser sin duplicar reglas de dominio ni invocar el binario vía `child_process`. SPECS v0.3 listaba GUI como no-objetivo.
+- Decisión:
+  1. Workspace Rust: `zedazo-core` (domain/application/infra reutilizable), `zedazo-cli` (adaptador Clap), `zedazo-api` (Axum/Tokio).
+  2. Frontend separado `apps/web` (Next.js App Router + TypeScript). Sin lógica de cribado/dedup en TS.
+  3. Primera release: **single-user local** (`127.0.0.1`), sin cuentas ni colaboración; `ZEDAZO_AUTH_MODE=disabled` solo en loopback.
+  4. Persistencia inicial: filesystem + `manifest.json` + `events.ndjson` (`ZEDAZO_STORAGE_MODE=ephemeral`). SQLite solo si el historial lo exige después.
+  5. Sin telemetría remota ni CDN de terceros por defecto; OTLP opt-in (`ZEDAZO_OTEL_ENABLED=false`).
+  6. CLI permanece interfaz oficial de automatización; `completions` sin pantalla GUI equivalente.
+  7. API versionada bajo `/api/v1`; cambios incompatibles → `/api/v2`.
+- Consecuencias: Deps nuevas (axum, tokio, etc.) solo en `zedazo-api`. Actualizar SPECS/ROADMAP/ARCHITECTURE. Hito **v0.5.0** web self-hosted (CardDAV sigue en v0.4.0, PRs separados).
+- Relacionado: [SPECS.md](./SPECS.md) O10, [ROADMAP.md](./ROADMAP.md) v0.5.0, [docs/gui/](./docs/gui/), [docs/api/openapi.yaml](./docs/api/openapi.yaml).
 
 </details>

@@ -1,46 +1,38 @@
-[package]
-name = "zedazo"
+[workspace]
+resolver = "2"
+members = [
+  "crates/zedazo-core",
+  "crates/zedazo-cli",
+  "crates/zedazo-api",
+]
+default-members = ["crates/zedazo-cli"]
+
+[workspace.package]
 version = "0.3.0"
 edition = "2021"
 rust-version = "1.80"
-description = "Zedazo: criba, normaliza, clasifica y deduplica contactos VCF vCard 4.0/3.0"
 license = "MIT OR Apache-2.0"
 repository = "https://github.com/Iniciativas-Alexendros/zedazo"
 homepage = "https://github.com/Iniciativas-Alexendros/zedazo"
-documentation = "https://docs.rs/zedazo"
-keywords = ["vcf", "vcard", "contacts", "cli", "deduplication"]
-categories = ["command-line-utilities", "text-processing"]
 
-[dependencies]
-# CLI
+[workspace.dependencies]
+zedazo-core = { path = "crates/zedazo-core", version = "0.3.0" }
 clap = { version = "4.5", features = ["derive"] }
 clap_complete = "4.5"
-# Parseo
 nom = "7"
-# Regex (clasificación)
 regex = "1.10"
-# CSV (audit log + export)
 csv = "1.3"
-# Logging estructurado
 tracing = "0.1"
 tracing-subscriber = { version = "0.3", features = ["env-filter"] }
-# Fuzzy matching D6
 strsim = "0.11"
-# Gestión de errores
 thiserror = "2"
 anyhow = "1"
-# Fechas
 jiff = "0.2"
-# Detección + transcodificación de codificación
 chardetng = "0.1"
 encoding_rs = "0.8"
-# Configuración externa
 toml = "0.9"
-# Export JSON
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
-
-[dev-dependencies]
 tempfile = "3"
 
 [profile.release]
@@ -50,7 +42,6 @@ strip = "symbols"
 panic = "abort"
 opt-level = 3
 
-# The profile that 'dist' will build with
 [profile.dist]
 inherits = "release"
 lto = "thin"

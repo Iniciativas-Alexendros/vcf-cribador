@@ -1,6 +1,6 @@
 use std::fs;
 use std::path::PathBuf;
-use zedazo::infrastructure::parser::{parse_vcards, unfold};
+use zedazo_core::infrastructure::parser::{parse_vcards, unfold};
 
 fn fixture(name: &str) -> PathBuf {
     PathBuf::from(env!("CARGO_MANIFEST_DIR"))
@@ -9,7 +9,7 @@ fn fixture(name: &str) -> PathBuf {
         .join(name)
 }
 
-fn read_vcf_to_vcards(path: &PathBuf) -> Vec<zedazo::infrastructure::parser::ParsedVCard> {
+fn read_vcf_to_vcards(path: &PathBuf) -> Vec<zedazo_core::infrastructure::parser::ParsedVCard> {
     let bytes = fs::read(path).expect("Unable to read fixture");
     let raw = String::from_utf8(bytes).expect("Fixture not valid UTF-8");
     let unfolded = unfold(&raw);
@@ -169,8 +169,8 @@ fn test_google_contacto_without_fn_has_uid_from_fallback() {
 
 #[test]
 fn test_pipeline_sample_dry_run() {
-    use zedazo::application::cribar;
-    use zedazo::domain::screening::ScreeningDecision;
+    use zedazo_core::application::cribar;
+    use zedazo_core::domain::screening::ScreeningDecision;
 
     let input = fixture("sample-contacts.vcf");
 
@@ -205,7 +205,7 @@ fn test_pipeline_sample_dry_run() {
 
 #[test]
 fn test_pipeline_google_dry_run() {
-    use zedazo::application::cribar;
+    use zedazo_core::application::cribar;
 
     let input = fixture("google_contactos.vcf");
 
@@ -223,8 +223,8 @@ fn test_pipeline_google_dry_run() {
 
 #[test]
 fn test_empty_vcf_error() {
-    use zedazo::application::cribar;
-    use zedazo::error::CribaError;
+    use zedazo_core::application::cribar;
+    use zedazo_core::error::CribaError;
 
     let empty_content = "";
     let empty_fixture = std::env::temp_dir().join("empty_test.vcf");
@@ -309,7 +309,7 @@ fn test_parse_proton_sample() {
 
 #[test]
 fn test_pipeline_duplicates_dry_run() {
-    use zedazo::application::cribar;
+    use zedazo_core::application::cribar;
 
     let input = fixture("duplicates.vcf");
 
@@ -323,7 +323,7 @@ fn test_pipeline_duplicates_dry_run() {
 
 #[test]
 fn test_pipeline_edge_cases_dry_run() {
-    use zedazo::application::cribar;
+    use zedazo_core::application::cribar;
 
     let input = fixture("edge_cases.vcf");
 
@@ -344,7 +344,7 @@ fn test_pipeline_edge_cases_dry_run() {
 
 #[test]
 fn test_pipeline_proton_dry_run() {
-    use zedazo::application::cribar;
+    use zedazo_core::application::cribar;
 
     let input = fixture("proton_sample.vcf");
 
@@ -357,13 +357,14 @@ fn test_pipeline_proton_dry_run() {
     // Verificar source_detail correcto
     let sources: Vec<_> = contacts.iter().map(|c| c.source_detail.clone()).collect();
     println!("Sources: {:?}", sources);
+    assert!(sources.iter().any(|s| matches!(
+        s,
+        zedazo_core::domain::contact::SourceDetail::ProtonAutosave
+    )));
     assert!(sources
         .iter()
-        .any(|s| matches!(s, zedazo::domain::contact::SourceDetail::ProtonAutosave)));
+        .any(|s| matches!(s, zedazo_core::domain::contact::SourceDetail::ProtonImport)));
     assert!(sources
         .iter()
-        .any(|s| matches!(s, zedazo::domain::contact::SourceDetail::ProtonImport)));
-    assert!(sources
-        .iter()
-        .any(|s| matches!(s, zedazo::domain::contact::SourceDetail::ProtonWeb)));
+        .any(|s| matches!(s, zedazo_core::domain::contact::SourceDetail::ProtonWeb)));
 }
