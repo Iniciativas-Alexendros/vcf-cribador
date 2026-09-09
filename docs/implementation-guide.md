@@ -50,11 +50,11 @@ Para requisitos actuales usa [SPECS.md](../SPECS.md). Esta guía resume qué cap
 
 Hecho en v0.1.0: screening C2–C6 / E1–E3, normalización FN/TEL/ORG, clasificación N1/N2, dedup Union-Find, writers VCF/CSV/JSON/TSV, CLI, config TOML base.
 
-**Pendiente v0.2.0:**
+**Cerrado / absorbido en hitos posteriores:**
 
-- [ ] Reglas C1/C5/C7/E4/E6
-- [ ] N3 / T4 / campo ADR (rama `feat/phase4-n3-t4-adr-clean`)
-- [ ] `domain::verification` I1–I7 + pipeline TOML enriquecido (`feat/phase5-pipeline-toml`)
-- [ ] OTel (`docs/otel.md`)
+- [x] Reglas C1/C5/C7/E4/E6 (v0.3.0)
+- [x] N3 / T4 / campo ADR (v0.2.0)
+- [x] `domain::verification` I1–I7 + pipeline TOML enriquecido (v0.2.0 / v0.3.0)
+- [ ] OTel — **aplazado post-v1.0** ([ADR-0017](../DECISIONS.md), [docs/otel.md](./otel.md)); no es deuda de v0.2.0
 
 El checklist línea-a-línea anterior a 2026-08-15 está en el historial git de este archivo.

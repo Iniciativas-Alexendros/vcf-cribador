@@ -14,6 +14,7 @@
 | **Lenguaje** | Rust (edition 2021) |
 | **Tipo** | CLI tool |
 | **Repositorio** | https://github.com/Iniciativas-Alexendros/zedazo |
+| **Dominio producto** | https://zedazo.alexendros.dev (cero coste; ADR-0014) |
 | **crates.io** | https://crates.io/crates/zedazo |
 | **Documentación** | https://docs.rs/zedazo |
 | **Binario release** | 3.2 MB (Linux x86-64, stripped, LTO) |

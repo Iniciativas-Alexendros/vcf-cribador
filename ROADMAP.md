@@ -30,7 +30,7 @@ supersedes: "v0.3.1"
 | CI | `ubuntu-latest`; Renovate; `make ci` = fmt + clippy + test + check + doc + docs-validate + parity + web-ci |
 | GUI/API | Local loopback (ADR-0015) + remoto HTTPS+token (ADR-0016, O11) |
 | Branch protection | Activa en `main` |
-| Backlog trazable | Issues GitHub (#24–27, #35, …) |
+| Backlog trazable | Issues GitHub (post-cierre #24–27/#35: TMview humano; CardDAV v0.4; OTel post-v1.0) |
 
 ## Hitos
 
@@ -61,7 +61,7 @@ supersedes: "v0.3.1"
 - [x] Reglas C1, C5, C7, E4, E6 con tests (`screening.rs` 272–465 + tests 628–678, #21)
 - [x] `domain::verification` aplica I1–I7 en pipeline (`verify` pre + `verify_post` post-escritura I4/I5/I6 en `cribar.rs:258`)
 - [x] Documentación canónica raíz alineada (SPECS/ROADMAP/DECISIONS/AGENTS → 0.3.0 2026-09-02)
-- [x] Issues #21/#25/#26/#27/#35 documentados para cierre en PR 0.3.0
+- [x] Issues #21/#25/#26/#27/#35 documentados para cierre en PR 0.3.0; cierre GitHub formal en chore/close-backlog-issues (2026-09-09)
 
 **Fuera de alcance v0.3.0:** CardDAV, watch mode, GUI (GUI abierta en v0.5.0 vía ADR-0015).
 
@@ -98,9 +98,13 @@ supersedes: "v0.3.1"
 
 - API de crate estable (semver estricto del core/CLI)
 - Benchmarks (criterion)
-- Cross-compile macOS/Windows — **bloqueado por decisión de release** (ADR pendiente: matrix GitHub-hosted vs `cargo-dist`)
+- Cross-compile macOS/Windows — artefactos vía **cargo-dist** (ADR-0012); validar releases reales en el hito
 - Corpus de regresión >10k contactos
 - GUI/API maduras (post-v0.5.0) opcionales en distribución Docker
+
+### Post-v1.0 — Observabilidad (aplazado)
+
+- OpenTelemetry / OTLP opt-in — **ADR-0017** (sin deps hasta entonces; ver [docs/otel.md](./docs/otel.md))
 
 ## Dependencias congeladas (ver DECISIONS)
 
