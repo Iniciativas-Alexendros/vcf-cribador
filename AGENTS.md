@@ -1,15 +1,15 @@
 ---
-version: "0.3.0"
-date: "2026-09-02"
+version: "0.3.2"
+date: "2026-09-09"
 status: "Activo"
 canonical: true
-supersedes: "v0.1.x"
+supersedes: "v0.3.1"
 ---
 
 # AGENTS.md
 
-**Versión:** 0.3.0  
-**Fecha:** 2026-09-02  
+**Versión:** 0.3.2  
+**Fecha:** 2026-09-09  
 **Propósito:** Contrato operativo para agentes de código en este repo.
 
 ---

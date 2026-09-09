@@ -112,6 +112,6 @@ supersedes: "v0.3.1"
 ## 7. Definition of Done (cambio de código)
 
 - Cumple criterios de aceptación citados
-- `make ci` verde (fmt, clippy `-D warnings`, test, check, doc)
+- `make ci` verde (fmt, clippy `-D warnings`, test, check, doc, docs-validate, parity, web-ci)
 - Documentación canónica actualizada si cambia contrato
 - Sin secretos ni PII en fixtures/logs

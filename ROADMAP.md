@@ -1,15 +1,15 @@
 ---
-version: "0.3.1"
-date: "2026-09-08"
+version: "0.3.2"
+date: "2026-09-09"
 status: "Activo"
 canonical: true
-supersedes: "v0.3.0"
+supersedes: "v0.3.1"
 ---
 
 # ROADMAP.md
 
-**Versión:** 0.3.1  
-**Fecha:** 2026-09-08  
+**Versión:** 0.3.2  
+**Fecha:** 2026-09-09  
 **Canónico:** este archivo. [`docs/tasks.md`](docs/tasks.md) redirige aquí.
 
 ---
@@ -25,11 +25,12 @@ supersedes: "v0.3.0"
 
 | Dimensión | Estado |
 |-----------|--------|
-| Versión publicada | `vcf-cribador` **0.1.2** (deprecado) · **Zedazo** `zedazo` **0.3.0** (local, pendiente tag) |
-| Tests | 150 (144 unit + 6 verification I4–I6) + 17 integración; cobertura vía `cargo llvm-cov` → Coveralls |
-| CI | `ubuntu-latest` (#30; self-hosted cuando vuelva); Renovate |
+| Versión publicada | crates.io **zedazo 0.3.0**; código `main` = hitos **v0.5.0** (GUI) + **v0.5.1** (remoto ADR-0016); tags `v0.5.x` pendientes de confirmación humana (evitan release crates.io prematuro) |
+| Tests | unitarios core + verificación I4–I6 + integración; parity O10; `auth_http`; web (`tsc`/`lint`/`next build`) |
+| CI | `ubuntu-latest`; Renovate; `make ci` = fmt + clippy + test + check + doc + docs-validate + parity + web-ci |
+| GUI/API | Local loopback (ADR-0015) + remoto HTTPS+token (ADR-0016, O11) |
 | Branch protection | Activa en `main` |
-| Backlog trazable | Issues GitHub (#32 rename) |
+| Backlog trazable | Issues GitHub (#24–27, #35, …) |
 
 ## Hitos
 
@@ -91,7 +92,7 @@ supersedes: "v0.3.0"
 - [x] Docs: threat-model, deploy (este host → miniPC / túnel / Let's Encrypt)
 - [x] Tests auth + `make ci` (O10 intacto)
 
-**Criterio de salida:** O11; despliegue remoto usable sin publicar API/web directamente; CI verde.
+**Criterio de salida:** O11; despliegue remoto usable sin publicar API/web directamente; CI verde. Tag `v0.5.1` (y bump crates.io) a confirmación humana.
 
 ### v1.0.0 — Producción — L
 

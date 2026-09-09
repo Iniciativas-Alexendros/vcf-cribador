@@ -1,15 +1,15 @@
 ---
-version: "0.3.1"
-date: "2026-09-08"
+version: "0.3.2"
+date: "2026-09-09"
 status: "Activo"
 canonical: true
-supersedes: "v0.2.0"
+supersedes: "v0.3.1"
 ---
 
 # Zedazo — Arquitectura
 
-**Versión:** 0.3.1
-**Fecha:** 2026-09-08
+**Versión:** 0.3.2
+**Fecha:** 2026-09-09
 **Canónico:** este archivo. [`docs/architecture.md`](docs/architecture.md) redirige aquí.
 
 ---
@@ -29,7 +29,7 @@ El proyecto usa **GitHub Actions** con **runners self-hosted** (`[self-hosted, t
 
 | Workflow          | Trigger                    | Jobs                                     |
 | ----------------- | -------------------------- | ---------------------------------------- |
-| `ci.yml`          | push/PR a `main`           | Check (stable), MSRV, Format, Clippy, Test, Doc, Coverage |
+| `ci.yml`          | push/PR a `main`           | Check, MSRV, Format, Clippy, Test, Doc, Coverage, Docs validate, Parity O10, Web |
 | `audit.yml`       | Schedule lunes 08:00 UTC   | cargo audit                              |
 | `release.yml`     | Tag `v*`                   | Build + Package + Publish to crates.io   |
 | Renovate          | Schedule + PRs             | `.github/renovate.json` (no Dependabot)  |
@@ -63,10 +63,16 @@ Regla de dependencia:
   zedazo-core NO depende de Axum, Tokio HTTP, cookies ni DB
 ```
 
-Workspace (ADR-0015): `crates/zedazo-core`, `crates/zedazo-cli`, `crates/zedazo-api`.
+Workspace (ADR-0015): `crates/zedazo-core`, `crates/zedazo-cli`, `crates/zedazo-api`, `apps/web`.
 Jobs web: directorio aislado por ULID bajo `$ZEDAZO_DATA_DIR` con `manifest.json` y `events.ndjson`.
 
-→ Ver [ROADMAP.md](./ROADMAP.md) v0.5.0 y [DECISIONS.md](./DECISIONS.md) (ADR-0015).
+### Auth y despliegue (ADR-0016)
+
+- Middleware `require_auth` en `/api/v1/*` salvo `GET /health`, `POST /auth/login`, `POST /auth/logout`
+- Modos: `disabled` (solo loopback, fail-closed; Docker local puede usar `ZEDAZO_AUTH_ALLOW_DISABLED_NON_LOOPBACK`) | `token` (Bearer + cookie `zedazo_auth` para SSE)
+- Remoto: [`deploy/docker-compose.remote.yml`](deploy/docker-compose.remote.yml) + Caddy same-origin; guía en [`docs/gui/deploy.md`](docs/gui/deploy.md)
+
+→ Ver [ROADMAP.md](./ROADMAP.md) v0.5.0–v0.5.1 y [DECISIONS.md](./DECISIONS.md) (ADR-0015, ADR-0016).
 
 ## Capas (histórico v0.2 — CLI única)
 

@@ -7,16 +7,31 @@ y este proyecto adhiere a [Semantic Versioning](https://semver.org/lang/es/).
 
 ## [Unreleased]
 
-### Añadido (v0.5.0-draft — ADR-0015)
+### Pendiente
+- Tag/release crates.io alineado con hitos GUI (versión workspace aún `0.3.0` hasta confirmación humana)
+
+## [0.5.1] - 2026-09-09
+
+### Añadido (ADR-0016 — exposición remota self-hosted)
+- Auth `ZEDAZO_AUTH_MODE=token|disabled` con fail-closed fuera de loopback
+- `POST /api/v1/auth/login` / `logout`; Bearer y cookie HttpOnly `zedazo_auth` (SSE)
+- Compose remoto [`deploy/docker-compose.remote.yml`](deploy/docker-compose.remote.yml) + Caddy same-origin; `.env.example`; `Caddyfile.public`
+- GUI: pantalla `/acceso`, `credentials: include`, EventSource `withCredentials`
+- Tests `crates/zedazo-api/tests/auth_http.rs`; SPECS **O11**; OpenAPI 0.5.1
+- Docs: threat-model y deploy (este host → miniPC / túnel / Let's Encrypt)
+
+## [0.5.0] - 2026-09-08
+
+### Añadido (ADR-0015 — GUI web self-hosted)
 - Workspace Rust: `zedazo-core`, `zedazo-cli` (binario `zedazo`), `zedazo-api` (Axum)
 - Contrato `ProcessRequest` / `ProcessResult`, progress y cancelación cooperativa
 - API HTTP `/api/v1` (uploads, jobs, SSE, contactos, duplicados, audit, stats, artefactos, reglas)
-- Frontend Next.js `apps/web` (flujo Procesar + Ejecuciones + exploración)
+- Frontend Next.js `apps/web` (Procesar, Ejecuciones, exploración, identidad Archivo Vivo)
 - Docs GUI: matriz de paridad, threat model, retención, estados de job, OpenAPI, deploy
 - Test de equivalencia CLI/core `equivalence_cli_api` (multi-fixture + artefactos)
 - Harness O10 CLI↔API HTTP `zedazo-api/tests/equivalence_http.rs` + `make parity` en CI
 - Jobs CI: `docs-validate`, `parity`, `web` (`apps/web`)
-- GUI/API V1: cancelación en UI, SSE con `events.ndjson` + `last_event_id`, wipe en Ajustes, warnings `[cribado]`, evidencias dedup, tipografía ampliada (tokens)
+- GUI/API V1: cancelación en UI, SSE con `events.ndjson` + `last_event_id`, wipe en Ajustes, warnings `[cribado]`, evidencias dedup
 - `deploy/docker-compose.yml` + Dockerfiles
 
 ## [0.3.0] - 2026-09-02
@@ -100,7 +115,9 @@ El crate `vcf-cribador` en crates.io permanece publicado (sin yank); la última 
 - Release automatizado con binario + SHA256
 - 129 tests unitarios y de integración
 
-[Unreleased]: https://github.com/Iniciativas-Alexendros/zedazo/compare/v0.3.0...HEAD
+[Unreleased]: https://github.com/Iniciativas-Alexendros/zedazo/compare/v0.5.1...HEAD
+[0.5.1]: https://github.com/Iniciativas-Alexendros/zedazo/compare/v0.5.0...v0.5.1
+[0.5.0]: https://github.com/Iniciativas-Alexendros/zedazo/compare/v0.3.0...v0.5.0
 [0.3.0]: https://github.com/Iniciativas-Alexendros/zedazo/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/Iniciativas-Alexendros/zedazo/compare/v0.1.1...v0.2.0
 [0.1.1]: https://github.com/Iniciativas-Alexendros/zedazo/compare/v0.1.0...v0.1.1

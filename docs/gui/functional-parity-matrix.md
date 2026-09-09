@@ -1,10 +1,11 @@
 # Matriz de paridad funcional CLI ↔ GUI
 
-**Versión:** 0.1.0  
-**Fecha:** 2026-09-08  
-**Traza:** ADR-0015, SPECS O10, ROADMAP v0.5.0
+**Versión:** 0.2.0  
+**Fecha:** 2026-09-09  
+**Traza:** ADR-0015, ADR-0016, SPECS O10/O11, ROADMAP v0.5.0–v0.5.1
 
 La GUI debe cubrir la **paridad de casos de uso**, no sustituir artefactos propios del terminal (`completions`).
+O11 (auth remoto) no altera la semántica del pipeline: O10 sigue válido con `ZEDAZO_AUTH_MODE=token`.
 
 | Capacidad | CLI | GUI / API | Criterio de equivalencia |
 |-----------|-----|-----------|--------------------------|

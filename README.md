@@ -9,9 +9,9 @@
 
 **Tu agenda, pasada por el zedazo fino.**
 
-Criba, normaliza, clasifica y deduplica contactos VCF exportados desde ProtonMail, Google Contacts o Apple iCloud.
+Criba, normaliza, clasifica y deduplica contactos VCF exportados desde **ProtonMail**, **Google Contacts** o **Apple iCloud**, con reglas deterministas, deduplicación transitiva y normalización de nombres y teléfonos.
 
-Limpia tus contactos VCF exportados desde **ProtonMail**, **Google Contacts** o **Apple iCloud** aplicando reglas deterministas de clasificación (C2-C6) y eliminación (E1-E3), deduplicación con cierre transitivo, y normalización de nombres y teléfonos.
+Desde **v0.5.0** incluye **GUI web + API HTTP** self-hosted sobre el mismo core (`zedazo-core`): local en loopback (ADR-0015) y remoto single-user con HTTPS + token (ADR-0016). La CLI sigue siendo el canal oficial de automatización.
 
 > Antes: `vcf-cribador`. Migración: ver [CHANGELOG 0.2.0](CHANGELOG.md#020---2026-08-15) y [ADR-0014](DECISIONS.md).
 
@@ -133,34 +133,14 @@ Por categoría:
 ## Arquitectura
 
 ```
-src/
-├── domain/           Reglas de negocio puras
-│   ├── contact.rs    Entidad Contact, StructuredName, CategorySet, Address
-│   ├── screening.rs  Motor de cribado C2-E3, DecisionTrace
-│   ├── classification.rs  Clasificación N1/N2/N3 por regex
-│   ├── normalization.rs   FN/TEL/ORG/ADR normalization
-│   ├── audit.rs           Modelo de trazas de auditoría
-│   └── verification.rs    Verificación de invariantes de dominio
-│   ├── identity.rs        Dedup Union-Find
-│   └── rules.rs           Reglas de clasificación
-├── application/     Casos de uso
-│   ├── cribar.rs    Pipeline completo
-│   ├── audit.rs     Auditoría standalone
-│   └── stats.rs     Estadísticas (texto/JSON/Markdown)
-├── infrastructure/  Adaptadores
-│   ├── parser.rs    VCF parser (nom)
-│   ├── writer.rs    VCF writer RFC 6350
-│   ├── tsv_writer.rs   Auditoría TSV
-│   ├── csv_writer.rs   Export CSV
-│   ├── json_writer.rs  Export JSON
-│   ├── encoding.rs  ISO-8859-1 → UTF-8
-│   ├── source.rs    Detección Proton/Google/Apple
-│   ├── v3_compat.rs vCard 3.0 → 4.0
-│   └── config.rs    Configuración TOML
-└── interfaces/      CLI (clap derive)
+crates/zedazo-core/     Dominio + application + infra I/O (sin HTTP)
+crates/zedazo-cli/      Binario `zedazo` (Clap)
+crates/zedazo-api/      API Axum `/api/v1` (+ auth ADR-0016)
+apps/web/               GUI Next.js (solo HTTP; sin lógica de cribado)
+deploy/                 Docker Compose local + remoto (Caddy)
 ```
 
-→ [`ARCHITECTURE.md`](ARCHITECTURE.md)
+→ [`ARCHITECTURE.md`](ARCHITECTURE.md) · ADR-0015 · ADR-0016
 
 ## Documentación
 
@@ -171,6 +151,8 @@ src/
 | [`ROADMAP.md`](ROADMAP.md)                                     | Hitos y criterios de salida                          |
 | [`DECISIONS.md`](DECISIONS.md)                                 | ADR con IDs estables                                 |
 | [`AGENTS.md`](AGENTS.md)                                       | Contrato para agentes de código                      |
+| [`docs/gui/`](docs/gui/)                                       | Paridad O10, deploy, threat-model, retención         |
+| [`docs/api/openapi.yaml`](docs/api/openapi.yaml)               | Contrato HTTP `/api/v1`                              |
 | [`docs/domain.md`](docs/domain.md)                             | Lenguaje ubicuo, entidades, rules                    |
 | [`docs/implementation-guide.md`](docs/implementation-guide.md) | Guía de implementación (histórico MVP)               |
 | [`docs/test-plan.md`](docs/test-plan.md)                       | Estrategia de testing, fixtures                      |
@@ -183,7 +165,7 @@ git clone https://github.com/Iniciativas-Alexendros/zedazo.git
 cd zedazo
 
 make hooks     # instalar pre-commit hooks
-make ci        # fmt + clippy + test + doc
+make ci        # fmt + clippy + test + check + doc + docs-validate + parity + web-ci
 make release   # build release
 ```
 

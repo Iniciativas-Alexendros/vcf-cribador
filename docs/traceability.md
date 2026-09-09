@@ -14,6 +14,7 @@
 | **O8** Exportar CSV/JSON/VCF | `infrastructure::writer`, `infrastructure::csv_writer`, `infrastructure::json_writer` | `test_write_vcf_4_0_version`, `test_folding_75_octets`, `test_folding_no_multibyte_split`, `test_photo_roundtrip`, `test_v3_props_not_emitted` | `test_export_csv_roundtrip`, `test_export_json_roundtrip` | ✅ |
 | **O9** Cargar reglas TOML | `infrastructure::config`, `domain::rules` | `test_all_rules_compile` | `test_config_custom_rules` | ✅ |
 | **O10** Paridad CLI↔GUI | `docs/gui`, `zedazo-api`, `process` | `equivalence_multi_fixture_counts_and_artifacts` | `equivalence_cli_http_all_fixtures` (HTTP) | ✅ O10 en CI (`make parity`) |
+| **O11** Acceso remoto self-hosted | `zedazo-api::auth`, `deploy/`, `apps/web` `/acceso` | `auth::tests::*` | `auth_http` | ✅ ADR-0016 |
 | **I1** Integridad contactos conservados | `domain::verification`, `application::cribar` | `test_verify_valid_conserved`, `test_verify_missing_n1` | `test_pipeline_completo` | ✅ Integrada en pipeline (`verify`) |
 | **I2** FN canónico sin @ | `domain::verification`, `domain::normalization` | `test_verify_fn_with_at`, `test_fn_no_at_sign` | `test_pipeline_completo` | ✅ Integrada en pipeline (`verify`) |
 | **I3** TEL E.164 o non_normalizable | `domain::verification`, `domain::normalization` | `test_tel_e164`, `test_tel_non_normalizable` | `test_pipeline_completo` | ✅ Integrada en pipeline (`verify`) |
