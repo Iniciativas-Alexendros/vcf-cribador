@@ -7,6 +7,9 @@ y este proyecto adhiere a [Semantic Versioning](https://semver.org/lang/es/).
 
 ## [Unreleased]
 
+### Changed
+- Cierre documentado backlog: Coveralls badge restaurado (#25); ADR-0012/0013 aceptadas (#26/#27); OTel aplazado ADR-0017 (#24); dominio `zedazo.alexendros.dev` (#35)
+
 ### Pendiente
 - Tag/release crates.io alineado con hitos GUI (versión workspace aún `0.3.0` hasta confirmación humana)
 

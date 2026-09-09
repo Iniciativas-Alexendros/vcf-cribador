@@ -2,6 +2,7 @@
 
 [![CI](https://github.com/Iniciativas-Alexendros/zedazo/actions/workflows/ci.yml/badge.svg)](https://github.com/Iniciativas-Alexendros/zedazo/actions/workflows/ci.yml)
 [![Security Audit](https://github.com/Iniciativas-Alexendros/zedazo/actions/workflows/audit.yml/badge.svg)](https://github.com/Iniciativas-Alexendros/zedazo/actions/workflows/audit.yml)
+[![Coverage Status](https://coveralls.io/repos/github/Iniciativas-Alexendros/zedazo/badge.svg?branch=main)](https://coveralls.io/github/Iniciativas-Alexendros/zedazo?branch=main)
 [![Crates.io](https://img.shields.io/crates/v/zedazo?color=orange)](https://crates.io/crates/zedazo)
 [![License](https://img.shields.io/badge/license-MIT%20OR%20Apache--2.0-blue)](LICENSE-MIT)
 [![MSRV](https://img.shields.io/badge/rustc-1.80+-blue.svg)](https://blog.rust-lang.org/2024/07/25/Rust-1.80.0.html)

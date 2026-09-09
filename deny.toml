@@ -1,5 +1,5 @@
 # cargo-deny configuration for Zedazo
-# Ver ADR-0013 (propuesta) en DECISIONS.md
+# Ver ADR-0013 (aceptada) en DECISIONS.md
 
 [advisories]
 ignore = []

@@ -101,7 +101,7 @@ supersedes: "v0.3.1"
 - Fecha: 2026-07
 - Decisión: CI/release Linux preferentemente en runners propios; `publish` a crates.io en `ubuntu-latest`.
 - Enmienda 2026-08-15: con **0 runners registrados**, los workflows pasaron a `ubuntu-latest` (#30) para desbloquear CI/release. Restaurar `[self-hosted, ts]` cuando el runner `ts` vuelva a estar online.
-- Consecuencias: Sin matrix multi-OS en CI; cross-compile v1.0 requiere ADR-0012.
+- Consecuencias: Sin matrix multi-OS en CI de calidad; release multiplataforma vía cargo-dist (ADR-0012 aceptada).
 - Relacionado: [ARCHITECTURE.md](./ARCHITECTURE.md), PR #30.
 
 </details>
@@ -132,30 +132,31 @@ supersedes: "v0.3.1"
 <summary><strong>ADR-0011</strong> — Cobertura con cargo-llvm-cov + Coveralls</summary>
 
 - Estado: aceptada
-- Fecha: 2026-07
+- Fecha: 2026-07 / enmienda 2026-09-09
 - Decisión: Job `coverage` en CI genera LCOV con `cargo llvm-cov` y sube a Coveralls.
-- Consecuencias: Badge Coveralls debe apuntar a la org correcta; umbral mínimo opcional (issue).
+- Consecuencias: Proyecto Coveralls bajo org `Iniciativas-Alexendros`; badge restaurado en README; umbral en CI activo (`--fail-under-lines 80`, `--fail-under-regions 75`). Cierra [#25](https://github.com/Iniciativas-Alexendros/zedazo/issues/25).
 
 </details>
 
 <details>
-<summary><strong>ADR-0012</strong> — Release multiplataforma (propuesta)</summary>
+<summary><strong>ADR-0012</strong> — Release multiplataforma (cargo-dist)</summary>
 
-- Estado: propuesta
-- Fecha: 2026-08-15
-- Contexto: v1.0 promete macOS/Windows; runners actuales solo Linux.
-- Opciones a decidir: (A) matrix `ubuntu/macos/windows-latest` solo en `release.yml`; (B) `cargo-dist`.
-- Bloquea: hito v1.0.0 cross-compile.
+- Estado: aceptada
+- Fecha: 2026-08-15 / aceptada 2026-09-09
+- Contexto: v1.0 promete macOS/Windows; CI de calidad sigue en Linux.
+- Decisión: **(B) `cargo-dist`** — [`dist-workspace.toml`](./dist-workspace.toml) + [`.github/workflows/release.yml`](./.github/workflows/release.yml) (targets `aarch64-apple-darwin`, `x86_64-apple-darwin`, `x86_64-unknown-linux-gnu`, `aarch64-unknown-linux-gnu`, `x86_64-pc-windows-msvc`). SBOM y publish crates.io se mantienen como pasos manuales (`allow-dirty = ["ci"]`).
+- Alternativa rechazada: (A) matrix GitHub-hosted pura sin cargo-dist.
+- Consecuencias: Artefactos multiplataforma vía cargo-dist; validar releases reales en el hito v1.0.0. Cierra [#27](https://github.com/Iniciativas-Alexendros/zedazo/issues/27).
 
 </details>
 
 <details>
-<summary><strong>ADR-0013</strong> — Supply chain: cargo-deny + SBOM (propuesta)</summary>
+<summary><strong>ADR-0013</strong> — Supply chain: cargo-deny + SBOM</summary>
 
-- Estado: propuesta
-- Fecha: 2026-08-15
-- Decisión propuesta: Añadir `cargo deny check` en CI/Makefile; SBOM en release.
-- Relacionado: [ROADMAP.md](./ROADMAP.md) calidad post-0.1.1.
+- Estado: aceptada
+- Fecha: 2026-08-15 / aceptada 2026-09-09
+- Decisión: `cargo deny check` en CI (job Deny) y `make deny`; SBOM CycloneDX en el workflow de release (`cargo cyclonedx`). Config en [`deny.toml`](./deny.toml).
+- Relacionado: [ROADMAP.md](./ROADMAP.md); cierra [#26](https://github.com/Iniciativas-Alexendros/zedazo/issues/26).
 
 </details>
 
@@ -163,10 +164,11 @@ supersedes: "v0.3.1"
 <summary><strong>ADR-0014</strong> — Rename producto/crate a Zedazo</summary>
 
 - Estado: aceptada
-- Fecha: 2026-08-15
-- Contexto: `vcf-cribador` colisiona semánticamente con el verbo de dominio *cribar*; se busca marca de producto distinta (patrón Atlaps). `cedazo` descartado. Gate crates.io: `zedazo` libre (`ze/da/zedazo` → 404). TMview UE pendiente humano.
+- Fecha: 2026-08-15 / enmienda 2026-09-09
+- Contexto: `vcf-cribador` colisiona semánticamente con el verbo de dominio *cribar*; se busca marca de producto distinta (patrón Atlaps). `cedazo` descartado. Gate crates.io: `zedazo` libre (`ze/da/zedazo` → 404). TMview UE clases 9 y 42: checklist humano pendiente (no bloquea rename).
 - Decisión: Renombrar producto/crate/binario a **Zedazo** (`zedazo`) en release **v0.2.0** solo rename+migración. Internos de dominio (`CribaError`, módulo `cribar`, «cribado») sin rename.
-- Relacionado: issue [#32](https://github.com/Iniciativas-Alexendros/zedazo/issues/32), [ROADMAP.md](./ROADMAP.md), [CHANGELOG.md](./CHANGELOG.md).
+- Dominio de producto (cero coste): **`https://zedazo.alexendros.dev`** (wordmark lowercase). DNS/CNAME cuando exista landing.
+- Relacionado: issues [#32](https://github.com/Iniciativas-Alexendros/zedazo/issues/32), [#35](https://github.com/Iniciativas-Alexendros/zedazo/issues/35); [ROADMAP.md](./ROADMAP.md), [CHANGELOG.md](./CHANGELOG.md).
 
 | # | Elemento | Actual | Decisión | Tipo |
 |---|---|---|---|---|
@@ -199,7 +201,7 @@ supersedes: "v0.3.1"
   2. Frontend separado `apps/web` (Next.js App Router + TypeScript). Sin lógica de cribado/dedup en TS.
   3. Primera release: **single-user local** (`127.0.0.1`), sin cuentas ni colaboración; `ZEDAZO_AUTH_MODE=disabled` solo en loopback.
   4. Persistencia inicial: filesystem + `manifest.json` + `events.ndjson` (`ZEDAZO_STORAGE_MODE=ephemeral`). SQLite solo si el historial lo exige después.
-  5. Sin telemetría remota ni CDN de terceros por defecto; OTLP opt-in (`ZEDAZO_OTEL_ENABLED=false`).
+  5. Sin telemetría remota ni CDN de terceros por defecto; OTLP opt-in aplazado post-v1.0 (`ZEDAZO_OTEL_ENABLED=false` reservado/no-op; ADR-0017).
   6. CLI permanece interfaz oficial de automatización; `completions` sin pantalla GUI equivalente.
   7. API versionada bajo `/api/v1`; cambios incompatibles → `/api/v2`.
 - Consecuencias: Deps nuevas (axum, tokio, etc.) solo en `zedazo-api`. Actualizar SPECS/ROADMAP/ARCHITECTURE. Hito **v0.5.0** web self-hosted (CardDAV sigue en v0.4.0, PRs separados).
@@ -224,5 +226,16 @@ supersedes: "v0.3.1"
   7. Acceso sin abrir puertos: Tailscale / Cloudflare Tunnel documentado; miniPC + dominio → Let's Encrypt.
 - Consecuencias: hito **v0.5.1**; threat-model y deploy actualizados; no OAuth/OIDC ni equipos.
 - Relacionado: ADR-0015, [docs/gui/deploy.md](./docs/gui/deploy.md), [docs/gui/threat-model.md](./docs/gui/threat-model.md).
+
+</details>
+
+<details>
+<summary><strong>ADR-0017</strong> — OpenTelemetry aplazado post-v1.0</summary>
+
+- Estado: aceptada (aplazamiento)
+- Fecha: 2026-09-09
+- Contexto: [#24](https://github.com/Iniciativas-Alexendros/zedazo/issues/24) pedía instrumentación OTLP; existe receta en [docs/otel.md](./docs/otel.md) pero no hay feature `otel` ni deps exportables. ADR-0015 exige telemetría remota off por defecto (`ZEDAZO_OTEL_ENABLED=false` en deploy = reservado/no-op).
+- Decisión: **No** añadir `opentelemetry*` / `tracing-opentelemetry` hasta **post-v1.0**. Logging con `tracing` permanece. Variables `ZEDAZO_OTEL_*` / `OTEL_*` documentadas como reservadas.
+- Consecuencias: Cierra #24 como diferido (no won't-fix); reabrir con ADR de deps cuando toque implementar. Guía en `docs/otel.md` marcada como aplazada.
 
 </details>
