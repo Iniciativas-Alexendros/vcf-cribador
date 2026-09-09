@@ -17,16 +17,19 @@
 - `cargo fmt` obligatorio (hook pre-commit incluido)
 - `cargo clippy -- -D warnings` sin errores
 - Tests unitarios para cada módulo de dominio y aplicación
-- Tests de integración con fixtures reales en `tests/`
+- Tests de integración con fixtures sintéticos (nunca PII real)
+- Español en commits, PRs y mensajes al humano ([AGENTS.md](AGENTS.md))
 
 ## Estructura del proyecto
 
 ```
-src/domain/         # Entidades, value objects, reglas de negocio puras
-src/application/    # Casos de uso (cribar, audit, stats, export)
-src/infrastructure/ # Adaptadores (parser, writer, encoding, CSV/JSON)
-src/interfaces/     # CLI (clap)
-tests/              # Tests de integración con fixtures VCF
+crates/zedazo-core/   # domain + application + infrastructure (sin HTTP)
+crates/zedazo-cli/    # binario zedazo (Clap)
+crates/zedazo-api/    # API HTTP Axum + auth (ADR-0016)
+apps/web/             # GUI Next.js (solo cliente HTTP)
+deploy/               # Docker Compose local / remoto + Caddy
+docs/gui/             # Paridad, deploy, threat-model
+tests fixtures:       crates/zedazo-core/tests/fixtures/
 ```
 
 Ver [`ARCHITECTURE.md`](ARCHITECTURE.md) para la arquitectura completa.
@@ -35,7 +38,7 @@ Ver [`ARCHITECTURE.md`](ARCHITECTURE.md) para la arquitectura completa.
 
 ```bash
 make hooks       # instalar pre-commit (fmt + clippy); ver `.githooks/install.sh`
-make ci          # fmt + clippy + test + check + doc + docs-validate
+make ci          # fmt + clippy + test + check + doc + docs-validate + parity + web-ci
 make deny        # opcional: cargo-deny (licencias/advisories)
 ```
 
@@ -44,7 +47,7 @@ Los hooks viven en [`.githooks/`](.githooks/) y se activan con `make hooks`. Doc
 ## Reportar bugs
 
 Usa la plantilla de [bug report](.github/ISSUE_TEMPLATE/bug_report.md). Incluye:
-- Comando exacto ejecutado
+- Comando exacto ejecutado (o URL/pantalla GUI)
 - Archivo VCF de ejemplo (anonimizado si contiene datos reales)
 - Salida esperada vs obtenida
-- Versión de Zedazo (`zedazo --help`)
+- Versión de Zedazo (`zedazo --help` / health API)

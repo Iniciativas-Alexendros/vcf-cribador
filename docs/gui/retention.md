@@ -1,7 +1,8 @@
 # Política de retención
 
-**Versión:** 0.1.0  
-**Fecha:** 2026-09-08
+**Versión:** 0.2.0  
+**Fecha:** 2026-09-09  
+**Traza:** ADR-0015, ADR-0016
 
 ## Variables
 

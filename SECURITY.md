@@ -8,12 +8,18 @@ Envía un correo a los mantenedores del proyecto con los detalles. Responderemos
 
 ## Versiones soportadas
 
-| Versión | Soportada          |
-|---------|--------------------|
-| 0.1.x   | ✅ Soporte completo |
+| Versión | Soportada |
+|---------|-----------|
+| 0.5.x (CLI + API/GUI en `main`) | ✅ Código activo |
+| 0.3.x (crates.io) | ✅ Publicada |
+| 0.2.x / 0.1.x | ⚠️ Solo histórico |
 
 ## Consideraciones de seguridad
 
 - **Archivos VCF**: Zedazo procesa archivos de contactos. No ejecutes la herramienta sobre archivos de fuentes no confiables sin revisarlos previamente.
-- **Datos personales**: El archivo de salida VCF y la auditoría TSV contienen datos de contacto personales. Trátalos con el mismo nivel de seguridad que el archivo original.
-- **Dependencias**: Usamos `cargo audit` semanalmente para detectar vulnerabilidades en dependencias.
+- **Datos personales**: El VCF de salida, la auditoría TSV y el volumen `ZEDAZO_DATA_DIR` (jobs/uploads) contienen datos personales. Trátalos como el original.
+- **API/GUI remota (ADR-0016)**:
+  - Nunca `ZEDAZO_AUTH_MODE=disabled` en interfaz pública (fail-closed fuera de loopback).
+  - Remoto: `token` + HTTPS (Caddy o túnel); rotar `ZEDAZO_AUTH_TOKEN` si se filtra.
+  - No publicar puertos de `api`/`web` al WAN; solo el reverse proxy.
+- **Dependencias**: Usamos `cargo audit` semanalmente vía GitHub Actions.
