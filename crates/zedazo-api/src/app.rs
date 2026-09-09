@@ -2,14 +2,15 @@ use std::collections::HashMap;
 use std::path::PathBuf;
 use std::sync::Arc;
 
+use axum::middleware;
 use axum::routing::{get, post};
 use axum::Router;
 use tokio::sync::{broadcast, RwLock};
-use tower_http::cors::{Any, CorsLayer};
 use tower_http::limit::RequestBodyLimitLayer;
 use tower_http::trace::TraceLayer;
 
 use crate::api;
+use crate::auth::{self, AuthConfig};
 use crate::jobs::{JobEvent, JobRecord};
 use crate::storage::Storage;
 
@@ -22,6 +23,7 @@ pub struct AppState {
     pub events: Arc<RwLock<HashMap<String, broadcast::Sender<JobEvent>>>>,
     pub core_version: String,
     pub api_version: String,
+    pub auth: AuthConfig,
 }
 
 impl AppState {
@@ -36,14 +38,29 @@ impl AppState {
             .ok()
             .and_then(|s| s.parse().ok())
             .unwrap_or(24);
-        Self::new(data_dir, max_upload_bytes, retention_hours)
+        let auth = AuthConfig::from_env()?;
+        Self::new_with_auth(data_dir, max_upload_bytes, retention_hours, auth)
     }
 
-    /// Estado para tests in-process (TempDir como data root).
+    /// Estado para tests in-process (TempDir como data root; auth disabled).
     pub fn new(
         data_dir: PathBuf,
         max_upload_bytes: usize,
         retention_hours: u64,
+    ) -> anyhow::Result<Self> {
+        Self::new_with_auth(
+            data_dir,
+            max_upload_bytes,
+            retention_hours,
+            AuthConfig::disabled(),
+        )
+    }
+
+    pub fn new_with_auth(
+        data_dir: PathBuf,
+        max_upload_bytes: usize,
+        retention_hours: u64,
+        auth: AuthConfig,
     ) -> anyhow::Result<Self> {
         let storage = Storage::new(data_dir)?;
         Ok(Self {
@@ -54,14 +71,21 @@ impl AppState {
             events: Arc::new(RwLock::new(HashMap::new())),
             core_version: env!("CARGO_PKG_VERSION").to_string(),
             api_version: "v1".to_string(),
+            auth,
         })
     }
 }
 
 pub fn router(state: AppState) -> Router {
     let limit = state.max_upload_bytes;
-    Router::new()
+    let cors = auth::cors_layer_for(&state.auth);
+
+    let public = Router::new()
         .route("/api/v1/health", get(api::health::health))
+        .route("/api/v1/auth/login", post(auth::login))
+        .route("/api/v1/auth/logout", post(auth::logout));
+
+    let protected = Router::new()
         .route("/api/v1/version", get(api::health::version))
         .route("/api/v1/uploads", post(api::uploads::create_upload))
         .route(
@@ -96,13 +120,15 @@ pub fn router(state: AppState) -> Router {
         .route("/api/v1/rules/validate", post(api::rules::validate))
         .route("/api/v1/rules/preview", post(api::rules::preview))
         .route("/api/v1/admin/wipe", post(api::admin::wipe_all))
+        .route_layer(middleware::from_fn_with_state(
+            state.clone(),
+            auth::require_auth,
+        ));
+
+    public
+        .merge(protected)
         .layer(TraceLayer::new_for_http())
         .layer(RequestBodyLimitLayer::new(limit + 1024))
-        .layer(
-            CorsLayer::new()
-                .allow_origin(Any)
-                .allow_methods(Any)
-                .allow_headers(Any),
-        )
+        .layer(cors)
         .with_state(state)
 }

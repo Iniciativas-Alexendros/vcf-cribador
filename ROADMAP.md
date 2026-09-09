@@ -82,6 +82,17 @@ supersedes: "v0.3.0"
 
 **Criterio de salida:** criterios V1 local en ADR-0015 / plan GUI; `make ci` verde incluyendo contrato API y O10. Tag/release a confirmación humana.
 
+### v0.5.1 — Hardening remoto self-hosted (ADR-0016) — M
+
+- [x] Auth `token` / `disabled` fail-closed; login/logout cookie; Bearer
+- [x] CORS acotado en modo token; health público
+- [x] Compose remoto + Caddy same-origin/SSE; `.env.example`
+- [x] GUI: pantalla de acceso; `credentials` + EventSource `withCredentials`
+- [x] Docs: threat-model, deploy (este host → miniPC / túnel / Let's Encrypt)
+- [x] Tests auth + `make ci` (O10 intacto)
+
+**Criterio de salida:** O11; despliegue remoto usable sin publicar API/web directamente; CI verde.
+
 ### v1.0.0 — Producción — L
 
 - API de crate estable (semver estricto del core/CLI)

@@ -1,18 +1,25 @@
 openapi: 3.1.0
 info:
   title: Zedazo API
-  version: 0.5.0-draft
+  version: 0.5.1-draft
   description: |
-    API HTTP self-hosted sobre zedazo-core (ADR-0015).
-    Prefijo /api/v1. Modo V1 local: auth disabled en loopback.
+    API HTTP self-hosted sobre zedazo-core (ADR-0015, ADR-0016).
+    Prefijo /api/v1.
+    Auth: `disabled` solo en loopback; `token` exige Bearer o cookie `zedazo_auth`.
 servers:
   - url: http://127.0.0.1:8080
-    description: Local single-user
+    description: Local single-user (auth disabled)
+  - url: https://127.0.0.1:8443
+    description: Remoto vía Caddy same-origin (auth token)
+security:
+  - bearerAuth: []
+  - cookieAuth: []
 paths:
   /api/v1/health:
     get:
       operationId: getHealth
       summary: Disponibilidad y versiones
+      security: []
       responses:
         "200":
           description: OK
@@ -20,6 +27,36 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Health"
+  /api/v1/auth/login:
+    post:
+      operationId: authLogin
+      summary: Establece cookie de sesión con el token de operador
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [token]
+              properties:
+                token:
+                  type: string
+      responses:
+        "204":
+          description: Cookie establecida
+        "401":
+          description: Token inválido
+        "503":
+          description: Auth no configurada en modo token
+  /api/v1/auth/logout:
+    post:
+      operationId: authLogout
+      summary: Borra la cookie de sesión
+      security: []
+      responses:
+        "204":
+          description: Cookie borrada
   /api/v1/version:
     get:
       operationId: getVersion
@@ -31,6 +68,8 @@ paths:
             application/json:
               schema:
                 $ref: "#/components/schemas/Version"
+        "401":
+          description: No autenticado (modo token)
   /api/v1/uploads:
     post:
       operationId: createUpload
@@ -325,6 +364,14 @@ paths:
         "200":
           description: Preview
 components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: zedazo_auth
   parameters:
     jobId:
       name: jobId

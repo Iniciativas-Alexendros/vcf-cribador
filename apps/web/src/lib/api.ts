@@ -1,5 +1,16 @@
-export const API_BASE =
-  process.env.NEXT_PUBLIC_API_BASE ?? "http://127.0.0.1:8080";
+export const API_BASE = process.env.NEXT_PUBLIC_API_BASE ?? "http://127.0.0.1:8080";
+
+export class ApiError extends Error {
+  status: number;
+  body: string;
+
+  constructor(status: number, body: string) {
+    super(body || `HTTP ${status}`);
+    this.name = "ApiError";
+    this.status = status;
+    this.body = body;
+  }
+}
 
 export type JobManifest = {
   job_id: string;
@@ -45,16 +56,20 @@ export type ContactView = {
   merged_uids: string[];
 };
 
+const defaultInit: RequestInit = {
+  credentials: "include",
+};
+
 async function parseJson<T>(res: Response): Promise<T> {
   if (!res.ok) {
     const text = await res.text();
-    throw new Error(text || res.statusText);
+    throw new ApiError(res.status, text || res.statusText);
   }
   return res.json() as Promise<T>;
 }
 
 export async function getHealth() {
-  const res = await fetch(`${API_BASE}/api/v1/health`);
+  const res = await fetch(`${API_BASE}/api/v1/health`, defaultInit);
   return parseJson<{
     status: string;
     api_version: string;
@@ -63,10 +78,46 @@ export async function getHealth() {
   }>(res);
 }
 
+/** Sondea sesión (protegido). 401 → requiere login en modo token. */
+export async function getVersion() {
+  const res = await fetch(`${API_BASE}/api/v1/version`, defaultInit);
+  return parseJson<{
+    version: string;
+    git_sha: string;
+    build_date: string;
+    schema_version?: string;
+  }>(res);
+}
+
+export async function loginWithToken(token: string) {
+  const res = await fetch(`${API_BASE}/api/v1/auth/login`, {
+    ...defaultInit,
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ token }),
+  });
+  if (!res.ok) {
+    const text = await res.text();
+    throw new ApiError(res.status, text || res.statusText);
+  }
+}
+
+export async function logoutSession() {
+  const res = await fetch(`${API_BASE}/api/v1/auth/logout`, {
+    ...defaultInit,
+    method: "POST",
+  });
+  if (!res.ok && res.status !== 204) {
+    const text = await res.text();
+    throw new ApiError(res.status, text || res.statusText);
+  }
+}
+
 export async function uploadVcf(file: File) {
   const fd = new FormData();
   fd.append("file", file);
   const res = await fetch(`${API_BASE}/api/v1/uploads`, {
+    ...defaultInit,
     method: "POST",
     body: fd,
   });
@@ -86,6 +137,7 @@ export async function createJob(body: {
   retention_hours?: number;
 }) {
   const res = await fetch(`${API_BASE}/api/v1/jobs`, {
+    ...defaultInit,
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(body),
@@ -94,12 +146,12 @@ export async function createJob(body: {
 }
 
 export async function listJobs() {
-  const res = await fetch(`${API_BASE}/api/v1/jobs`);
+  const res = await fetch(`${API_BASE}/api/v1/jobs`, defaultInit);
   return parseJson<{ items: JobManifest[] }>(res);
 }
 
 export async function getJob(jobId: string) {
-  const res = await fetch(`${API_BASE}/api/v1/jobs/${jobId}`);
+  const res = await fetch(`${API_BASE}/api/v1/jobs/${jobId}`, defaultInit);
   return parseJson<{
     job: JobManifest;
     warnings: { code: string; message: string }[];
@@ -108,13 +160,15 @@ export async function getJob(jobId: string) {
 
 export async function cancelJob(jobId: string) {
   const res = await fetch(`${API_BASE}/api/v1/jobs/${jobId}/cancel`, {
+    ...defaultInit,
     method: "POST",
   });
-  if (!res.ok) throw new Error(await res.text());
+  if (!res.ok) throw new ApiError(res.status, await res.text());
 }
 
 export async function wipeAllData() {
   const res = await fetch(`${API_BASE}/api/v1/admin/wipe`, {
+    ...defaultInit,
     method: "POST",
   });
   return parseJson<{ wiped: boolean }>(res);
@@ -122,9 +176,12 @@ export async function wipeAllData() {
 
 export async function deleteJob(jobId: string) {
   const res = await fetch(`${API_BASE}/api/v1/jobs/${jobId}`, {
+    ...defaultInit,
     method: "DELETE",
   });
-  if (!res.ok && res.status !== 204) throw new Error(await res.text());
+  if (!res.ok && res.status !== 204) {
+    throw new ApiError(res.status, await res.text());
+  }
 }
 
 export async function listContacts(jobId: string, q?: string, result?: string) {
@@ -133,24 +190,28 @@ export async function listContacts(jobId: string, q?: string, result?: string) {
   if (result) params.set("result", result);
   const res = await fetch(
     `${API_BASE}/api/v1/jobs/${jobId}/contacts?${params}`,
+    defaultInit,
   );
   return parseJson<{ items: ContactView[] }>(res);
 }
 
 export async function listDuplicates(jobId: string) {
-  const res = await fetch(`${API_BASE}/api/v1/jobs/${jobId}/duplicates`);
+  const res = await fetch(
+    `${API_BASE}/api/v1/jobs/${jobId}/duplicates`,
+    defaultInit,
+  );
   return parseJson<{
     groups: { canonical_uid: string; member_uids: string[] }[];
   }>(res);
 }
 
 export async function getAudit(jobId: string) {
-  const res = await fetch(`${API_BASE}/api/v1/jobs/${jobId}/audit`);
+  const res = await fetch(`${API_BASE}/api/v1/jobs/${jobId}/audit`, defaultInit);
   return parseJson<{ items: { cols: string[] }[] }>(res);
 }
 
 export async function getStats(jobId: string) {
-  const res = await fetch(`${API_BASE}/api/v1/jobs/${jobId}/stats`);
+  const res = await fetch(`${API_BASE}/api/v1/jobs/${jobId}/stats`, defaultInit);
   return parseJson<Record<string, unknown>>(res);
 }
 
@@ -160,6 +221,7 @@ export function artifactUrl(jobId: string, kind: string) {
 
 export async function createAudit(upload_id: string, config_toml?: string) {
   const res = await fetch(`${API_BASE}/api/v1/audits`, {
+    ...defaultInit,
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ upload_id, config_toml }),
@@ -169,6 +231,7 @@ export async function createAudit(upload_id: string, config_toml?: string) {
 
 export async function validateRules(toml: string) {
   const res = await fetch(`${API_BASE}/api/v1/rules/validate`, {
+    ...defaultInit,
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ toml }),
@@ -190,7 +253,6 @@ export function isTerminalStatus(status: string) {
 
 export function isCancellableStatus(status: string) {
   return (
-    !isTerminalStatus(status) &&
-    !/^cancel_requested$/i.test(status)
+    !isTerminalStatus(status) && !/^cancel_requested$/i.test(status)
   );
 }

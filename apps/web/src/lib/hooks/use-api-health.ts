@@ -5,14 +5,22 @@ import { API_BASE, getHealth } from "@/lib/api";
 
 export type ConnectionState = "checking" | "connected" | "disconnected";
 
-function isLoopbackBase(base: string) {
+function isLoopbackHost(hostname: string) {
+  return (
+    hostname === "127.0.0.1" ||
+    hostname === "localhost" ||
+    hostname === "::1"
+  );
+}
+
+function isLocalProcessing(base: string) {
+  if (!base) {
+    if (typeof window === "undefined") return false;
+    return isLoopbackHost(window.location.hostname);
+  }
   try {
     const url = new URL(base);
-    return (
-      url.hostname === "127.0.0.1" ||
-      url.hostname === "localhost" ||
-      url.hostname === "::1"
-    );
+    return isLoopbackHost(url.hostname);
   } catch {
     return false;
   }
@@ -48,7 +56,7 @@ export function useApiHealth(pollMs = 30000) {
     state,
     health,
     refresh,
-    isLocalProcessing: isLoopbackBase(API_BASE),
-    apiBase: API_BASE,
+    isLocalProcessing: isLocalProcessing(API_BASE),
+    apiBase: API_BASE || "(same-origin)",
   };
 }

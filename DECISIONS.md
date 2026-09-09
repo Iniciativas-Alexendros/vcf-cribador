@@ -204,5 +204,25 @@ supersedes: "v0.3.0"
   7. API versionada bajo `/api/v1`; cambios incompatibles → `/api/v2`.
 - Consecuencias: Deps nuevas (axum, tokio, etc.) solo en `zedazo-api`. Actualizar SPECS/ROADMAP/ARCHITECTURE. Hito **v0.5.0** web self-hosted (CardDAV sigue en v0.4.0, PRs separados).
 - Relacionado: [SPECS.md](./SPECS.md) O10, [ROADMAP.md](./ROADMAP.md) v0.5.0, [docs/gui/](./docs/gui/), [docs/api/openapi.yaml](./docs/api/openapi.yaml).
+- Enmienda: exposición remota single-user → **ADR-0016** (no altera el alcance local de v0.5.0).
+
+</details>
+
+<details>
+<summary><strong>ADR-0016</strong> — Exposición remota self-hosted single-user (HTTPS + token)</summary>
+
+- Estado: aceptada
+- Fecha: 2026-09-09
+- Contexto: La GUI/API V1 (ADR-0015) opera en loopback sin auth. El operador quiere gestiones VCF desde Internet en el mismo dispositivo (luego miniPC), sin SaaS ni multi-usuario.
+- Decisión:
+  1. **Single-user remoto:** un operador; sin cuentas, colaboración ni multi-tenant.
+  2. **`ZEDAZO_AUTH_MODE`:** `disabled` solo si el bind es loopback (**fail-closed** al arrancar si bind no-loopback), salvo `ZEDAZO_AUTH_ALLOW_DISABLED_NON_LOOPBACK=true` para Docker local con puertos host en `127.0.0.1`. `token` exige `ZEDAZO_AUTH_TOKEN` no vacío.
+  3. Credencial: `Authorization: Bearer` o cookie HttpOnly `zedazo_auth` (misma secreto) para SSE/`EventSource` con `withCredentials`.
+  4. Endpoints públicos: `GET /api/v1/health`, `POST /api/v1/auth/login`, `POST /api/v1/auth/logout`. Resto protegido en modo `token`.
+  5. Despliegue: Caddy same-origin (`/` → web, `/api/*` → api); API/web no publicados a Internet; TLS en el proxy. Compose profile `remote`.
+  6. CORS: en modo `token`, orígenes vía `ZEDAZO_CORS_ORIGIN` o sin `Any` (mismo origen detrás del proxy).
+  7. Acceso sin abrir puertos: Tailscale / Cloudflare Tunnel documentado; miniPC + dominio → Let's Encrypt.
+- Consecuencias: hito **v0.5.1**; threat-model y deploy actualizados; no OAuth/OIDC ni equipos.
+- Relacionado: ADR-0015, [docs/gui/deploy.md](./docs/gui/deploy.md), [docs/gui/threat-model.md](./docs/gui/threat-model.md).
 
 </details>

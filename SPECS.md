@@ -1,16 +1,16 @@
 ---
-version: "0.3.1"
-date: "2026-09-08"
+version: "0.3.2"
+date: "2026-09-09"
 status: "Aprobado"
 canonical: true
-supersedes: "v0.3.0"
+supersedes: "v0.3.1"
 ---
 
 # SPECS.md
 
-**Versión:** 0.3.1  
-**Fecha:** 2026-09-08  
-**Estado:** Aprobado (v0.3.0 calidad; alcance web abierto por ADR-0015)  
+**Versión:** 0.3.2  
+**Fecha:** 2026-09-09  
+**Estado:** Aprobado (v0.3.0 calidad; web local ADR-0015; remoto single-user ADR-0016)  
 **Canónico:** este archivo. [`docs/spec.md`](docs/spec.md) redirige aquí.
 
 **Documentos relacionados:** [ROADMAP.md](./ROADMAP.md) · [DECISIONS.md](./DECISIONS.md) · [ARCHITECTURE.md](./ARCHITECTURE.md) · [AGENTS.md](./AGENTS.md)
@@ -35,17 +35,21 @@ supersedes: "v0.3.0"
 | **O8** | Exportar CSV y JSON además de VCF 4.0 | Formatos válidos y completos |
 | **O9** | Cargar reglas desde TOML | Append por defecto; `replace` para sustitución total |
 | **O10** | Paridad funcional CLI↔GUI self-hosted | Misma semántica de resultados sobre fixtures; ver [docs/gui/functional-parity-matrix.md](./docs/gui/functional-parity-matrix.md) |
+| **O11** | Acceso remoto self-hosted single-user | HTTPS (proxy) + `ZEDAZO_AUTH_MODE=token`; fail-closed si auth disabled fuera de loopback (ADR-0016) |
 
 ## 3. No-objetivos
 
 - APIs externas (CardDAV, Proton, Google People) — hito v0.4.0+ (requiere ADR de red)
 - TUI interactiva
-- Multiusuario / colaboración / edición manual de contactos en GUI (pospuesto post-V1 local)
+- Multiusuario / colaboración / edición manual de contactos en GUI (pospuesto; no cubierto por ADR-0016)
+- SaaS, cuentas OAuth/OIDC o multi-tenant
 - Soporte vCard 2.1
 - Mutación de datos binarios (PHOTO, LOGO, SOUND, KEY): solo preservar u omitir
 - Sustituir la CLI: permanece canal oficial de automatización y rollback
 
 **En alcance (ADR-0015, hito v0.5.0):** GUI web + API HTTP local single-user sobre `zedazo-core`.
+
+**En alcance (ADR-0016, hito v0.5.1):** misma GUI/API expuesta en red vía Caddy same-origin + auth por token/cookie; un operador; portable a miniPC self-hosted.
 
 ## 4. Invariantes de dominio
 

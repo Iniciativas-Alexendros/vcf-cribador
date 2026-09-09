@@ -1,13 +1,11 @@
-# TLS interno (este dispositivo / LAN). Para dominio público ver Caddyfile.public.
+# Proxy local opcional (profile proxy en docker-compose.yml).
 :443 {
 	tls internal
-
 	handle /api/* {
 		reverse_proxy api:8080 {
 			flush_interval -1
 		}
 	}
-
 	handle {
 		reverse_proxy web:3000
 	}

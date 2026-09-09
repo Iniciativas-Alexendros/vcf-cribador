@@ -87,7 +87,7 @@ cargo llvm-cov --lcov --output-path coverage/lcov.info
 
 ## Learned User Preferences
 
-- GUI V1 self-hosted: alcance single-user local (sin cuentas, sin colaboración, sin edición manual de contactos).
+- GUI V1 self-hosted: single-user (sin cuentas, sin colaboración, sin edición manual de contactos); local loopback por defecto y remoto vía ADR-0016 (HTTPS + token).
 - Paridad CLI↔GUI = casos de uso funcionales del binario; la CLI sigue siendo la interfaz oficial de automatización/scripting (p. ej. `completion` no requiere pantalla web).
 - No mezclar CardDAV u otras features de red con cambios de dominio o UI en la misma unidad de trabajo/PR.
 - Identidad GUI «Archivo Vivo»: documental/preciso (no dashboard SaaS genérico); UI en español; temas claro/oscuro/sistema; colores de producción en `oklch()`.
@@ -95,6 +95,7 @@ cargo llvm-cov --lcov --output-path coverage/lcov.info
 ## Learned Workspace Facts
 
 - Workspace ADR-0015: `crates/zedazo-core`, `crates/zedazo-cli` (binario `zedazo`), `crates/zedazo-api` (Axum), `apps/web` (Next.js).
+- Remoto ADR-0016: `ZEDAZO_AUTH_MODE=token`, cookie `zedazo_auth`, Compose [`deploy/docker-compose.remote.yml`](deploy/docker-compose.remote.yml) + Caddy same-origin; Docker local usa `ZEDAZO_AUTH_ALLOW_DISABLED_NON_LOOPBACK`.
 - Jobs de la API aíslan datos por directorio de job; modo local sin red saliente por defecto; resultados GUI/API deben equivaler a CLI sobre los mismos fixtures.
 - `make ci` = fmt-check + clippy + test + check + doc + `docs-validate` + `parity` (O10) + `web-ci` (`apps/web`).
 - O10: harness HTTP en `crates/zedazo-api/tests/equivalence_http.rs` vía `make parity`; matriz en `docs/gui/functional-parity-matrix.md`.
