@@ -2,6 +2,7 @@
 
 use tracing_subscriber::EnvFilter;
 use zedazo_api::app;
+use zedazo_api::auth;
 use zedazo_api::dto::JobStatus;
 use zedazo_api::jobs::now_rfc3339;
 
@@ -12,6 +13,9 @@ async fn main() -> anyhow::Result<()> {
         .init();
 
     let state = app::AppState::from_env()?;
+    let bind = std::env::var("ZEDAZO_BIND").unwrap_or_else(|_| "127.0.0.1:8080".into());
+    auth::validate_bind_auth(&bind, &state.auth)?;
+
     // Barrido periódico de retención (TTL)
     {
         let st = state.clone();
@@ -25,7 +29,6 @@ async fn main() -> anyhow::Result<()> {
     }
     let app = app::router(state.clone());
 
-    let bind = std::env::var("ZEDAZO_BIND").unwrap_or_else(|_| "127.0.0.1:8080".into());
     let listener = tokio::net::TcpListener::bind(&bind).await?;
     tracing::info!("zedazo-api escuchando en http://{bind}");
     axum::serve(listener, app).await?;

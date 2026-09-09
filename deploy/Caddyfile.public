@@ -1,0 +1,12 @@
+# Ejemplo para miniPC + dominio (Let's Encrypt).
+# Sustituir example.com y montar este archivo como Caddyfile en compose remoto.
+example.com {
+	handle /api/* {
+		reverse_proxy api:8080 {
+			flush_interval -1
+		}
+	}
+	handle {
+		reverse_proxy web:3000
+	}
+}

@@ -1,7 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { API_BASE, getHealth, wipeAllData } from "@/lib/api";
+import {
+  API_BASE,
+  getHealth,
+  logoutSession,
+  wipeAllData,
+} from "@/lib/api";
+import { useRouter } from "next/navigation";
 import { PageHeader } from "@/components/shell/page-header";
 import { Card } from "@/components/ui/card";
 import { Callout } from "@/components/ui/callout";
@@ -12,11 +18,22 @@ import { useApiHealth } from "@/lib/hooks/use-api-health";
 import formStyles from "@/styles/forms.module.css";
 
 export default function AjustesPage() {
+  const router = useRouter();
   const { preference, setPreference } = useTheme();
-  const { state, health, isLocalProcessing, refresh } = useApiHealth();
+  const { state, health, isLocalProcessing, refresh, apiBase } = useApiHealth();
   const [raw, setRaw] = useState("");
   const [wipeBusy, setWipeBusy] = useState(false);
   const [wipeMsg, setWipeMsg] = useState<string | null>(null);
+  const [logoutBusy, setLogoutBusy] = useState(false);
+  const [httpsOk, setHttpsOk] = useState(true);
+
+  useEffect(() => {
+    setHttpsOk(
+      window.location.protocol === "https:" ||
+        window.location.hostname === "127.0.0.1" ||
+        window.location.hostname === "localhost",
+    );
+  }, []);
 
   useEffect(() => {
     void getHealth()
@@ -112,7 +129,7 @@ export default function AjustesPage() {
       </Card>
 
       <Card variant="document" className="zed-stack">
-        <h2 className="zed-title-section">Conectividad</h2>
+        <h2 className="zed-title-section">Conectividad y acceso</h2>
         <p>
           Estado:{" "}
           <strong>
@@ -123,18 +140,53 @@ export default function AjustesPage() {
                 : "Comprobando…"}
           </strong>
         </p>
+        {!httpsOk ? (
+          <Callout variant="warning" title="Sin HTTPS">
+            En exposición remota usa Caddy o un túnel TLS. El token viaja en
+            cookie; sin HTTPS el riesgo aumenta.
+          </Callout>
+        ) : null}
         <MetadataList
           items={[
-            { label: "URL API", value: API_BASE, mono: true, copyable: true },
+            {
+              label: "URL API",
+              value: apiBase || API_BASE || "(same-origin)",
+              mono: true,
+              copyable: true,
+            },
+            {
+              label: "Auth",
+              value:
+                "Token/cookie si ZEDAZO_AUTH_MODE=token (ADR-0016)",
+            },
           ]}
         />
-        <button
-          type="button"
-          className="zed-button zed-button--secondary"
-          onClick={() => void refresh()}
-        >
-          Comprobar salud
-        </button>
+        <div style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap" }}>
+          <button
+            type="button"
+            className="zed-button zed-button--secondary"
+            onClick={() => void refresh()}
+          >
+            Comprobar salud
+          </button>
+          <Button
+            variant="secondary"
+            loading={logoutBusy}
+            onClick={async () => {
+              setLogoutBusy(true);
+              try {
+                await logoutSession();
+                router.replace("/acceso");
+              } catch (e) {
+                setWipeMsg(String(e));
+              } finally {
+                setLogoutBusy(false);
+              }
+            }}
+          >
+            Cerrar sesión
+          </Button>
+        </div>
         <pre className="zed-mono" style={{ overflow: "auto" }}>
           {raw || "…"}
         </pre>

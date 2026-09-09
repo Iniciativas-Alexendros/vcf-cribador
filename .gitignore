@@ -21,3 +21,6 @@ apps/web/.next/
 !crates/zedazo-core/tests/fixtures/proton_sample.vcf
 *.tsv
 !crates/zedazo-core/tests/fixtures/*.tsv
+deploy/.env
+.env
+.env.local

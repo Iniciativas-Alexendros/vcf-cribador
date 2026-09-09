@@ -54,7 +54,7 @@ export function useJobEvents(jobId: string | null) {
     const connect = () => {
       es?.close();
       const url = eventsUrl(jobId, lastEventId.current);
-      es = new EventSource(url);
+      es = new EventSource(url, { withCredentials: true });
       attachListeners(es);
     };
 

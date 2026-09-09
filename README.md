@@ -37,23 +37,28 @@ zedazo export limpio.vcf -o contactos.csv
 zedazo export limpio.vcf -o contactos.json -f json
 ```
 
-## GUI / API self-hosted (ADR-0015, hito v0.5.0)
+## GUI / API self-hosted (ADR-0015 / ADR-0016)
 
 Workspace: `crates/zedazo-core` · `crates/zedazo-cli` · `crates/zedazo-api` · `apps/web`.
 
 ```bash
-# API local
+# API local (auth disabled solo en loopback)
 ZEDAZO_DATA_DIR=./data ZEDAZO_BIND=127.0.0.1:8080 cargo run -p zedazo-api
 
 # Frontend
 pnpm --dir apps/web install
 pnpm --dir apps/web dev
 
-# Docker
+# Docker local
 docker compose -f deploy/docker-compose.yml up --build
+
+# Docker remoto single-user (HTTPS + token)
+cp deploy/.env.example deploy/.env   # editar token
+docker compose -f deploy/docker-compose.remote.yml --env-file deploy/.env up --build
+# → https://127.0.0.1:8443
 ```
 
-Docs: [docs/gui/](docs/gui/) · OpenAPI [docs/api/openapi.yaml](docs/api/openapi.yaml).
+Docs: [docs/gui/](docs/gui/) · OpenAPI [docs/api/openapi.yaml](docs/api/openapi.yaml) · [deploy.md](docs/gui/deploy.md).
 
 ## Configuración
 
