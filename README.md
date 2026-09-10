@@ -61,6 +61,36 @@ docker compose -f deploy/docker-compose.remote.yml --env-file deploy/.env up --b
 
 Docs: [docs/gui/](docs/gui/) · OpenAPI [docs/api/openapi.yaml](docs/api/openapi.yaml) · [deploy.md](docs/gui/deploy.md).
 
+## Capturas
+
+| Procesar | Ejecuciones | Ajustes |
+| --- | --- | --- |
+| ![Procesar VCF en Zedazo](docs/screenshots/procesar-light.png) | ![Lista de ejecuciones](docs/screenshots/ejecuciones-light.png) | ![Ajustes de apariencia y privacidad](docs/screenshots/ajustes-light.png) |
+
+<details>
+<summary>Tema oscuro</summary>
+
+| Procesar | Ejecuciones | Ajustes |
+| --- | --- | --- |
+| ![Procesar VCF (oscuro)](docs/screenshots/procesar-dark.png) | ![Ejecuciones (oscuro)](docs/screenshots/ejecuciones-dark.png) | ![Ajustes (oscuro)](docs/screenshots/ajustes-dark.png) |
+
+</details>
+
+## Demo en 60 segundos
+
+```bash
+# Fixture sintético de ejemplo
+cp examples/sample.vcf /tmp/sample.vcf
+
+# Stack local (API :8080, web :3000)
+docker compose -f deploy/docker-compose.yml up --build
+# Abrir http://127.0.0.1:3000 → Procesar → subir examples/sample.vcf
+
+# O solo CLI
+cargo install zedazo   # o binario de release tras tag v0.5.1
+zedazo cribar examples/sample.vcf -o /tmp/out.vcf -a /tmp/audit.tsv
+```
+
 ## Configuración
 
 Opcional: crea un archivo TOML para personalizar el cribado.
