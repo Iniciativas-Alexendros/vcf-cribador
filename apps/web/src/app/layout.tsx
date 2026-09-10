@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import Script from "next/script";
 import { Providers } from "@/components/providers";
 import { THEME_BOOT_SCRIPT } from "@/lib/theme";
@@ -20,6 +20,13 @@ export const metadata: Metadata = {
   title: "Zedazo",
   description:
     "Ordena tus contactos. Conserva las decisiones. Procesamiento VCF local y trazable.",
+};
+
+export const viewport: Viewport = {
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#faf8f2" },
+    { media: "(prefers-color-scheme: dark)", color: "#1a1f2e" },
+  ],
 };
 
 export default function RootLayout({

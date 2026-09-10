@@ -10,6 +10,7 @@ y este proyecto adhiere a [Semantic Versioning](https://semver.org/lang/es/).
 ### Changed
 - Cierre documentado backlog: Coveralls badge restaurado (#25); ADR-0012/0013 aceptadas (#26/#27); OTel aplazado ADR-0017 (#24); dominio `zedazo.alexendros.dev` (#35)
 - Docs: `product-card.md` alineado con ROADMAP; runners `ubuntu-latest` en `contract.md` y `ARCHITECTURE.md` (enmienda ADR-0008)
+- GUI: favicon + `theme-color`; cabeceras de seguridad en Caddy/Next; Playwright e2e/a11y en `web-ci` y CI
 
 ## [0.5.1] - 2026-09-09
 
