@@ -335,6 +335,12 @@ jobs:
     steps:
       - uses: actions/checkout@v6
       - uses: dtolnay/rust-toolchain@stable
-      - name: Publish
-        run: cargo publish --token ${{ secrets.CRATES_IO_TOKEN }}
+      - name: Publish zedazo-core
+        run: cargo publish -p zedazo-core --token ${{ secrets.CRATES_IO_TOKEN }}
+        if: ${{ !contains(github.ref_name, '-rc') && !contains(github.ref_name, '-alpha') && !contains(github.ref_name, '-beta') }}
+      - name: Wait for crates.io index
+        run: sleep 45
+        if: ${{ !contains(github.ref_name, '-rc') && !contains(github.ref_name, '-alpha') && !contains(github.ref_name, '-beta') }}
+      - name: Publish zedazo
+        run: cargo publish -p zedazo --token ${{ secrets.CRATES_IO_TOKEN }}
         if: ${{ !contains(github.ref_name, '-rc') && !contains(github.ref_name, '-alpha') && !contains(github.ref_name, '-beta') }}

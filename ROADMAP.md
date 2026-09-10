@@ -25,7 +25,7 @@ supersedes: "v0.3.1"
 
 | Dimensión | Estado |
 |-----------|--------|
-| Versión publicada | crates.io **zedazo 0.3.0**; código `main` = hitos **v0.5.0** (GUI) + **v0.5.1** (remoto ADR-0016); tags `v0.5.x` pendientes de confirmación humana (evitan release crates.io prematuro) |
+| Versión publicada | crates.io pendiente de tag **v0.5.1**; workspace Cargo.toml **0.5.1**; código = hitos v0.5.0 (GUI) + v0.5.1 (remoto ADR-0016) |
 | Tests | unitarios core + verificación I4–I6 + integración; parity O10; `auth_http`; web (`tsc`/`lint`/`next build`) |
 | CI | `ubuntu-latest`; Renovate; `make ci` = fmt + clippy + test + check + doc + docs-validate + parity + web-ci |
 | GUI/API | Local loopback (ADR-0015) + remoto HTTPS+token (ADR-0016, O11) |

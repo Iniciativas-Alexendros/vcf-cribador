@@ -7,8 +7,8 @@
 | Campo | Valor |
 |-------|-------|
 | **Nombre** | Zedazo |
-| **Versión publicada** | crates.io **0.3.0** |
-| **Código `main`** | Hitos **v0.5.0** (GUI) + **v0.5.1** (remoto); tags `v0.5.x` a confirmación humana |
+| **Versión publicada** | Workspace **0.5.1**; crates.io tras tag humano `v0.5.1` |
+| **Código `main`** | Hitos **v0.5.0** (GUI) + **v0.5.1** (remoto) |
 | **Estado** | Publicado (CLI) + GUI/API self-hosted en código |
 | **Licencia** | MIT OR Apache-2.0 (dual) |
 | **MSRV** | Rust 1.80+ |
