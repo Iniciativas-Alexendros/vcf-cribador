@@ -91,11 +91,15 @@ cargo llvm-cov --lcov --output-path coverage/lcov.info
 - Paridad CLI↔GUI = casos de uso funcionales del binario; la CLI sigue siendo la interfaz oficial de automatización/scripting (p. ej. `completion` no requiere pantalla web).
 - No mezclar CardDAV u otras features de red con cambios de dominio o UI en la misma unidad de trabajo/PR.
 - Identidad GUI «Archivo Vivo»: documental/preciso (no dashboard SaaS genérico); UI en español; temas claro/oscuro/sistema; colores de producción en `oklch()`.
+- No añadir PWA, notificaciones de job u otras extras de GUI sin ancla en SPECS/ADR.
+- Si pide fusionar o «monitoriza merge», esperar CI verde y hacer merge; no empujar a `main` (PRs draft desde ramas `cursor/`).
 
 ## Learned Workspace Facts
 
-- Workspace ADR-0015: `crates/zedazo-core`, `crates/zedazo-cli` (binario `zedazo`), `crates/zedazo-api` (Axum), `apps/web` (Next.js).
+- Workspace ADR-0015: `crates/zedazo-core`, `crates/zedazo-cli` (binario `zedazo`), `crates/zedazo-api` (Axum, `/api/v1`, SSE; `publish = false`), `apps/web` (Next.js).
 - Remoto ADR-0016: `ZEDAZO_AUTH_MODE=token`, cookie `zedazo_auth`, Compose [`deploy/docker-compose.remote.yml`](deploy/docker-compose.remote.yml) + Caddy same-origin; Docker local usa `ZEDAZO_AUTH_ALLOW_DISABLED_NON_LOOPBACK`.
 - Jobs de la API aíslan datos por directorio de job; modo local sin red saliente por defecto; resultados GUI/API deben equivaler a CLI sobre los mismos fixtures.
 - `make ci` = fmt-check + clippy + test + check + doc + `docs-validate` + `parity` (O10) + `web-ci` (`apps/web`).
 - O10: harness HTTP en `crates/zedazo-api/tests/equivalence_http.rs` vía `make parity`; matriz en `docs/gui/functional-parity-matrix.md`.
+- CI de GitHub Actions corre en `ubuntu-latest`; no hay runners self-hosted registrados.
+- `make web-ci` cubre tests de librería de `apps/web`; Playwright e2e/a11y son scripts locales y no corren en CI.

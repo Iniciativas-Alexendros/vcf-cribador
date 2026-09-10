@@ -1,4 +1,4 @@
-# 📇 Zedazo — Ficha de producto v0.2.0
+# Zedazo — Ficha de producto
 
 ---
 
@@ -7,23 +7,24 @@
 | Campo | Valor |
 |-------|-------|
 | **Nombre** | Zedazo |
-| **Versión** | 0.2.0 |
-| **Estado** | Publicado (crates.io + GitHub) |
+| **Versión publicada** | crates.io **0.3.0** |
+| **Código `main`** | Hitos **v0.5.0** (GUI) + **v0.5.1** (remoto); tags `v0.5.x` a confirmación humana |
+| **Estado** | Publicado (CLI) + GUI/API self-hosted en código |
 | **Licencia** | MIT OR Apache-2.0 (dual) |
 | **MSRV** | Rust 1.80+ |
-| **Lenguaje** | Rust (edition 2021) |
-| **Tipo** | CLI tool |
+| **Lenguaje** | Rust (edition 2021) + TypeScript (Next.js) |
+| **Tipo** | CLI + API HTTP + GUI web self-hosted |
 | **Repositorio** | https://github.com/Iniciativas-Alexendros/zedazo |
 | **Dominio producto** | https://zedazo.alexendros.dev (cero coste; ADR-0014) |
 | **crates.io** | https://crates.io/crates/zedazo |
-| **Documentación** | https://docs.rs/zedazo |
-| **Binario release** | 3.2 MB (Linux x86-64, stripped, LTO) |
-| **Líneas de código** | ~4,500 (src + tests) |
-| **Tests** | 145 (unitarios + integración) |
+| **Documentación** | https://docs.rs/zedazo · [docs/gui/](./gui/) |
+| **Workspace** | `zedazo-core` · `zedazo-cli` (binario `zedazo`) · `zedazo-api` · `apps/web` |
 
 ## Descripción
 
-Herramienta CLI para cribar, normalizar, clasificar y deduplicar archivos de contactos **VCF vCard 4.0/3.0** exportados desde **ProtonMail**, **Google Contacts** y **Apple iCloud**.
+Herramienta para cribar, normalizar, clasificar y deduplicar archivos de contactos **VCF vCard 4.0/3.0** exportados desde **ProtonMail**, **Google Contacts** y **Apple iCloud**.
+
+El núcleo de dominio (`zedazo-core`) lo consumen la **CLI** (`zedazo`) y, desde v0.5.0 (ADR-0015), una **API HTTP** (`zedazo-api`) + **GUI** Next.js (`apps/web`). Procesamiento local, sin telemetría remota por defecto. Remoto single-user vía HTTPS + token (ADR-0016).
 
 Aplica un pipeline determinista de 6 etapas con reglas configurables vía TOML, generando salida en VCF 4.0 limpio + auditoría completa en TSV, CSV y JSON.
 
@@ -40,18 +41,24 @@ VCF → Parse → Normalize → Classify → Screen → Dedup → Write
 | **Parse** | RFC 6350 §3.2 unfold, §3.4 escape, propiedades agrupadas, v3→v4 |
 | **Normalize** | N1-N7 FN (títulos, cargos, partículas), T1-T4 TEL (E.164 +34), ORG (siglas, formas jurídicas) |
 | **Classify** | 16 categorías N2 en jerarquía de 3 niveles (PROF-JUD, INST-AUT, FIN-CRYPTO, TECH-SW, SALUD-SOC...) |
-| **Screen** | C2-C6 conservación por categoría + E1-E3 eliminación (huérfanos, spam, email-only) |
+| **Screen** | Conservación por categoría (incl. C1/C5/C7) + eliminación (incl. E4/E6) |
 | **Dedup** | Union-Find con cierre transitivo D1-D2 (UID exacto, TEL exacto, EMAIL fuzzy, FN fuzzy) |
-| **Write** | VCF 4.0 folding 75 octetos + TSV auditoría (11 columnas) + CSV export + JSON export |
+| **Write** | VCF 4.0 folding 75 octetos + TSV auditoría + CSV/JSON export |
 
-### Comandos adicionales
+### Comandos CLI adicionales
 
 | Comando | Función |
 |---------|---------|
 | `audit` | Solo screening + TSV, sin modificar VCF |
 | `stats` | Estadísticas en texto, JSON o Markdown |
 | `export` | Export CSV o JSON desde pipeline |
-| `completions` | Genera autocompletado para bash, zsh, fish |
+| `completions` | Autocompletado bash, zsh, fish (sin pantalla GUI) |
+
+### GUI / API (v0.5.0+)
+
+- API `/api/v1`: uploads, jobs, SSE, artefactos, contactos, duplicados, auditoría, reglas
+- GUI: Procesar, Ejecuciones, Auditar, Reglas, Ajustes, Acceso (token), Documentación
+- Paridad funcional CLI↔GUI (O10); remoto O11 (ADR-0016)
 
 ## Configuración
 
@@ -71,87 +78,66 @@ e2_keywords = ["pharma", "jackpot"]
 |---------|-----------|---------|
 | VCF 4.0 | Salida | FN, N, ORG, TEL, EMAIL, NOTE, X-ZEDAZO-*, PRODID |
 | VCF 3.0/4.0 | Entrada | Auto-detección Proton/Google/Apple |
-| TSV | Auditoría | 11 columnas (UID, FN, TEL, EMAIL, ORG, SOURCE, acción, regla, evidencia, merged_uids, categorías) |
-| CSV | Export | 9 columnas (FN, N, ORG, TEL, EMAIL, ADR, CATEGORIES, SOURCE, CLASSIFY_RESULT) |
-| JSON | Export | Array completo con todos los campos de Contact |
+| TSV | Auditoría | Columnas de decisión y evidencia |
+| CSV / JSON | Export | Contactos del pipeline |
 | TOML | Config | Reglas personalizadas de cribado |
 | ISO-8859-1 | Entrada | Transcodificación automática → UTF-8 |
 
 ## Tecnologías
 
-| Categoría | Dependencia | Versión |
-|-----------|-------------|---------|
+| Categoría | Dependencia | Notas |
+|-----------|-------------|-------|
 | CLI | clap (derive) | 4.5 |
-| Parser | nom | 7 |
-| Regex | regex | 1.10 |
-| CSV | csv | 1.3 |
-| Logging | tracing + tracing-subscriber | 0.1 / 0.3 |
-| Fechas | jiff | 0.2 |
-| Errores | thiserror + anyhow | 2 / 1 |
-| Fuzzy | strsim | 0.11 |
-| Encoding | chardetng + encoding_rs | 0.1 / 0.8 |
-| Config | toml | 0.8 |
-| JSON | serde + serde_json | 1 |
-| Templating | clap_complete | 4.5 |
-| Dev | tempfile | 3 |
+| Parser | nom | 7 (congelado < 8) |
+| Config | toml | < 1 (congelado) |
+| Encoding | chardetng + encoding_rs | chardetng < 1 |
+| API | Axum + Tokio | Solo `zedazo-api` |
+| GUI | Next.js App Router | `apps/web`; Web Awesome |
+| Dist | cargo-dist | 5 targets + SBOM |
 
 ## Arquitectura
 
 ```
-src/
-├── domain/           Reglas de negocio puras
-│   ├── contact.rs       Entidad Contact, value objects
-│   ├── screening.rs     Motor C2-E3, DecisionTrace
-│   ├── classification.rs  16 categorías N2
-│   ├── normalization.rs    FN/TEL/ORG E.164
-│   ├── identity.rs         Union-Find dedup
-│   └── rules.rs            Regex clasificación
-├── application/     Casos de uso
-│   ├── cribar.rs       Pipeline completo
-│   ├── audit.rs        Auditoría standalone
-│   └── stats.rs        Estadísticas 3 formatos
-├── infrastructure/  Adaptadores
-│   ├── parser.rs       VCF parser RFC 6350
-│   ├── writer.rs       VCF writer + folding
-│   ├── tsv_writer.rs   Auditoría 11 columnas
-│   ├── csv_writer.rs   Export CSV
-│   ├── json_writer.rs  Export JSON
-│   ├── encoding.rs     ISO-8859-1 → UTF-8
-│   ├── source.rs       Detección Proton/Google/Apple
-│   ├── v3_compat.rs    vCard 3.0 → 4.0
-│   └── config.rs       TOML con replace/append
-└── interfaces/      CLI clap derive
+crates/zedazo-core/   Dominio + application + infra I/O (sin HTTP)
+crates/zedazo-cli/    Binario `zedazo` (Clap)
+crates/zedazo-api/    Axum `/api/v1` (publish = false)
+apps/web/             Next.js — identidad «Archivo Vivo»
+deploy/               Compose local/remoto + Caddy
 ```
 
-**Patrón:** Clean Architecture con dependencias hacia dominio.
+**Patrón:** Clean Architecture; `domain` puro sin I/O. Ver [ARCHITECTURE.md](../ARCHITECTURE.md) y ADR-0015/0016.
 
 ## Calidad y CI/CD
 
 | Aspecto | Herramienta |
 |---------|-------------|
-| CI | GitHub Actions (check stable + MSRV, fmt, clippy, test, doc) |
-| Release | GitHub Actions automático (tag v* → build + SHA256 + GitHub Release + crates.io) |
-| Security | `cargo audit` semanal (lunes 09:00 Europe/Madrid) |
-| Dependabot | Cargo + Actions, semanal, ignora breaking changes |
-| Pre-commit | `cargo fmt --check` + `cargo clippy -D warnings` |
-| Linting | Clippy estricto sin warnings |
-| Tests | 145 tests (135 lib + 10 integración) con fixtures sintéticos |
+| CI | GitHub Actions en `ubuntu-latest` (`make ci`: fmt, clippy, test, check, doc, docs-validate, parity, web-ci) |
+| Release | Tag semver → cargo-dist + SBOM + crates.io (`zedazo-core` luego `zedazo`) |
+| Security | `cargo audit` semanal |
+| Dependencias | **Renovate** (no Dependabot); pins en ADR-0009 |
+| Pre-commit | `make hooks` → fmt + clippy |
+| Paridad | O10: `make parity` + matriz en `docs/gui/` |
 
 ## Roadmap
 
+Alineado con [ROADMAP.md](../ROADMAP.md) (canónico):
+
 | Versión | Features |
 |---------|----------|
-| **v0.1.0** ✅ | Pipeline completo, 4 comandos CLI, configuración TOML, stats/export, CI/CD, crates.io |
-| **v0.2.0** | Reglas C1/C5/C7/E4/E6, campo ADR, validación invariantes I1-I7, Apple fixtures |
-| **v0.3.0** | CardDAV sync, watch mode, filtros por categoría |
-| **v1.0.0** | API estable, benchmarks, cross-compile macOS/Windows |
+| **v0.1.x–v0.2.0** ✅ | Pipeline CLI, rename Zedazo, crates.io |
+| **v0.3.0** ✅ | Calidad: reglas C1/C5/C7/E4/E6, invariantes I1–I7 |
+| **v0.5.0** ✅ código | GUI + API self-hosted (ADR-0015); tag pendiente |
+| **v0.5.1** ✅ código | Remoto HTTPS + token (ADR-0016); tag/bump crates.io pendiente |
+| **v0.4.0** | CardDAV sync, watch mode (requiere ADR de red; PRs separados) |
+| **v1.0.0** | API de crate estable, benchmarks, corpus grande |
+| **Post-v1.0** | OpenTelemetry opt-in (ADR-0017) |
 
 ## Seguridad y privacidad
 
-- Procesamiento local, sin conexiones externas ni telemetría
-- Fixtures de tests 100% sintéticos (datos ficticios)
-- Código abierto auditable bajo MIT OR Apache-2.0
-- No almacena ni transmite datos de contacto
+- Procesamiento local, sin telemetría remota por defecto
+- Fixtures de tests 100 % sintéticos (sin PII real)
+- Remoto: auth fail-closed, cookie HttpOnly, same-origin (ADR-0016)
+- Código abierto bajo MIT OR Apache-2.0
 - Política de vulnerabilidades en SECURITY.md
 
 ## Uso rápido
@@ -159,12 +145,16 @@ src/
 ```bash
 cargo install zedazo
 zedazo cribar contactos.vcf -o limpio.vcf -a audit.tsv
+
+# GUI local (tras v0.5.0 en código)
+cd deploy && docker compose up --build
 ```
 
 ## Enlaces
 
-- 🏠 GitHub: https://github.com/Iniciativas-Alexendros/zedazo
-- 📦 crates.io: https://crates.io/crates/zedazo
-- 📚 Documentación: https://docs.rs/zedazo
-- 🔁 Dependencias: Renovate (no Dependabot)
-- 🧪 Cobertura: cargo-llvm-cov → Coveralls
+- GitHub: https://github.com/Iniciativas-Alexendros/zedazo
+- crates.io: https://crates.io/crates/zedazo
+- Documentación: https://docs.rs/zedazo
+- Dependencias: Renovate (no Dependabot)
+- Cobertura: cargo-llvm-cov → Coveralls
+- Deploy: [docs/gui/deploy.md](./gui/deploy.md)

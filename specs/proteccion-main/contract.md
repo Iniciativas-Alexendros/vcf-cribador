@@ -55,4 +55,4 @@ Configuración: [`.github/renovate.json`](../../.github/renovate.json).
 | Doc | stable | `cargo doc --no-deps --document-private-items` |
 | Coverage | stable | `cargo llvm-cov --lcov --output-path coverage/lcov.info` → Coveralls |
 
-Runners: `[self-hosted, ts]` (ADR-0008).
+Runners: `ubuntu-latest` (enmienda ADR-0008, 2026-08-15: 0 runners `[self-hosted, ts]` registrados; restaurar labels propias cuando el runner `ts` vuelva a estar online).

@@ -25,7 +25,7 @@ supersedes: "v0.3.1"
 
 ## CI/CD
 
-El proyecto usa **GitHub Actions** con **runners self-hosted** (`[self-hosted, ts]`).
+El proyecto usa **GitHub Actions** en **`ubuntu-latest`**. ADR-0008 prefiere runners `[self-hosted, ts]`; enmienda 2026-08-15: con 0 runners registrados, los workflows usan `ubuntu-latest` hasta restaurar el runner `ts`.
 
 | Workflow          | Trigger                    | Jobs                                     |
 | ----------------- | -------------------------- | ---------------------------------------- |
