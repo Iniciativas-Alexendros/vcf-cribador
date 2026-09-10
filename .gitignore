@@ -19,6 +19,7 @@ apps/web/.next/
 !crates/zedazo-core/tests/fixtures/duplicates.vcf
 !crates/zedazo-core/tests/fixtures/edge_cases.vcf
 !crates/zedazo-core/tests/fixtures/proton_sample.vcf
+!examples/sample.vcf
 *.tsv
 !crates/zedazo-core/tests/fixtures/*.tsv
 deploy/.env
