@@ -11,10 +11,11 @@ y este proyecto adhiere a [Semantic Versioning](https://semver.org/lang/es/).
 - Cierre documentado backlog: Coveralls badge restaurado (#25); ADR-0012/0013 aceptadas (#26/#27); OTel aplazado ADR-0017 (#24); dominio `zedazo.alexendros.dev` (#35)
 - Docs: `product-card.md` alineado con ROADMAP; runners `ubuntu-latest` en `contract.md` y `ARCHITECTURE.md` (enmienda ADR-0008)
 
-### Pendiente
-- Tag/release crates.io alineado con hitos GUI (versión workspace aún `0.3.0` hasta confirmación humana)
-
 ## [0.5.1] - 2026-09-09
+
+### Changed
+- Workspace Cargo.toml `0.3.0` → `0.5.1` (alineado con hitos GUI/remoto)
+- Release: `cargo publish -p zedazo-core` y luego `-p zedazo` (workspace virtual; `zedazo-api` no se publica)
 
 ### Añadido (ADR-0016 — exposición remota self-hosted)
 - Auth `ZEDAZO_AUTH_MODE=token|disabled` con fail-closed fuera de loopback
@@ -25,6 +26,9 @@ y este proyecto adhiere a [Semantic Versioning](https://semver.org/lang/es/).
 - Docs: threat-model y deploy (este host → miniPC / túnel / Let's Encrypt)
 
 ## [0.5.0] - 2026-09-08
+
+> Hito de código en `main` **sin tag ni artefactos** en GitHub Releases/crates.io.
+> El primer release con binarios GUI/API es **v0.5.1**.
 
 ### Añadido (ADR-0015 — GUI web self-hosted)
 - Workspace Rust: `zedazo-core`, `zedazo-cli` (binario `zedazo`), `zedazo-api` (Axum)
@@ -120,8 +124,8 @@ El crate `vcf-cribador` en crates.io permanece publicado (sin yank); la última 
 - 129 tests unitarios y de integración
 
 [Unreleased]: https://github.com/Iniciativas-Alexendros/zedazo/compare/v0.5.1...HEAD
-[0.5.1]: https://github.com/Iniciativas-Alexendros/zedazo/compare/v0.5.0...v0.5.1
-[0.5.0]: https://github.com/Iniciativas-Alexendros/zedazo/compare/v0.3.0...v0.5.0
+[0.5.1]: https://github.com/Iniciativas-Alexendros/zedazo/compare/v0.3.0...v0.5.1
+[0.5.0]: https://github.com/Iniciativas-Alexendros/zedazo/compare/v0.3.0...v0.5.1
 [0.3.0]: https://github.com/Iniciativas-Alexendros/zedazo/compare/v0.2.0...v0.3.0
 [0.2.0]: https://github.com/Iniciativas-Alexendros/zedazo/compare/v0.1.1...v0.2.0
 [0.1.1]: https://github.com/Iniciativas-Alexendros/zedazo/compare/v0.1.0...v0.1.1
