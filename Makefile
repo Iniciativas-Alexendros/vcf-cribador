@@ -90,6 +90,9 @@ docs-validate: ## Valida documentación canónica (frontmatter, enlaces, stubs, 
 	@grep -q "https://docs.rs/zedazo" apps/landing/index.html || (echo "❌ landing: falta enlace docs.rs"; exit 1)
 	@grep -q "zedazo.alexendros.dev" apps/landing/index.html || (echo "❌ landing: falta wordmark de dominio"; exit 1)
 	@grep -q "zedazo.alexendros.dev" deploy/Caddyfile.landing || (echo "❌ Caddyfile.landing: falta hostname de producto"; exit 1)
+	@grep -q 'class="wordmark">zedazo</span>' apps/landing/index.html || (echo "❌ landing: wordmark no está en minúsculas"; exit 1)
+	@grep -q 'ZEDAZO_WORDMARK = "zedazo"' apps/web/src/components/brand/zedazo-wordmark.tsx || (echo "❌ GUI: wordmark no está en minúsculas"; exit 1)
+	@test -f docs/brand.md || (echo "❌ falta docs/brand.md"; exit 1)
 	@echo "✓ Landing OK"
 	@echo "✓ docs-validate completado"
 

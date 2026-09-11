@@ -1,4 +1,4 @@
-# Zedazo
+# zedazo
 
 [![CI](https://github.com/Iniciativas-Alexendros/zedazo/actions/workflows/ci.yml/badge.svg)](https://github.com/Iniciativas-Alexendros/zedazo/actions/workflows/ci.yml)
 [![Security Audit](https://github.com/Iniciativas-Alexendros/zedazo/actions/workflows/audit.yml/badge.svg)](https://github.com/Iniciativas-Alexendros/zedazo/actions/workflows/audit.yml)
@@ -10,7 +10,7 @@
 
 **Tu agenda, pasada por el zedazo fino.**
 
-Sitio de producto: [https://zedazo.alexendros.dev](https://zedazo.alexendros.dev) (landing en [`apps/landing/`](apps/landing/index.html); DNS: [docs/gui/deploy.md](docs/gui/deploy.md)).
+Sitio de producto: [https://zedazo.alexendros.dev](https://zedazo.alexendros.dev) (landing en [`apps/landing/`](apps/landing/index.html); DNS: [docs/gui/deploy.md](docs/gui/deploy.md)). Wordmark: [`docs/brand.md`](docs/brand.md).
 
 Criba, normaliza, clasifica y deduplica contactos VCF exportados desde **ProtonMail**, **Google Contacts** o **Apple iCloud**, con reglas deterministas, deduplicación transitiva y normalización de nombres y teléfonos.
 

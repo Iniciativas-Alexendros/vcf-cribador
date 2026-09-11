@@ -6,7 +6,7 @@
 
 | Campo | Valor |
 |-------|-------|
-| **Nombre** | Zedazo |
+| **Nombre** | **zedazo** (wordmark lowercase; prosa: Zedazo). Convención: [brand.md](./brand.md) |
 | **Versión publicada** | Workspace **0.5.1**; crates.io tras tag humano `v0.5.1` |
 | **Código `main`** | Hitos **v0.5.0** (GUI) + **v0.5.1** (remoto) |
 | **Estado** | Publicado (CLI) + GUI/API self-hosted en código |
@@ -15,7 +15,7 @@
 | **Lenguaje** | Rust (edition 2021) + TypeScript (Next.js) |
 | **Tipo** | CLI + API HTTP + GUI web self-hosted |
 | **Repositorio** | https://github.com/Iniciativas-Alexendros/zedazo |
-| **Dominio producto** | https://zedazo.alexendros.dev (cero coste; ADR-0014; landing `apps/landing/`; DNS en [deploy.md](./gui/deploy.md)) |
+| **Dominio producto** | https://zedazo.alexendros.dev (cero coste; ADR-0014; landing `apps/landing/`; DNS en [deploy.md](./gui/deploy.md); marca: [brand.md](./brand.md)) |
 | **crates.io** | https://crates.io/crates/zedazo |
 | **Documentación** | https://docs.rs/zedazo · [docs/gui/](./gui/) |
 | **Workspace** | `zedazo-core` · `zedazo-cli` (binario `zedazo`) · `zedazo-api` · `apps/web` |
@@ -159,3 +159,4 @@ cd deploy && docker compose up --build
 - Dependencias: Renovate (no Dependabot)
 - Cobertura: cargo-llvm-cov → Coveralls
 - Deploy: [docs/gui/deploy.md](./gui/deploy.md) (DNS CNAME + landing + GUI remota)
+- Marca / TMview: [docs/brand.md](./brand.md)
