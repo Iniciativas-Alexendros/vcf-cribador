@@ -29,7 +29,7 @@ crates/zedazo-api/    # API HTTP Axum + auth (ADR-0016)
 apps/web/             # GUI Next.js (solo cliente HTTP)
 apps/landing/         # ficha pública estática (zedazo.alexendros.dev)
 deploy/               # Docker Compose local / remoto / landing + Caddy
-docs/gui/             # Paridad, deploy (DNS), threat-model
+docs/gui/             # Paridad, deploy (DNS), threat-model, design-system-plan
 tests fixtures:       crates/zedazo-core/tests/fixtures/
 ```
 

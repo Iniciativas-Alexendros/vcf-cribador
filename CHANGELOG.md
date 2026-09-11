@@ -8,6 +8,7 @@ y este proyecto adhiere a [Semantic Versioning](https://semver.org/lang/es/).
 ## [Unreleased]
 
 ### Added
+- Plan de modernización del design system GUI (OKLCH / DTCG → GUI profesional) en [`docs/gui/design-system-plan.md`](docs/gui/design-system-plan.md) ([#59](https://github.com/Iniciativas-Alexendros/zedazo/issues/59)); sin cambios de UI en este ítem
 - **ADR-0018** (aceptada): red/proveedor CardDAV como precondición de v0.4.0 / [#48](https://github.com/Iniciativas-Alexendros/zedazo/issues/48) — cliente RFC 6352, una cuenta, crate dedicado; sin código de sync en este cambio
 - Convención de marca y pesquisa TMview UE clases 9/42 en [`docs/brand.md`](docs/brand.md) (#49)
 - Landing pública estática [`apps/landing/`](apps/landing/index.html) para `https://zedazo.alexendros.dev` (#50)
