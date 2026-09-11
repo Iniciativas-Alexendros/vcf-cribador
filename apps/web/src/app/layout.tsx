@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import Script from "next/script";
 import { Providers } from "@/components/providers";
 import { THEME_BOOT_SCRIPT } from "@/lib/theme";
+import { themeColorHex } from "@/lib/design-tokens";
 import { ZEDAZO_WORDMARK } from "@/components/brand/zedazo-wordmark";
 import "@fontsource/atkinson-hyperlegible-next/400.css";
 import "@fontsource/atkinson-hyperlegible-next/600.css";
@@ -25,8 +26,8 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = {
   themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#faf8f2" },
-    { media: "(prefers-color-scheme: dark)", color: "#1a1f2e" },
+    { media: "(prefers-color-scheme: light)", color: themeColorHex.light },
+    { media: "(prefers-color-scheme: dark)", color: themeColorHex.dark },
   ],
 };
 

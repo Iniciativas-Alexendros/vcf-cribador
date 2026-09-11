@@ -1,0 +1,10 @@
+{
+  "$description": "Capa de componente (fase 1: stub). Fase 2 añadirá button, badge, input, table y shell. Los bordes de badge semánticos (--zed-badge-*-border) viven en semantic/color.*.json.",
+  "component": {
+    "reserved": {
+      "$type": "string",
+      "$value": "phase-2",
+      "$description": "Marcador; no emite CSS."
+    }
+  }
+}

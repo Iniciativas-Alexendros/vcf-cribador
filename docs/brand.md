@@ -18,7 +18,7 @@ El signo visual del producto es **`zedazo` en minúsculas**. No se usa Title Cas
 
 El logomark (tres nodos) es decorativo junto al wordmark (`aria-hidden`); el nombre accesible del lockup es el texto `zedazo`.
 
-Los colores de producción de la GUI se expresan en **OKLCH** (`--zed-*` en `apps/web/src/design-system/`). Esta nota no define la paleta; el pipeline de tokens y el QA visual están en [`docs/gui/design-system-plan.md`](./gui/design-system-plan.md) ([#59](https://github.com/Iniciativas-Alexendros/zedazo/issues/59)).
+Los colores de producción de la GUI se expresan en **OKLCH**. Fuente DTCG: [`apps/web/tokens/`](../apps/web/tokens/) (ADR-0019); custom properties `--zed-*` generadas. Esta nota no define la paleta; el pipeline y el QA visual están en [`docs/gui/design-system-plan.md`](./gui/design-system-plan.md) ([#59](https://github.com/Iniciativas-Alexendros/zedazo/issues/59)).
 
 ## Pesquisa TMview / EUIPO (clases 9 y 42)
 

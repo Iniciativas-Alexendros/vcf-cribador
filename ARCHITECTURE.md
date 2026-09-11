@@ -67,6 +67,7 @@ Workspace (ADR-0015): `crates/zedazo-core`, `crates/zedazo-cli`, `crates/zedazo-
 CardDAV (v0.4.0, **ADR-0018** aceptada): crate previsto `zedazo-carddav` (`publish = false`), consumido por la CLI; **no** HTTP CardDAV en `zedazo-core`. Código de red en PRs distintos de dominio/UI.
 Ficha pública (ADR-0014 / #50): `apps/landing/` en `zedazo.alexendros.dev`; DNS y Caddy en [`docs/gui/deploy.md`](docs/gui/deploy.md).
 Jobs web: directorio aislado por ULID bajo `$ZEDAZO_DATA_DIR` con `manifest.json` y `events.ndjson`.
+Tokens GUI (ADR-0019): fuente DTCG [`apps/web/tokens/`](apps/web/tokens/) → `pnpm tokens:build` → `--zed-*` OKLCH + tipos TS; contraste WCAG 2.2 AA en `web-ci`. `apps/landing/` no consume este pipeline.
 
 ### Auth y despliegue (ADR-0016)
 
