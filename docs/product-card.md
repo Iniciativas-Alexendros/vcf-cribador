@@ -15,7 +15,7 @@
 | **Lenguaje** | Rust (edition 2021) + TypeScript (Next.js) |
 | **Tipo** | CLI + API HTTP + GUI web self-hosted |
 | **Repositorio** | https://github.com/Iniciativas-Alexendros/zedazo |
-| **Dominio producto** | https://zedazo.alexendros.dev (cero coste; ADR-0014) |
+| **Dominio producto** | https://zedazo.alexendros.dev (cero coste; ADR-0014; landing `apps/landing/`; DNS en [deploy.md](./gui/deploy.md)) |
 | **crates.io** | https://crates.io/crates/zedazo |
 | **Documentación** | https://docs.rs/zedazo · [docs/gui/](./gui/) |
 | **Workspace** | `zedazo-core` · `zedazo-cli` (binario `zedazo`) · `zedazo-api` · `apps/web` |
@@ -102,7 +102,8 @@ crates/zedazo-core/   Dominio + application + infra I/O (sin HTTP)
 crates/zedazo-cli/    Binario `zedazo` (Clap)
 crates/zedazo-api/    Axum `/api/v1` (publish = false)
 apps/web/             Next.js — identidad «Archivo Vivo»
-deploy/               Compose local/remoto + Caddy
+apps/landing/         Ficha pública estática (zedazo.alexendros.dev)
+deploy/               Compose local/remoto/landing + Caddy
 ```
 
 **Patrón:** Clean Architecture; `domain` puro sin I/O. Ver [ARCHITECTURE.md](../ARCHITECTURE.md) y ADR-0015/0016.
@@ -157,4 +158,4 @@ cd deploy && docker compose up --build
 - Documentación: https://docs.rs/zedazo
 - Dependencias: Renovate (no Dependabot)
 - Cobertura: cargo-llvm-cov → Coveralls
-- Deploy: [docs/gui/deploy.md](./gui/deploy.md)
+- Deploy: [docs/gui/deploy.md](./gui/deploy.md) (DNS CNAME + landing + GUI remota)

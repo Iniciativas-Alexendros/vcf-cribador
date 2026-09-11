@@ -27,8 +27,9 @@ crates/zedazo-core/   # domain + application + infrastructure (sin HTTP)
 crates/zedazo-cli/    # binario zedazo (Clap)
 crates/zedazo-api/    # API HTTP Axum + auth (ADR-0016)
 apps/web/             # GUI Next.js (solo cliente HTTP)
-deploy/               # Docker Compose local / remoto + Caddy
-docs/gui/             # Paridad, deploy, threat-model
+apps/landing/         # ficha pública estática (zedazo.alexendros.dev)
+deploy/               # Docker Compose local / remoto / landing + Caddy
+docs/gui/             # Paridad, deploy (DNS), threat-model
 tests fixtures:       crates/zedazo-core/tests/fixtures/
 ```
 

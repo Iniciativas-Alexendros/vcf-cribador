@@ -168,7 +168,8 @@ supersedes: "v0.3.1"
 - Contexto: `vcf-cribador` colisiona semánticamente con el verbo de dominio *cribar*; se busca marca de producto distinta (patrón Atlaps). `cedazo` descartado. Gate crates.io: `zedazo` libre (`ze/da/zedazo` → 404). TMview UE clases 9 y 42: checklist humano pendiente (no bloquea rename).
 - Decisión: Renombrar producto/crate/binario a **Zedazo** (`zedazo`) en release **v0.2.0** solo rename+migración. Internos de dominio (`CribaError`, módulo `cribar`, «cribado») sin rename.
 - Dominio de producto (cero coste): **`https://zedazo.alexendros.dev`** (wordmark lowercase). DNS/CNAME cuando exista landing.
-- Relacionado: issues [#32](https://github.com/Iniciativas-Alexendros/zedazo/issues/32), [#35](https://github.com/Iniciativas-Alexendros/zedazo/issues/35); [ROADMAP.md](./ROADMAP.md), [CHANGELOG.md](./CHANGELOG.md).
+- Operativa (#50): landing estática [`apps/landing/`](./apps/landing/); CNAME `zedazo` → `<HOST_DESTINO>` (operador) y Caddy/Let's Encrypt en [`docs/gui/deploy.md`](./docs/gui/deploy.md). GUI remota en el mismo host → same-origin (ADR-0016), no este Caddyfile de landing.
+- Relacionado: issues [#32](https://github.com/Iniciativas-Alexendros/zedazo/issues/32), [#35](https://github.com/Iniciativas-Alexendros/zedazo/issues/35), [#50](https://github.com/Iniciativas-Alexendros/zedazo/issues/50); [ROADMAP.md](./ROADMAP.md), [CHANGELOG.md](./CHANGELOG.md).
 
 | # | Elemento | Actual | Decisión | Tipo |
 |---|---|---|---|---|
