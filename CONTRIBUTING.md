@@ -26,6 +26,7 @@
 crates/zedazo-core/   # domain + application + infrastructure (sin HTTP)
 crates/zedazo-cli/    # binario zedazo (Clap)
 crates/zedazo-api/    # API HTTP Axum + auth (ADR-0016)
+crates/zedazo-carddav/# cliente CardDAV pull (ADR-0018; publish = false)
 apps/web/             # GUI Next.js (solo cliente HTTP)
 apps/landing/         # ficha pública estática (zedazo.alexendros.dev)
 deploy/               # Docker Compose local / remoto / landing + Caddy

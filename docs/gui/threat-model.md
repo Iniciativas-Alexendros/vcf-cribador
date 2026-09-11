@@ -2,7 +2,7 @@
 
 **Versión:** 0.2.0  
 **Fecha:** 2026-09-09  
-**Traza:** ADR-0015, ADR-0016; egreso CardDAV futuro: ADR-0018 (aceptada)
+**Traza:** ADR-0015, ADR-0016; egreso CardDAV: ADR-0018 (aceptada; primer slice CLI)
 
 ## Activos
 
@@ -11,6 +11,7 @@
 - Reglas TOML del operador
 - Metadatos de jobs (hashes, conteos)
 - Secreto de acceso (`ZEDAZO_AUTH_TOKEN`) y cookie de sesión
+- Credenciales CardDAV (`ZEDAZO_CARDDAV_*`; distintas del token de GUI)
 
 ## Supuestos
 
@@ -46,6 +47,7 @@
 | T11 | Exposición sin auth | Fail-closed: `disabled` solo loopback; arranque aborta si no |
 | T12 | Robo de token/cookie | HTTPS obligatorio en remoto; cookie `Secure; HttpOnly`; token fuera de git |
 | T13 | Publicar API/web al WAN | Solo Caddy (o túnel) publica puertos; profile `remote` |
+| T14 | Filtrar app-password CardDAV / reutilizar token GUI | Env `ZEDAZO_CARDDAV_*` distinto de `ZEDAZO_AUTH_TOKEN`; no loguear secretos; egreso solo CLI opt-in |
 
 ## Fuera de alcance
 
