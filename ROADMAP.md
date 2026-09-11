@@ -71,8 +71,8 @@ supersedes: "v0.3.1"
 *(antes numerado v0.3.0)*
 
 - CardDAV sync, watch mode, filtros por categoría
-- Precondición: **[ADR-0018](./DECISIONS.md)** (propuesta 2026-09-11) — red/proveedor **antes** de código ([#48](https://github.com/Iniciativas-Alexendros/zedazo/issues/48))
-- Primer slice (tras aceptar ADR-0018): cliente RFC 6352 + Basic/app-password; **una cuenta**; crate `zedazo-carddav`; pull default / write opt-in; CLI. PRs **separados** de dominio y UI
+- Precondición: **[ADR-0018](./DECISIONS.md)** (aceptada 2026-09-11) — red/proveedor **antes** de código ([#48](https://github.com/Iniciativas-Alexendros/zedazo/issues/48))
+- Primer slice: cliente RFC 6352 + Basic/app-password; **una cuenta**; crate `zedazo-carddav`; pull default / write opt-in; CLI. PRs **separados** de dominio y UI
 - Fuera del primer slice: watch mode, filtros por categoría, OAuth Google / People API, proveedor Proton de primera clase (Proton no expone CardDAV nativo; sigue export VCF)
 - OTel permanece post-v1.0 (ADR-0017)
 

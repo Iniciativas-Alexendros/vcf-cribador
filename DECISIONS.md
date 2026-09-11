@@ -246,7 +246,7 @@ supersedes: "v0.3.1"
 <details>
 <summary><strong>ADR-0018</strong> — Red/proveedor CardDAV (precondición v0.4.0)</summary>
 
-- Estado: **propuesta** (el decisor la acepta o enmienda al fusionar; sin código CardDAV en este ADR)
+- Estado: **aceptada**
 - Fecha: 2026-09-11
 - Contexto: [#48](https://github.com/Iniciativas-Alexendros/zedazo/issues/48) / [ROADMAP.md](./ROADMAP.md) **v0.4.0** exigen un ADR de red/proveedor **antes** de implementar sync. SPECS §3 deja CardDAV, Proton API y Google People como no-objetivo hasta ese hito. El producto ya parsea vCard 3.0/4.0 de **export** Proton / Google / Apple (O1) y opera **single-user self-hosted** (ADR-0015 local, ADR-0016 remoto HTTPS+token). La landing `zedazo.alexendros.dev` (ADR-0014) no es proxy de contactos. El pipeline local sigue **sin red saliente por defecto**.
 - Hallazgo de proveedores (2026-09):
@@ -254,7 +254,7 @@ supersedes: "v0.3.1"
   2. **Apple iCloud:** CardDAV nativo (`https://contacts.icloud.com` → shard `pNN-contacts.icloud.com`); Basic + app-specific password; vCard 3.0. Encaja con O1.
   3. **Proton Contacts:** **no** expone CardDAV/CalDAV nativo (Bridge oficial es correo, no contactos; E2E). El flujo vigente sigue siendo export/import VCF 4.0. Un puente local no oficial (p. ej. hydroxide en loopback) podría hablar RFC genérico; Zedazo **no** lo empaqueta ni lo soporta.
   4. **Google Contacts CardDAV:** existe (`https://www.googleapis.com/.well-known/carddav`) pero **solo OAuth 2.0** + registro de cliente en Google Cloud; vCard 3.0. People API es **otro** protocolo (SPECS §3 lo lista aparte).
-- Decisión (propuesta, a confirmar):
+- Decisión:
   1. **Una cuenta / un principal** por configuración. Sin multi-cuenta simultánea ni perfiles de operador. Cambiar de servidor = cambiar config, no N sesiones. Encaja con ADR-0015/0016; no hay evidencia que fuerce multi-cuenta en v0.4.0.
   2. **Read y write** sobre CardDAV. La lectura (pull) es el default. La escritura (PUT/DELETE) es **opt-in explícito** por invocación: I7 prohíbe sobrescribir el VCF local; el remoto no se muta en `cribar` salvo comando de sync con confirmación. Sin last-write-wins silencioso: `If-Match` / ETag; HTTP 412 → conflicto reportado, no overwrite.
   3. **Cliente RFC primero**, no SDK de marca. Perfiles de descubrimiento documentados: URL explícita, Nextcloud (`/remote.php/dav/`), iCloud (`contacts.icloud.com`). Fastmail u otros hosts RFC = misma impl.
@@ -271,7 +271,7 @@ supersedes: "v0.3.1"
   - Multi-cuenta / OAuth de producto: contradice single-user ADR-0015/0016.
   - Tratar Proton o Google People como primer proveedor CardDAV: Proton no tiene DAV; People no es CardDAV.
   - Push automático tras `cribar`: viola I7 y el principio de red saliente opt-in.
-- Consecuencias: desbloquea implementación de #48 **después** de aceptar este ADR; SPECS §3 / ROADMAP v0.4.0 apuntan aquí. Primer slice verificable: pull RFC + Basic contra fixture/servidor de prueba (Nextcloud o DAV genérico), sin GUI. OTel sigue post-v1.0 (ADR-0017).
+- Consecuencias: desbloquea implementación de #48 (PRs de código posteriores; este ADR no incluye sync). SPECS §3 / ROADMAP v0.4.0 apuntan aquí. Primer slice verificable: pull RFC + Basic contra fixture/servidor de prueba (Nextcloud o DAV genérico), sin GUI. OTel sigue post-v1.0 (ADR-0017).
 - Relacionado: [SPECS.md](./SPECS.md) §3, [ROADMAP.md](./ROADMAP.md) v0.4.0, [ARCHITECTURE.md](./ARCHITECTURE.md), ADR-0014, ADR-0015, ADR-0016, [#48](https://github.com/Iniciativas-Alexendros/zedazo/issues/48).
 - **Hunches** (etiquetados; no bloquean el ADR si se enmiendan):
   - Nextcloud + iCloud cubren al operador self-hosted y a O1 Apple mejor que perseguir Proton DAV.

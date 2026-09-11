@@ -64,7 +64,7 @@ Regla de dependencia:
 ```
 
 Workspace (ADR-0015): `crates/zedazo-core`, `crates/zedazo-cli`, `crates/zedazo-api`, `apps/web`.
-CardDAV (v0.4.0, **ADR-0018** propuesta): crate previsto `zedazo-carddav` (`publish = false`), consumido por la CLI; **no** HTTP CardDAV en `zedazo-core`. Código de red en PRs distintos de dominio/UI.
+CardDAV (v0.4.0, **ADR-0018** aceptada): crate previsto `zedazo-carddav` (`publish = false`), consumido por la CLI; **no** HTTP CardDAV en `zedazo-core`. Código de red en PRs distintos de dominio/UI.
 Ficha pública (ADR-0014 / #50): `apps/landing/` en `zedazo.alexendros.dev`; DNS y Caddy en [`docs/gui/deploy.md`](docs/gui/deploy.md).
 Jobs web: directorio aislado por ULID bajo `$ZEDAZO_DATA_DIR` con `manifest.json` y `events.ndjson`.
 

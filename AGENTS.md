@@ -56,7 +56,7 @@ Criterio de cierre: CI verde + criterio SPECS
 
 - Dependencia nueva o major (sobre todo nom/toml/chardetng)
 - Cambiar `panic`/`profile.release` o runners
-- Features de red (CardDAV, watch) — ancla [ADR-0018](./DECISIONS.md) (propuesta); no implementar sync hasta que el ADR esté aceptado
+- Features de red (CardDAV, watch) — ancla [ADR-0018](./DECISIONS.md) (aceptada); PRs de sync separados de dominio/UI; deps HTTP en el PR de código
 - Alterar un ADR aceptado
 - Publicar crates.io / tags de release (el humano lanza o confirma)
 
