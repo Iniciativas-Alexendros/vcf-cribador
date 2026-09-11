@@ -1,0 +1,35 @@
+name: Publish crates.io
+
+# Manual / recuperación cuando el job publish de release.yml se salta.
+on:
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: "Git ref a publicar (tag o commit)"
+        required: true
+        default: "v0.5.1"
+
+permissions:
+  contents: read
+
+jobs:
+  publish:
+    name: Publish zedazo-core + zedazo
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          ref: ${{ inputs.ref }}
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Verify versions
+        run: |
+          set -euo pipefail
+          ver=$(grep '^version' Cargo.toml | head -1 | sed 's/.*"\(.*\)"/\1/')
+          echo "workspace version=$ver (ref=${{ inputs.ref }})"
+          test -n "$ver"
+      - name: Publish zedazo-core
+        run: cargo publish -p zedazo-core --token ${{ secrets.CRATES_IO_TOKEN }}
+      - name: Wait for crates.io index
+        run: sleep 45
+      - name: Publish zedazo
+        run: cargo publish -p zedazo --token ${{ secrets.CRATES_IO_TOKEN }}
