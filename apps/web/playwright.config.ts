@@ -11,11 +11,12 @@ export default defineConfig({
     trace: "on-first-retry",
   },
   webServer: {
+    // Prefer prior `next build`. With output:standalone, Next warns on
+    // `next start` but still serves for e2e; Docker uses node server.js.
     command: "./node_modules/.bin/next start -p 3000",
     url: "http://127.0.0.1:3000",
     reuseExistingServer: !process.env.CI,
     timeout: 120_000,
-    // Prefer a prior `next build`. Standalone output may warn; server still serves.
   },
   projects: [{ name: "chromium", use: { ...devices["Desktop Chrome"] } }],
 });

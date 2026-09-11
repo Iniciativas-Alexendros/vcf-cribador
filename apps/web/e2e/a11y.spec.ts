@@ -8,7 +8,7 @@ test.describe("navegación básica Archivo Vivo", () => {
       "Ordena tus contactos",
     );
     await expect(
-      page.getByRole("link", { name: /Procesar un archivo VCF/i }),
+      page.getByRole("link", { name: /Procesar un archivo VCF/i }).first(),
     ).toBeVisible();
     await expect(page.getByRole("navigation", { name: "Secciones" })).toBeVisible();
   });
@@ -23,7 +23,9 @@ test.describe("navegación básica Archivo Vivo", () => {
 
   test("ejecuciones carga listado", async ({ page }) => {
     await page.goto("/ejecuciones");
-    await expect(page.getByRole("heading", { name: "Ejecuciones" })).toBeVisible();
+    await expect(
+      page.getByRole("heading", { level: 1, name: "Ejecuciones" }),
+    ).toBeVisible();
   });
 
   test("skip link existe", async ({ page }) => {
