@@ -18,7 +18,7 @@ export function ProductLockup({
   const inner = (
     <>
       <span style={{ display: "inline-flex", alignItems: "center", gap: "0.65rem" }}>
-        <ZedazoMark size={size} />
+        <ZedazoMark size={size} decorative />
         <ZedazoWordmark />
       </span>
       {subtitle ? (

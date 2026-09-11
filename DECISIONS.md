@@ -164,12 +164,14 @@ supersedes: "v0.3.1"
 <summary><strong>ADR-0014</strong> — Rename producto/crate a Zedazo</summary>
 
 - Estado: aceptada
-- Fecha: 2026-08-15 / enmienda 2026-09-09
-- Contexto: `vcf-cribador` colisiona semánticamente con el verbo de dominio *cribar*; se busca marca de producto distinta (patrón Atlaps). `cedazo` descartado. Gate crates.io: `zedazo` libre (`ze/da/zedazo` → 404). TMview UE clases 9 y 42: checklist humano pendiente (no bloquea rename).
+- Fecha: 2026-08-15 / enmienda 2026-09-09 / wordmark+TMview 2026-09-11
+- Contexto: `vcf-cribador` colisiona semánticamente con el verbo de dominio *cribar*; se busca marca de producto distinta (patrón Atlaps). `cedazo` descartado. Gate crates.io: `zedazo` libre (`ze/da/zedazo` → 404).
 - Decisión: Renombrar producto/crate/binario a **Zedazo** (`zedazo`) en release **v0.2.0** solo rename+migración. Internos de dominio (`CribaError`, módulo `cribar`, «cribado») sin rename.
-- Dominio de producto (cero coste): **`https://zedazo.alexendros.dev`** (wordmark lowercase). DNS/CNAME cuando exista landing.
+- Wordmark: **`zedazo` en minúsculas** en lockups, pestaña, landing y H1 de README (patrón Atlaps). Prosa: «Zedazo». Identificadores: `zedazo` / `ZEDAZO_*` / `X-ZEDAZO-*`. Convención: [`docs/brand.md`](./docs/brand.md).
+- Dominio de producto (cero coste): **`https://zedazo.alexendros.dev`**. DNS/CNAME: operativa #50.
 - Operativa (#50): landing estática [`apps/landing/`](./apps/landing/); CNAME `zedazo` → `<HOST_DESTINO>` (operador) y Caddy/Let's Encrypt en [`docs/gui/deploy.md`](./docs/gui/deploy.md). GUI remota en el mismo host → same-origin (ADR-0016), no este Caddyfile de landing.
-- Relacionado: issues [#32](https://github.com/Iniciativas-Alexendros/zedazo/issues/32), [#35](https://github.com/Iniciativas-Alexendros/zedazo/issues/35), [#50](https://github.com/Iniciativas-Alexendros/zedazo/issues/50); [ROADMAP.md](./ROADMAP.md), [CHANGELOG.md](./CHANGELOG.md).
+- TMview UE clases 9 y 42 (#49): pesquisa documental 2026-09-11 en [`docs/brand.md`](./docs/brand.md) — sin coincidencia exacta «Zedazo» en índices públicos; TMview oficial y valoración de similitud (p. ej. EUTM **ZEZARO** 009317348) quedan en checklist humano. No bloquea el rename ni el wordmark.
+- Relacionado: issues [#32](https://github.com/Iniciativas-Alexendros/zedazo/issues/32), [#35](https://github.com/Iniciativas-Alexendros/zedazo/issues/35), [#49](https://github.com/Iniciativas-Alexendros/zedazo/issues/49), [#50](https://github.com/Iniciativas-Alexendros/zedazo/issues/50); [ROADMAP.md](./ROADMAP.md), [CHANGELOG.md](./CHANGELOG.md).
 
 | # | Elemento | Actual | Decisión | Tipo |
 |---|---|---|---|---|

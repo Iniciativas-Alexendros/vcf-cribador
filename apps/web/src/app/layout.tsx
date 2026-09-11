@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import Script from "next/script";
 import { Providers } from "@/components/providers";
 import { THEME_BOOT_SCRIPT } from "@/lib/theme";
+import { ZEDAZO_WORDMARK } from "@/components/brand/zedazo-wordmark";
 import "@fontsource/atkinson-hyperlegible-next/400.css";
 import "@fontsource/atkinson-hyperlegible-next/600.css";
 import "@fontsource/atkinson-hyperlegible-next/700.css";
@@ -17,7 +18,7 @@ import "@/design-system/components.css";
 import "./globals.css";
 
 export const metadata: Metadata = {
-  title: "Zedazo",
+  title: ZEDAZO_WORDMARK,
   description:
     "Ordena tus contactos. Conserva las decisiones. Procesamiento VCF local y trazable.",
 };

@@ -8,6 +8,7 @@ y este proyecto adhiere a [Semantic Versioning](https://semver.org/lang/es/).
 ## [Unreleased]
 
 ### Added
+- Convención de marca y pesquisa TMview UE clases 9/42 en [`docs/brand.md`](docs/brand.md) (#49)
 - Landing pública estática [`apps/landing/`](apps/landing/index.html) para `https://zedazo.alexendros.dev` (#50)
 - Receta Caddy/Compose [`deploy/Caddyfile.landing`](deploy/Caddyfile.landing) + [`deploy/docker-compose.landing.yml`](deploy/docker-compose.landing.yml)
 - Guía DNS CNAME `zedazo` → `<HOST_DESTINO>` (operador) y same-origin futuro en [`docs/gui/deploy.md`](docs/gui/deploy.md)
@@ -16,6 +17,7 @@ y este proyecto adhiere a [Semantic Versioning](https://semver.org/lang/es/).
 - Release: job `Publish to crates.io` con `if: always() && needs.host.result == 'success'` (evita skip cuando los builds de cargo-dist se saltan); workflow manual `publish-crates.yml`
 
 ### Changed
+- Wordmark lowercase **`zedazo`** en landing, GUI chrome y README (ADR-0014 / #49)
 - Cierre documentado backlog: Coveralls badge restaurado (#25); ADR-0012/0013 aceptadas (#26/#27); OTel aplazado ADR-0017 (#24); dominio `zedazo.alexendros.dev` (#35)
 - Docs: `product-card.md` alineado con ROADMAP; runners `ubuntu-latest` en `contract.md` y `ARCHITECTURE.md` (enmienda ADR-0008)
 - GUI: favicon + `theme-color`; cabeceras de seguridad en Caddy/Next; Playwright e2e/a11y en `web-ci` y CI

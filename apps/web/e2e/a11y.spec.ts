@@ -4,6 +4,8 @@ import AxeBuilder from "@axe-core/playwright";
 test.describe("navegación básica Archivo Vivo", () => {
   test("home muestra marca y CTAs", async ({ page }) => {
     await page.goto("/");
+    await expect(page).toHaveTitle(/zedazo/i);
+    await expect(page.getByRole("link", { name: /zedazo/i }).first()).toBeVisible();
     await expect(page.getByRole("heading", { level: 1 })).toContainText(
       "Ordena tus contactos",
     );

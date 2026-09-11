@@ -72,7 +72,7 @@ docker compose -f docker-compose.remote.yml --env-file .env up --build
 
 ## Dominio de producto
 
-Wordmark lowercase **`https://zedazo.alexendros.dev`** (ADR-0014). Esta URL es la **ficha pública** del producto, no un SaaS ni la GUI de cribado.
+Wordmark lowercase **`https://zedazo.alexendros.dev`** (ADR-0014). Convención de marca y pesquisa TMview: [`docs/brand.md`](../brand.md). Esta URL es la **ficha pública** del producto, no un SaaS ni la GUI de cribado.
 
 Hoy el repo sirve una landing estática en [`apps/landing/`](../../apps/landing/index.html) (pitch, crate, GitHub, docs.rs). El registro DNS lo crea el **operador** en la zona `alexendros.dev`; el destino del CNAME no está fijado en el código.
 

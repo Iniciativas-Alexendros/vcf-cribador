@@ -91,6 +91,7 @@ cargo llvm-cov --lcov --output-path coverage/lcov.info
 - Paridad CLI↔GUI = casos de uso funcionales del binario; la CLI sigue siendo la interfaz oficial de automatización/scripting (p. ej. `completion` no requiere pantalla web).
 - No mezclar CardDAV u otras features de red con cambios de dominio o UI en la misma unidad de trabajo/PR.
 - Identidad GUI «Archivo Vivo»: documental/preciso (no dashboard SaaS genérico); UI en español; temas claro/oscuro/sistema; colores de producción en `oklch()`.
+- Wordmark lowercase **`zedazo`** (lockups/pestaña/README H1); prosa «Zedazo»; ids `zedazo` / `ZEDAZO_*` / `X-ZEDAZO-*` (ADR-0014, [`docs/brand.md`](./docs/brand.md)).
 - No añadir PWA, notificaciones de job u otras extras de GUI sin ancla en SPECS/ADR.
 - Si pide fusionar o «monitoriza merge», esperar CI verde y hacer merge; no empujar a `main` (PRs draft desde ramas `cursor/`).
 
