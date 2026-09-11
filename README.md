@@ -10,6 +10,8 @@
 
 **Tu agenda, pasada por el zedazo fino.**
 
+Sitio de producto: [https://zedazo.alexendros.dev](https://zedazo.alexendros.dev) (landing en [`apps/landing/`](apps/landing/index.html); DNS: [docs/gui/deploy.md](docs/gui/deploy.md)).
+
 Criba, normaliza, clasifica y deduplica contactos VCF exportados desde **ProtonMail**, **Google Contacts** o **Apple iCloud**, con reglas deterministas, deduplicación transitiva y normalización de nombres y teléfonos.
 
 Desde **v0.5.0** incluye **GUI web + API HTTP** self-hosted sobre el mismo core (`zedazo-core`): local en loopback (ADR-0015) y remoto single-user con HTTPS + token (ADR-0016). La CLI sigue siendo el canal oficial de automatización.
@@ -168,7 +170,8 @@ crates/zedazo-core/     Dominio + application + infra I/O (sin HTTP)
 crates/zedazo-cli/      Binario `zedazo` (Clap)
 crates/zedazo-api/      API Axum `/api/v1` (+ auth ADR-0016)
 apps/web/               GUI Next.js (solo HTTP; sin lógica de cribado)
-deploy/                 Docker Compose local + remoto (Caddy)
+apps/landing/           Ficha pública estática (zedazo.alexendros.dev)
+deploy/                 Docker Compose local + remoto + landing (Caddy)
 ```
 
 → [`ARCHITECTURE.md`](ARCHITECTURE.md) · ADR-0015 · ADR-0016
@@ -182,7 +185,7 @@ deploy/                 Docker Compose local + remoto (Caddy)
 | [`ROADMAP.md`](ROADMAP.md)                                     | Hitos y criterios de salida                          |
 | [`DECISIONS.md`](DECISIONS.md)                                 | ADR con IDs estables                                 |
 | [`AGENTS.md`](AGENTS.md)                                       | Contrato para agentes de código                      |
-| [`docs/gui/`](docs/gui/)                                       | Paridad O10, deploy, threat-model, retención         |
+| [`docs/gui/`](docs/gui/)                                       | Paridad O10, deploy (incl. DNS del dominio de producto), threat-model, retención         |
 | [`docs/api/openapi.yaml`](docs/api/openapi.yaml)               | Contrato HTTP `/api/v1`                              |
 | [`docs/domain.md`](docs/domain.md)                             | Lenguaje ubicuo, entidades, rules                    |
 | [`docs/implementation-guide.md`](docs/implementation-guide.md) | Guía de implementación (histórico MVP)               |

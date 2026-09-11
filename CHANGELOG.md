@@ -7,6 +7,11 @@ y este proyecto adhiere a [Semantic Versioning](https://semver.org/lang/es/).
 
 ## [Unreleased]
 
+### Added
+- Landing pública estática [`apps/landing/`](apps/landing/index.html) para `https://zedazo.alexendros.dev` (#50)
+- Receta Caddy/Compose [`deploy/Caddyfile.landing`](deploy/Caddyfile.landing) + [`deploy/docker-compose.landing.yml`](deploy/docker-compose.landing.yml)
+- Guía DNS CNAME `zedazo` → `<HOST_DESTINO>` (operador) y same-origin futuro en [`docs/gui/deploy.md`](docs/gui/deploy.md)
+
 ### Fixed
 - Release: job `Publish to crates.io` con `if: always() && needs.host.result == 'success'` (evita skip cuando los builds de cargo-dist se saltan); workflow manual `publish-crates.yml`
 

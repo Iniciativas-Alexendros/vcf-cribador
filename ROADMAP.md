@@ -30,6 +30,7 @@ supersedes: "v0.3.1"
 | CI | `ubuntu-latest`; Renovate; `make ci` = fmt + clippy + test + check + doc + docs-validate + parity + web-ci |
 | GUI/API | Local loopback (ADR-0015) + remoto HTTPS+token (ADR-0016, O11) |
 | Branch protection | Activa en `main` |
+| Dominio producto | Landing `apps/landing` + guía DNS (#50); CNAME a rellenar por el operador |
 | Backlog trazable | Issues GitHub (post-cierre #24–27/#35: TMview humano; CardDAV v0.4; OTel post-v1.0) |
 
 ## Hitos
@@ -93,6 +94,14 @@ supersedes: "v0.3.1"
 - [x] Tests auth + `make ci` (O10 intacto)
 
 **Criterio de salida:** O11; despliegue remoto usable sin publicar API/web directamente; CI verde. Tag `v0.5.1` (y bump crates.io) a confirmación humana.
+
+### Ops — dominio de producto (`zedazo.alexendros.dev`) — S
+
+- [x] Landing estática [`apps/landing/`](apps/landing/index.html) (ficha pública, no GUI)
+- [x] Guía DNS CNAME + Caddy Let's Encrypt en [`docs/gui/deploy.md`](docs/gui/deploy.md) (#50)
+- CNAME en zona `alexendros.dev`: lo crea el operador (`zedazo` → host real; placeholder `<HOST_DESTINO>`)
+
+**Fuera de alcance de esta unidad:** CardDAV (#48), TMview/wordmark (#49), GUI en el mismo hostname (sigue ADR-0016 / `Caddyfile.public`).
 
 ### v1.0.0 — Producción — L
 
