@@ -31,7 +31,7 @@ supersedes: "v0.3.1"
 | GUI/API | Local loopback (ADR-0015) + remoto HTTPS+token (ADR-0016, O11) |
 | Branch protection | Activa en `main` |
 | Dominio producto | Landing `apps/landing` + guía DNS (#50); CNAME a rellenar por el operador |
-| Backlog trazable | Issues GitHub (post-cierre #24–27/#35: TMview oficial residual #49; CardDAV v0.4; OTel post-v1.0) |
+| Backlog trazable | Issues GitHub (post-cierre #24–27/#35: TMview oficial residual #49; CardDAV v0.4 ADR-0018/#48; OTel post-v1.0) |
 
 ## Hitos
 
@@ -71,7 +71,10 @@ supersedes: "v0.3.1"
 *(antes numerado v0.3.0)*
 
 - CardDAV sync, watch mode, filtros por categoría
-- Requiere ADR de proveedor/red antes de implementar
+- Precondición: **[ADR-0018](./DECISIONS.md)** (aceptada 2026-09-11) — red/proveedor **antes** de código ([#48](https://github.com/Iniciativas-Alexendros/zedazo/issues/48))
+- Primer slice: cliente RFC 6352 + Basic/app-password; **una cuenta**; crate `zedazo-carddav`; pull default / write opt-in; CLI. PRs **separados** de dominio y UI
+- Fuera del primer slice: watch mode, filtros por categoría, OAuth Google / People API, proveedor Proton de primera clase (Proton no expone CardDAV nativo; sigue export VCF)
+- OTel permanece post-v1.0 (ADR-0017)
 
 ### v0.5.0 — Web self-hosted (GUI + API) — L
 
