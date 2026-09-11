@@ -45,17 +45,45 @@ function srgbTransfer(channel) {
   return encoded;
 }
 
+function inSrgbGamut(lin) {
+  return lin.r >= 0 && lin.r <= 1 && lin.g >= 0 && lin.g <= 1 && lin.b >= 0 && lin.b <= 1;
+}
+
+/**
+ * Aproxima el gamut mapping CSS (reducir C, conservar L/H) para que
+ * hex y contraste coincidan con lo que pinta el motor, no con un clip RGB.
+ * @param {Oklch} color
+ */
+export function mapToSrgbGamut(color) {
+  if (inSrgbGamut(oklchToLinearSrgb(color))) return color;
+  let lo = 0;
+  let hi = color.c;
+  let mapped = { ...color, c: 0 };
+  for (let i = 0; i < 32; i++) {
+    const mid = (lo + hi) / 2;
+    const candidate = { ...color, c: mid };
+    if (inSrgbGamut(oklchToLinearSrgb(candidate))) {
+      mapped = candidate;
+      lo = mid;
+    } else {
+      hi = mid;
+    }
+  }
+  return mapped;
+}
+
 /**
  * @param {Oklch} color
- * @returns {{ r: number, g: number, b: number, alpha: number }} sRGB 0–1 recortado
+ * @returns {{ r: number, g: number, b: number, alpha: number }} sRGB 0–1
  */
 export function oklchToSrgb(color) {
-  const lin = oklchToLinearSrgb(color);
+  const mapped = mapToSrgbGamut(color);
+  const lin = oklchToLinearSrgb(mapped);
   return {
     r: clamp01(srgbTransfer(lin.r)),
     g: clamp01(srgbTransfer(lin.g)),
     b: clamp01(srgbTransfer(lin.b)),
-    alpha: lin.alpha,
+    alpha: mapped.alpha ?? 1,
   };
 }
 
@@ -87,7 +115,7 @@ export function oklchToHex(color) {
  * @param {Oklch} color
  */
 export function relativeLuminance(color) {
-  const lin = oklchToLinearSrgb(color);
+  const lin = oklchToLinearSrgb(mapToSrgbGamut(color));
   const r = clamp01(lin.r);
   const g = clamp01(lin.g);
   const b = clamp01(lin.b);

@@ -40,6 +40,12 @@
       "role": "ui"
     },
     {
+      "id": "accent-on-canvas",
+      "fg": "color.accent.default",
+      "bg": "color.bg.canvas",
+      "minRatio": 4.5
+    },
+    {
       "id": "accent-on-accent",
       "fg": "color.accent.on",
       "bg": "color.accent.default",

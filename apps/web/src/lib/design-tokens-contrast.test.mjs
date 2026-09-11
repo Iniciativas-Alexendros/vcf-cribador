@@ -3,7 +3,12 @@ import { readFile, readdir } from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import test from "node:test";
-import { contrastRatio, oklchToHex, parseOklchValue } from "../../scripts/design-tokens/oklch.mjs";
+import {
+  contrastRatio,
+  mapToSrgbGamut,
+  oklchToHex,
+  parseOklchValue,
+} from "../../scripts/design-tokens/oklch.mjs";
 import { evaluateContrastPairs } from "../../scripts/design-tokens/contrast.mjs";
 
 const WEB_ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../..");
@@ -70,6 +75,12 @@ test("fuente DTCG no contiene hex de producción", async () => {
 test("parseOklchValue rechaza no-OKLCH", () => {
   assert.equal(parseOklchValue({ colorSpace: "srgb", components: [1, 0, 0] }), null);
   assert.equal(parseOklchValue("oklch(1 0 0)"), null);
+});
+
+test("mapToSrgbGamut reduce C si el color está fuera de sRGB", () => {
+  const loud = { l: 0.7, c: 0.4, h: 30, alpha: 1 };
+  const mapped = mapToSrgbGamut(loud);
+  assert.ok(mapped.c < loud.c);
 });
 
 async function listJson(dir) {
