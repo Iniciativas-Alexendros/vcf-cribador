@@ -15,7 +15,9 @@ allow = [
     "Unicode-3.0",
     "Unicode-DFS-2016",
     "Zlib",
-    # ring (backend TLS de rustls vía reqwest en zedazo-carddav, ADR-0018)
+    # webpki-roots (reqwest rustls-tls en zedazo-carddav, ADR-0018)
+    "CDLA-Permissive-2.0",
+    # ring (backend TLS de rustls; ISC+MIT+OpenSSL en algunas versiones)
     "OpenSSL",
 ]
 

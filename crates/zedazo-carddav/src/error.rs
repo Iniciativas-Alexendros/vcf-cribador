@@ -56,6 +56,12 @@ pub enum CardDavError {
         detail: String,
     },
 
+    /// El servidor DAV devolvió un href fuera del origen.
+    #[error(
+        "href CardDAV fuera de origen ({from} → {to}); se ignora para no reenviar credenciales"
+    )]
+    CrossOrigin { from: String, to: String },
+
     /// XML DAV inválido o incompleto.
     #[error("respuesta DAV inválida: {0}")]
     Protocol(String),

@@ -13,7 +13,8 @@ use reqwest::{Method, StatusCode, Url};
 use crate::config::CardDavConfig;
 use crate::error::{CardDavError, CardDavResult};
 use crate::url_policy::{
-    ensure_trailing_slash, origin_with_slash, resolve_href, same_collection, validate_server_url,
+    ensure_trailing_slash, origin_with_slash, resolve_href, resolve_redirect, same_collection,
+    validate_server_url,
 };
 use crate::xml::{
     looks_like_vcard, parse_multistatus, propfind_addressbook_home_set, propfind_collection,
@@ -394,7 +395,7 @@ impl CardDavClient {
             let loc = loc
                 .to_str()
                 .map_err(|_| CardDavError::Protocol("Location no ASCII".into()))?;
-            url = resolve_href(&url, loc)?;
+            url = resolve_redirect(&url, loc, allow_cross_host)?;
             tracing::debug!(%url, "carddav: siguiendo redirección");
         }
     }

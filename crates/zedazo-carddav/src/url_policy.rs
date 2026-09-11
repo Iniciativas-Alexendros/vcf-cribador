@@ -70,14 +70,70 @@ pub fn ensure_trailing_slash(url: &Url) -> Url {
     }
 }
 
-/// Une un `href` DAV (absoluto o de ruta) al origen del `base`.
+/// Une un `href` DAV al origen de `base`.
+///
+/// Los hrefs absolutos o protocol-relative (`//host/…`) que cambian de origen
+/// se rechazan: un 207 malicioso no debe reenviar Basic a loopback u otro host.
 pub fn resolve_href(base: &Url, href: &str) -> CardDavResult<Url> {
+    resolve_href_inner(base, href, false)
+}
+
+/// Une un `Location` de redirección. Si `allow_cross_origin` es true (solo
+/// `/.well-known/carddav`), se admite cambio de host HTTPS (p. ej. iCloud).
+pub fn resolve_redirect(
+    base: &Url,
+    location: &str,
+    allow_cross_origin: bool,
+) -> CardDavResult<Url> {
+    resolve_href_inner(base, location, allow_cross_origin)
+}
+
+fn resolve_href_inner(base: &Url, href: &str, allow_cross_origin: bool) -> CardDavResult<Url> {
     let href = href.trim();
     if href.is_empty() {
         return Err(CardDavError::Protocol("href DAV vacío".into()));
     }
-    base.join(href)
-        .map_err(|e| CardDavError::InvalidUrl(e.to_string()))
+    let joined = base
+        .join(href)
+        .map_err(|e| CardDavError::InvalidUrl(e.to_string()))?;
+    if same_origin(base, &joined) {
+        return Ok(joined);
+    }
+    if !allow_cross_origin {
+        return Err(CardDavError::CrossOrigin {
+            from: origin_key(base),
+            to: joined.to_string(),
+        });
+    }
+    // well-known: HTTPS a un host no-loopback, o mismo tipo loopback.
+    let from_loop = is_loopback_host(base.host_str().unwrap_or(""));
+    let to_loop = is_loopback_host(joined.host_str().unwrap_or(""));
+    if to_loop && !from_loop {
+        return Err(CardDavError::CrossOrigin {
+            from: origin_key(base),
+            to: joined.to_string(),
+        });
+    }
+    if joined.scheme() != "https" && !to_loop {
+        return Err(CardDavError::CleartextForbidden);
+    }
+    Ok(joined)
+}
+
+/// Mismo esquema, host (ASCII case-insensitive) y puerto efectivo.
+pub fn same_origin(a: &Url, b: &Url) -> bool {
+    a.scheme() == b.scheme()
+        && a.host_str().map(str::to_ascii_lowercase) == b.host_str().map(str::to_ascii_lowercase)
+        && a.port_or_known_default() == b.port_or_known_default()
+}
+
+fn origin_key(url: &Url) -> String {
+    format!(
+        "{}://{}{}",
+        url.scheme(),
+        url.host_str().unwrap_or(""),
+        url.port().map(|p| format!(":{p}")).unwrap_or_default()
+    )
 }
 
 /// Compara dos URLs de colección ignorando la barra final.
@@ -125,5 +181,39 @@ mod tests {
             joined.as_str(),
             "https://cloud.example.test/remote.php/dav/principals/users/ada/"
         );
+    }
+
+    #[test]
+    fn resolve_href_rechaza_loopback_inyectado() {
+        let base = Url::parse("https://cloud.example.test/remote.php/dav/").unwrap();
+        let err = resolve_href(&base, "http://127.0.0.1:9/secret").unwrap_err();
+        assert!(matches!(err, CardDavError::CrossOrigin { .. }));
+        let err = resolve_href(&base, "//127.0.0.1/steal").unwrap_err();
+        assert!(matches!(err, CardDavError::CrossOrigin { .. }));
+        let err = resolve_href(&base, "https://evil.example.test/dav/").unwrap_err();
+        assert!(matches!(err, CardDavError::CrossOrigin { .. }));
+    }
+
+    #[test]
+    fn resolve_href_acepta_absoluto_mismo_origen() {
+        let base = Url::parse("https://cloud.example.test/remote.php/dav/").unwrap();
+        let joined = resolve_href(
+            &base,
+            "https://cloud.example.test/remote.php/dav/addressbooks/users/ada/",
+        )
+        .unwrap();
+        assert!(joined.path().contains("/addressbooks/"));
+    }
+
+    #[test]
+    fn well_known_redirect_https_ok_loopback_no() {
+        let base = Url::parse("https://contacts.icloud.com/.well-known/carddav").unwrap();
+        let ok = resolve_redirect(&base, "https://p01-contacts.icloud.com/", true).unwrap();
+        assert_eq!(ok.host_str(), Some("p01-contacts.icloud.com"));
+        let err = resolve_redirect(&base, "http://127.0.0.1:8080/", true).unwrap_err();
+        assert!(matches!(
+            err,
+            CardDavError::CrossOrigin { .. } | CardDavError::CleartextForbidden
+        ));
     }
 }
