@@ -242,3 +242,40 @@ supersedes: "v0.3.1"
 - Consecuencias: Cierra #24 como diferido (no won't-fix); reabrir con ADR de deps cuando toque implementar. Guía en `docs/otel.md` marcada como aplazada.
 
 </details>
+
+<details>
+<summary><strong>ADR-0018</strong> — Red/proveedor CardDAV (precondición v0.4.0)</summary>
+
+- Estado: **propuesta** (el decisor la acepta o enmienda al fusionar; sin código CardDAV en este ADR)
+- Fecha: 2026-09-11
+- Contexto: [#48](https://github.com/Iniciativas-Alexendros/zedazo/issues/48) / [ROADMAP.md](./ROADMAP.md) **v0.4.0** exigen un ADR de red/proveedor **antes** de implementar sync. SPECS §3 deja CardDAV, Proton API y Google People como no-objetivo hasta ese hito. El producto ya parsea vCard 3.0/4.0 de **export** Proton / Google / Apple (O1) y opera **single-user self-hosted** (ADR-0015 local, ADR-0016 remoto HTTPS+token). La landing `zedazo.alexendros.dev` (ADR-0014) no es proxy de contactos. El pipeline local sigue **sin red saliente por defecto**.
+- Hallazgo de proveedores (2026-09):
+  1. **RFC 6352 genérico** (descubrimiento RFC 6764 `/.well-known/carddav`, `addressbook-home-set`, sync RFC 6578): cubre Nextcloud/SabreDAV, Fastmail y hosts DAV ordinarios. Auth típica: HTTP Basic + **contraseña de aplicación**.
+  2. **Apple iCloud:** CardDAV nativo (`https://contacts.icloud.com` → shard `pNN-contacts.icloud.com`); Basic + app-specific password; vCard 3.0. Encaja con O1.
+  3. **Proton Contacts:** **no** expone CardDAV/CalDAV nativo (Bridge oficial es correo, no contactos; E2E). El flujo vigente sigue siendo export/import VCF 4.0. Un puente local no oficial (p. ej. hydroxide en loopback) podría hablar RFC genérico; Zedazo **no** lo empaqueta ni lo soporta.
+  4. **Google Contacts CardDAV:** existe (`https://www.googleapis.com/.well-known/carddav`) pero **solo OAuth 2.0** + registro de cliente en Google Cloud; vCard 3.0. People API es **otro** protocolo (SPECS §3 lo lista aparte).
+- Decisión (propuesta, a confirmar):
+  1. **Una cuenta / un principal** por configuración. Sin multi-cuenta simultánea ni perfiles de operador. Cambiar de servidor = cambiar config, no N sesiones. Encaja con ADR-0015/0016; no hay evidencia que fuerce multi-cuenta en v0.4.0.
+  2. **Read y write** sobre CardDAV. La lectura (pull) es el default. La escritura (PUT/DELETE) es **opt-in explícito** por invocación: I7 prohíbe sobrescribir el VCF local; el remoto no se muta en `cribar` salvo comando de sync con confirmación. Sin last-write-wins silencioso: `If-Match` / ETag; HTTP 412 → conflicto reportado, no overwrite.
+  3. **Cliente RFC primero**, no SDK de marca. Perfiles de descubrimiento documentados: URL explícita, Nextcloud (`/remote.php/dav/`), iCloud (`contacts.icloud.com`). Fastmail u otros hosts RFC = misma impl.
+  4. **Auth v0.4.0:** HTTP Basic (usuario + app password / token de aplicación del *proveedor*). Credenciales en env/`zedazo.toml` local (`ZEDAZO_CARDDAV_*`); **nunca** reutilizar `ZEDAZO_AUTH_TOKEN` (eso es acceso a la GUI, ADR-0016). No loguear secretos. Egreso solo desde la máquina del operador (CLI) o, más tarde, desde el host self-hosted; **no** vía `zedazo.alexendros.dev`.
+  5. **OAuth/OIDC de proveedor (Google) y Google People API:** fuera del primer slice. SPECS §3 rechaza cuentas OAuth de *producto* Zedazo; un cliente OAuth Google implicaría `client_id`/refresh tokens y un ADR o slice dedicado. **Hunch:** no conviene mezclarlo con el cliente RFC+Basic.
+  6. **Proton:** sigue por fichero VCF. CardDAV a Proton solo si el operador apunta el cliente genérico a un puente *suyo*. No hay proveedor «Proton» de primera clase hasta que Proton publique DAV.
+  7. **TLS:** HTTPS obligatorio (TLS 1.2+); sin `insecure-skip-verify` por defecto. CA privada (Nextcloud self-signed) solo con flag/config explícita en un PR posterior. HTTP claro solo hacia loopback (puente local).
+  8. **Límites:** un request en vuelo por colección de forma conservadora; honrar `Retry-After`; backoff exponencial; sin sync automático al arrancar GUI/CLI.
+  9. **Crate:** `zedazo-carddav` (`publish = false`), adaptador de infraestructura. Lo consume `zedazo-cli` en el primer slice. **`zedazo-core` sin HTTP** (ADR-0015: ni Axum inbound ni cliente CardDAV). `zedazo-api` / GUI **no** ganan endpoints CardDAV en el mismo PR que el cliente. Deps HTTP concretas (`reqwest`/equivalente, rustls) + `deny.toml` → PR de implementación (confirmación de dep nueva, AGENTS §4).
+  10. **Watch mode y filtros por categoría** (ROADMAP v0.4.0): **fuera del primer slice**. Watch = más adelante, acotado a polling de `CTag`/`sync-token` (y/o watch de ficheros locales) en PRs propios. Filtros = aplicar taxonomía N1/N2 ya existente sobre el set sincronizado; `addressbook-query` RFC 6352 no es requisito del primer slice.
+- PRs: todo código CardDAV **separado** de cambios de dominio o UI (AGENTS / #48). No mezclar con features GUI en la misma unidad.
+- Alternativas rechazadas (o diferidas):
+  - Meter HTTP CardDAV en `zedazo-core`: viola «core sin HTTP».
+  - Multi-cuenta / OAuth de producto: contradice single-user ADR-0015/0016.
+  - Tratar Proton o Google People como primer proveedor CardDAV: Proton no tiene DAV; People no es CardDAV.
+  - Push automático tras `cribar`: viola I7 y el principio de red saliente opt-in.
+- Consecuencias: desbloquea implementación de #48 **después** de aceptar este ADR; SPECS §3 / ROADMAP v0.4.0 apuntan aquí. Primer slice verificable: pull RFC + Basic contra fixture/servidor de prueba (Nextcloud o DAV genérico), sin GUI. OTel sigue post-v1.0 (ADR-0017).
+- Relacionado: [SPECS.md](./SPECS.md) §3, [ROADMAP.md](./ROADMAP.md) v0.4.0, [ARCHITECTURE.md](./ARCHITECTURE.md), ADR-0014, ADR-0015, ADR-0016, [#48](https://github.com/Iniciativas-Alexendros/zedazo/issues/48).
+- **Hunches** (etiquetados; no bloquean el ADR si se enmiendan):
+  - Nextcloud + iCloud cubren al operador self-hosted y a O1 Apple mejor que perseguir Proton DAV.
+  - Un subcomando CLI (`zedazo carddav …`) antes que pantalla GUI.
+  - `addressbook-query` y filtros server-side no hacen falta para el MVP de sync.
+
+</details>

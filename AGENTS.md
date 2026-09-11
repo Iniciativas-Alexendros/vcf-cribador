@@ -56,7 +56,7 @@ Criterio de cierre: CI verde + criterio SPECS
 
 - Dependencia nueva o major (sobre todo nom/toml/chardetng)
 - Cambiar `panic`/`profile.release` o runners
-- Features de red (CardDAV, watch)
+- Features de red (CardDAV, watch) — ancla [ADR-0018](./DECISIONS.md) (propuesta); no implementar sync hasta que el ADR esté aceptado
 - Alterar un ADR aceptado
 - Publicar crates.io / tags de release (el humano lanza o confirma)
 
@@ -97,7 +97,7 @@ cargo llvm-cov --lcov --output-path coverage/lcov.info
 
 ## Learned Workspace Facts
 
-- Workspace ADR-0015: `crates/zedazo-core`, `crates/zedazo-cli` (binario `zedazo`), `crates/zedazo-api` (Axum, `/api/v1`, SSE; `publish = false`), `apps/web` (Next.js).
+- Workspace ADR-0015: `crates/zedazo-core`, `crates/zedazo-cli` (binario `zedazo`), `crates/zedazo-api` (Axum, `/api/v1`, SSE; `publish = false`), `apps/web` (Next.js). CardDAV v0.4.0: crate previsto `zedazo-carddav` (ADR-0018, aún no en el workspace).
 - Dominio de producto ADR-0014: `https://zedazo.alexendros.dev`; landing estática `apps/landing/`; CNAME `zedazo` → host del operador (no Vercel por defecto); guía en `docs/gui/deploy.md`. GUI remota en ese host = `Caddyfile.public` same-origin (ADR-0016), no mezclar con CardDAV/TMview.
 - Remoto ADR-0016: `ZEDAZO_AUTH_MODE=token`, cookie `zedazo_auth`, Compose [`deploy/docker-compose.remote.yml`](deploy/docker-compose.remote.yml) + Caddy same-origin; Docker local usa `ZEDAZO_AUTH_ALLOW_DISABLED_NON_LOOPBACK`.
 - Jobs de la API aíslan datos por directorio de job; modo local sin red saliente por defecto; resultados GUI/API deben equivaler a CLI sobre los mismos fixtures.

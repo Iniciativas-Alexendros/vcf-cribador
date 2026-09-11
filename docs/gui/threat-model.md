@@ -2,7 +2,7 @@
 
 **Versión:** 0.2.0  
 **Fecha:** 2026-09-09  
-**Traza:** ADR-0015, ADR-0016
+**Traza:** ADR-0015, ADR-0016; egreso CardDAV futuro: ADR-0018 (propuesta)
 
 ## Activos
 
@@ -18,7 +18,7 @@
 
 - Operador único en `127.0.0.1`
 - `ZEDAZO_AUTH_MODE=disabled` solo en loopback (fail-closed si bind no-loopback)
-- Sin red saliente durante procesamiento por defecto
+- Sin red saliente durante procesamiento por defecto (CardDAV es egreso **opt-in**, ADR-0018)
 - Volumen de datos bajo control del operador
 
 ### V1 remoto single-user (ADR-0016)

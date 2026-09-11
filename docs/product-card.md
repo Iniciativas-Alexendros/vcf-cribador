@@ -129,7 +129,7 @@ Alineado con [ROADMAP.md](../ROADMAP.md) (canónico):
 | **v0.3.0** ✅ | Calidad: reglas C1/C5/C7/E4/E6, invariantes I1–I7 |
 | **v0.5.0** ✅ código | GUI + API self-hosted (ADR-0015); tag pendiente |
 | **v0.5.1** ✅ código | Remoto HTTPS + token (ADR-0016); tag/bump crates.io pendiente |
-| **v0.4.0** | CardDAV sync, watch mode (requiere ADR de red; PRs separados) |
+| **v0.4.0** | CardDAV sync, watch mode ([ADR-0018](../DECISIONS.md) propuesta; PRs separados de dominio/UI) |
 | **v1.0.0** | API de crate estable, benchmarks, corpus grande |
 | **Post-v1.0** | OpenTelemetry opt-in (ADR-0017) |
 
