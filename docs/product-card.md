@@ -18,7 +18,7 @@
 | **Dominio producto** | https://zedazo.alexendros.dev (cero coste; ADR-0014; landing `apps/landing/`; DNS en [deploy.md](./gui/deploy.md); marca: [brand.md](./brand.md)) |
 | **crates.io** | https://crates.io/crates/zedazo |
 | **Documentación** | https://docs.rs/zedazo · [docs/gui/](./gui/) |
-| **Workspace** | `zedazo-core` · `zedazo-cli` (binario `zedazo`) · `zedazo-api` · `apps/web` |
+| **Workspace** | `zedazo-core` · `zedazo-cli` (binario `zedazo`) · `zedazo-api` · `zedazo-carddav` · `apps/web` |
 
 ## Descripción
 
@@ -101,6 +101,7 @@ e2_keywords = ["pharma", "jackpot"]
 crates/zedazo-core/   Dominio + application + infra I/O (sin HTTP)
 crates/zedazo-cli/    Binario `zedazo` (Clap)
 crates/zedazo-api/    Axum `/api/v1` (publish = false)
+crates/zedazo-carddav/ Cliente CardDAV pull (publish = false; ADR-0018)
 apps/web/             Next.js — identidad «Archivo Vivo»
 apps/landing/         Ficha pública estática (zedazo.alexendros.dev)
 deploy/               Compose local/remoto/landing + Caddy
@@ -129,7 +130,7 @@ Alineado con [ROADMAP.md](../ROADMAP.md) (canónico):
 | **v0.3.0** ✅ | Calidad: reglas C1/C5/C7/E4/E6, invariantes I1–I7 |
 | **v0.5.0** ✅ código | GUI + API self-hosted (ADR-0015); tag pendiente |
 | **v0.5.1** ✅ código | Remoto HTTPS + token (ADR-0016); tag/bump crates.io pendiente |
-| **v0.4.0** | CardDAV sync, watch mode ([ADR-0018](../DECISIONS.md) aceptada; PRs separados de dominio/UI) |
+| **v0.4.0** | CardDAV: primer slice pull CLI ([docs/carddav.md](./carddav.md), ADR-0018/#48); watch/write/filtros pendientes |
 | **v1.0.0** | API de crate estable, benchmarks, corpus grande |
 | **Post-v1.0** | OpenTelemetry opt-in (ADR-0017) |
 

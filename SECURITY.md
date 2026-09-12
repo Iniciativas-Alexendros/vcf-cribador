@@ -22,5 +22,5 @@ Envía un correo a los mantenedores del proyecto con los detalles. Responderemos
   - Nunca `ZEDAZO_AUTH_MODE=disabled` en interfaz pública (fail-closed fuera de loopback).
   - Remoto: `token` + HTTPS (Caddy o túnel); rotar `ZEDAZO_AUTH_TOKEN` si se filtra.
   - No publicar puertos de `api`/`web` al WAN; solo el reverse proxy.
-- **CardDAV (ADR-0018):** credenciales del proveedor (`ZEDAZO_CARDDAV_*`) distintas del token de GUI; no viajan por `zedazo.alexendros.dev`. Egreso opt-in; el pipeline `cribar` sigue sin red por defecto.
+- **CardDAV (ADR-0018):** credenciales del proveedor (`ZEDAZO_CARDDAV_URL`, `ZEDAZO_CARDDAV_USERNAME`, `ZEDAZO_CARDDAV_PASSWORD`, opcional `ZEDAZO_CARDDAV_ADDRESSBOOK`) distintas de `ZEDAZO_AUTH_TOKEN` (GUI). No viajan por `zedazo.alexendros.dev`. Egreso opt-in vía `zedazo carddav`; el pipeline `cribar` sigue sin red por defecto. HTTPS (TLS 1.2+) obligatorio fuera de loopback; sin `insecure-skip-verify`. Ver [`docs/carddav.md`](docs/carddav.md).
 - **Dependencias**: Usamos `cargo audit` semanalmente vía GitHub Actions.
