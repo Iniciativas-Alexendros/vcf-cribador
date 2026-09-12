@@ -104,4 +104,4 @@ cargo llvm-cov --lcov --output-path coverage/lcov.info
 - `make ci` = fmt-check + clippy + test + check + doc + `docs-validate` + `parity` (O10) + `web-ci` (`apps/web`).
 - O10: harness HTTP en `crates/zedazo-api/tests/equivalence_http.rs` vía `make parity`; matriz en `docs/gui/functional-parity-matrix.md`.
 - CI de GitHub Actions corre en `ubuntu-latest`; no hay runners self-hosted registrados.
-- `make web-ci` incluye build de `apps/web` y Playwright e2e/a11y (excluye capturas `screenshots`).
+- `make web-ci` incluye build de `apps/web` y Playwright e2e/a11y + regresión visual (`e2e/visual.spec.ts`); excluye el spec opt-in `screenshots` (`docs/screenshots/`).

@@ -1,12 +1,12 @@
 # Plan de modernización del design system (GUI browser)
 
-**Versión:** 0.1.3  
+**Versión:** 0.2.0  
 **Fecha:** 2026-09-12  
-**Estado:** Plan. **Fases 1–3 aterrizadas** (pipeline DTCG + átomos + pantallas `--zed-*`, [ADR-0019](../../DECISIONS.md)). Fase 4 pendiente. Epic [#59](https://github.com/Iniciativas-Alexendros/zedazo/issues/59).  
+**Estado:** **Ejecutado** (2026-09-12). Fases 1–4 aterrizadas (pipeline DTCG + átomos + pantallas `--zed-*` + catálogo/QA, [ADR-0019](../../DECISIONS.md)). Epic [#59](https://github.com/Iniciativas-Alexendros/zedazo/issues/59) cerrable si el DoD de §7 se mantiene en CI.  
 **Traza:** ADR-0015 (GUI local), ADR-0016 (remoto HTTPS+token), ADR-0019 (tokens), SPECS O10/O11, identidad «Archivo Vivo», [`docs/brand.md`](../brand.md), epic [#59](https://github.com/Iniciativas-Alexendros/zedazo/issues/59).  
 **No mezclar** con CardDAV ([#48](https://github.com/Iniciativas-Alexendros/zedazo/issues/48) / ADR-0018) ni con cambios de dominio.
 
-Este documento es la fuente de verdad para llevar los tokens OKLCH `--zed-*` ya existentes hasta una **GUI de browser profesional, acabada y sin costuras visuales**. La implementación vive en PRs posteriores, uno por fase (o slice menor), con CI verde.
+Este documento es la fuente de verdad del programa de design system (tokens OKLCH `--zed-*` → GUI profesional). Las cuatro fases están **ejecutadas** (2026-09-12). Cambios posteriores son mantenimiento (contraste, snapshots, copy), no un nuevo programa.
 
 ---
 
@@ -24,8 +24,8 @@ La GUI V1 (`apps/web`, hitos v0.5.0 / v0.5.1) ya no es un prototipo vacío: cubr
 | Temas | `light` / `dark` / `system` (`data-theme`, `localStorage` `zedazo-theme`, script anti-FOUC) |
 | Tipografía | Atkinson Hyperlegible Next + IBM Plex Mono (self-hosted `@fontsource`, sin CDN) |
 | Web Awesome `@awesome.me/webawesome` ^3.12 | Dependencia y `transpilePackages`; **ningún componente `<wa-*>` montado**. `WebAwesomeProvider` es un passthrough. Bridge `--wa-*` ← `--zed-*` en `themes.css`; clases `wa-light` / `wa-dark` en `<html>` |
-| Playwright + `@axe-core/playwright` | `make web-ci`; tags `wcag2a` / `wcag2aa` / `wcag22aa` |
-| Capturas | `e2e/screenshots.spec.ts` (opt-in `ZEDAZO_SCREENSHOTS=1`); no es regresión visual en CI |
+| Playwright + `@axe-core/playwright` | `make web-ci`; tags `wcag2a` / `wcag2aa` / `wcag22aa` en todas las rutas de §1.3 + estados sintéticos |
+| Capturas | Regresión visual `e2e/visual.spec.ts` (`toHaveScreenshot`, light/dark, desktop + un viewport móvil) en `web-ci`. README: `e2e/screenshots.spec.ts` opt-in `ZEDAZO_SCREENSHOTS=1` → `docs/screenshots/` |
 
 ### 1.2 Capas CSS actuales
 
@@ -34,13 +34,13 @@ Orden de carga en `layout.tsx`: `reset` → `tokens` → `themes` → `typograph
 - **Primitivos + semánticos** viven en JSON DTCG. `tokens.css` / `themes.css` son wrappers que importan `generated/` (fase 1). Recetas de componente siguen siendo CSS humano.
 - **Recetas de componente** en `components.css` (`.zed-button`, `.zed-badge`, `.zed-card`, `.zed-input`, …).
 - **CSS Modules** paralelos: `styles/shell.module.css`, `forms.module.css`, `tables.module.css`, `states.module.css`. Fases 2–3 cablean colores, z-index, overlay, spacing y patrones de pantalla a `--zed-*`. Breakpoints siguen como literales equivalentes (`56.25rem` / `60rem` = `--zed-bp-md/lg`; custom props no aplican en `@media`).
-- **Huecos residuales (fase 4):** catálogo visual completo, axe de estados representativos extra, regresión visual en CI. Anchos dinámicos (barra de stats, skeleton) siguen en inline porque son datos, no receta.
+- **Residuos aceptados:** anchos dinámicos (barra de stats, skeleton) siguen en inline porque son datos, no receta. APCA informativo en el catálogo; el gate de CI es WCAG 2.2 AA.
 
-Fase 1 cubre JSON DTCG, build Node, tipos TS y check de contraste. Fase 2 añade catálogo mínimo en [`/documentacion/ds`](../../apps/web/src/app/documentacion/ds/page.tsx); el catálogo completo es fase 4.
+Fase 1 cubre JSON DTCG, build Node, tipos TS y check de contraste. Fase 2 añadió el catálogo mínimo; fase 4 completa [`/documentacion/ds`](../../apps/web/src/app/documentacion/ds/page.tsx) (átomos de producto + tokens + estados de ejecución).
 
 ### 1.3 Superficie de producto (rutas y bloques)
 
-Rutas App Router: `/`, `/procesar`, `/ejecuciones`, `/ejecuciones/[jobId]`, `/auditar`, `/reglas`, `/acceso`, `/ajustes`, `/documentacion`, `/documentacion/ds` (catálogo mínimo, fase 2).
+Rutas App Router: `/`, `/procesar`, `/ejecuciones`, `/ejecuciones/[jobId]`, `/auditar`, `/reglas`, `/acceso`, `/ajustes`, `/documentacion`, `/documentacion/ds` (catálogo de átomos, fase 4).
 
 Bloques React (inventario de partida para la fase 2):
 
@@ -56,11 +56,11 @@ Bloques React (inventario de partida para la fase 2):
 
 ### 1.4 A11y y QA hoy
 
-`e2e/a11y.spec.ts` cubre `/`, `/procesar`, `/ejecuciones`, `/ejecuciones/[jobId]` (empty/error sintético), `/auditar`, `/reglas`, `/ajustes`, `/acceso`, `/documentacion`. Fase 2 añade `e2e/atoms.spec.ts` (axe de `/documentacion/ds`). Estados extra (job running con fixture) quedan para fase 4.
+`e2e/a11y.spec.ts` cubre las rutas de §1.3 (incluido `/documentacion/ds`) y estados sintéticos: listado vacío, error, loading y job `screening` (`job-sintetico`). `e2e/atoms.spec.ts` fija el catálogo. `e2e/visual.spec.ts` es la regresión visual en CI.
 
-Motion: `prefers-reduced-motion` ya anula animaciones/transiciones en `motion.css`. No hay tokens de duración/easing en un formato DTCG ni prueba de que el resto de módulos respeten el mismo contrato.
+Motion: `prefers-reduced-motion` anula animaciones/transiciones en `motion.css`; e2e comprueba que `.zed-spinner` no anima bajo `reduce`.
 
-Contraste: `pnpm tokens:contrast` (fase 1) cubre pares semánticos light/dark en CI. Axe sigue cubriendo el DOM de tres rutas; la paleta completa de componentes queda para fases 2–4.
+Contraste: `pnpm tokens:contrast` cubre pares semánticos light/dark en CI. Axe WCAG 2.2 A/AA cubre el DOM de producto.
 
 ### 1.5 Restricciones de producto que el DS no puede romper
 
@@ -218,7 +218,7 @@ Cada fase = uno o más PRs **pequeños**, CI verde, **sin** CardDAV, **sin** cam
 - [x] **Tablas y fichas:** contactos, duplicados, drawer (`.zed-drawer` + `--zed-drawer-width`). Densidad `--zed-text-sm` / space tokens; `EmptyState` cuando no hay filas.
 - [x] **Jobs y auditoría:** stepper, `JobProgress`, timeline, `JobRowActions`, retención; copy «ejecución» (no «job» en UI).
 - [x] **Estados:** empty / loading / error / privacy callouts con la misma receta tipográfica (`states.module.css` + `compact`).
-- [x] Axe ampliado a las rutas de §1.3 (salvo fixture running, fase 4). Catálogo `/documentacion/ds` muestra stepper y estados.
+- [x] Axe ampliado a las rutas de §1.3. Catálogo `/documentacion/ds` muestra stepper y estados. Fixture running → fase 4.
 
 Copy: español, tono archivo (preciso, no marketing). Wordmark intocable (`zedazo` en chrome; prosa «Zedazo»).
 
@@ -228,13 +228,13 @@ Copy: español, tono archivo (preciso, no marketing). Wordmark intocable (`zedaz
 
 **Objetivo:** que no se deshaga.
 
-- Catálogo `/documentacion/ds` (preferido) o Storybook (si se justifica).
-- Axe **todas** las rutas de §1.3 + estados representativos (vacío, error, job running con fixture sintético).
-- Regresión visual: `toHaveScreenshot` de Playwright en CI (chromium, light+dark, desktop; un viewport móvil del shell). Las capturas actuales de `docs/screenshots/` se regeneran al cerrar la fase; no mezclar con el job `screenshots` opt-in hasta que el baseline sea estable.
-- DoD de esta sección 7 cumplido; este plan marcado **ejecutado** (fecha) o sustituido por un changelog de tokens.
-- README / `/documentacion` enlazan el catálogo. Sin PWA.
+- [x] Catálogo `/documentacion/ds` (sin Storybook): tokens, botón, badge, card, callout, formulario, icono, filtro, datos, stepper, ejecución, empty/error/loading.
+- [x] Axe **todas** las rutas de §1.3 + estados representativos (vacío, error, loading, job running con fixture sintético).
+- [x] Regresión visual: `toHaveScreenshot` en CI (chromium, light+dark, desktop; un viewport móvil del shell). `docs/screenshots/` se regenera con `ZEDAZO_SCREENSHOTS=1` (opt-in, fuera de `web-ci`).
+- [x] DoD de §7 cumplido; este plan marcado **ejecutado** (2026-09-12).
+- [x] README / `/documentacion` enlazan el catálogo. Sin PWA.
 
-**Criterio de salida:** `make ci` verde con la matriz de §6; epic [#59](https://github.com/Iniciativas-Alexendros/zedazo/issues/59) cerrable.
+**Criterio de salida:** `make ci` verde con la matriz de §6; epic [#59](https://github.com/Iniciativas-Alexendros/zedazo/issues/59) cerrable. *Hecho (2026-09-12).*
 
 ---
 
@@ -246,16 +246,16 @@ Copy: español, tono archivo (preciso, no marketing). Wordmark intocable (`zedaz
 | Contraste | Pares semánticos light/dark (fg/bg, accent-on/accent, estado soft/on-soft, foco 3:1) | script Node en `apps/web` | `web-ci` |
 | Unidad | Contrast checker; resolución de tema `system` | `node --test` o Vitest *si* se añade (dep → confirmar) | `web-ci` |
 | e2e funcional | Marca, CTAs, skip link, Procesar, Ejecuciones (ya existe) | `e2e/a11y.spec.ts` parte nav | `web-ci` |
-| axe 2.2 AA | Cada ruta de §1.3 | ampliar `a11y.spec.ts` | `web-ci` (fase 4; ir añadiendo rutas desde fase 3) |
-| Visual | Shell + pantallas clave light/dark | Playwright screenshots en CI | `web-ci` fase 4 |
-| Reduced motion | Spinner/shell no animan bajo `prefers-reduced-motion: reduce` | e2e o unit CSS | fase 4 |
+| axe 2.2 AA | Cada ruta de §1.3 + vacío/error/loading/running | `e2e/a11y.spec.ts` | `web-ci` |
+| Visual | Shell + pantallas clave light/dark + móvil | `e2e/visual.spec.ts` (`toHaveScreenshot`) | `web-ci` |
+| Reduced motion | Spinner no anima bajo `prefers-reduced-motion: reduce` | `e2e/a11y.spec.ts` | `web-ci` |
 | Paridad O10 | Equivalencia CLI↔API | `make parity` | **no** se toca |
 | Auth O11 | Login cookie / Bearer | `auth_http` | **no** se toca |
 | Docs | Enlaces internos | `make docs-validate` | siempre |
 
 Fixtures: 100 % sintéticos. Jobs de axe contra API local pueden usar el sample de `examples/sample.vcf`, nunca agendas reales.
 
-**Rutas axe (objetivo fase 4):** `/`, `/procesar`, `/ejecuciones`, `/ejecuciones/[jobId]` (con job sintético o empty), `/auditar`, `/reglas`, `/acceso`, `/ajustes`, `/documentacion`, `/documentacion/ds`.
+**Rutas axe (fase 4, hechas):** `/`, `/procesar`, `/ejecuciones`, `/ejecuciones/[jobId]` (error + running sintético), `/auditar`, `/reglas`, `/acceso`, `/ajustes`, `/documentacion`, `/documentacion/ds`. Estados extra: vacío, error, loading.
 
 **Pares de contraste mínimos (fase 1):**
 
@@ -279,14 +279,14 @@ Checklist del **programa** (no de este PR de docs). Cada fase tiene su propio Do
 - [x] Átomos sin color/spacing hardcodeado; un API React por control (`buttonClassName`). Modules de átomos/chrome cableados; magics de pantalla → fase 3. *(fase 2)*
 - [x] Frontera WA resuelta: bridge generado + kit opcional acotado (sin `<wa-*>`). *(fase 2)*
 - [x] Pantallas de §5 fase 3 sin costura light/dark; copy ES; wordmark lowercase. *(fase 3)*
-- [ ] Catálogo `/documentacion/ds` completo (fase 4). Mínimo de átomos ya en fase 2.
-- [ ] Axe 2.2 AA en todas las rutas de la matriz; reduced-motion cubierto.
-- [ ] Regresión visual light+dark en CI; capturas README regeneradas.
-- [ ] `make ci` verde; O10/O11 intactos; sin secretos en el diff.
-- [ ] PRs de implementación **no** mezclan CardDAV, dominio ni majors de parser.
-- [ ] Docs canónicos: este plan marcado ejecutado; `docs/brand.md` sigue siendo wordmark, no paleta.
+- [x] Catálogo `/documentacion/ds` completo (fase 4). Sin Storybook.
+- [x] Axe 2.2 AA en todas las rutas de la matriz; reduced-motion cubierto.
+- [x] Regresión visual light+dark en CI; capturas README regeneradas (`docs/screenshots/`).
+- [x] `make ci` verde; O10/O11 intactos; sin secretos en el diff.
+- [x] PRs de implementación **no** mezclan CardDAV, dominio ni majors de parser.
+- [x] Docs canónicos: este plan marcado ejecutado (2026-09-12); `docs/brand.md` sigue siendo wordmark, no paleta.
 
-Los PRs de fase 1–2 no cierran el epic [#59](https://github.com/Iniciativas-Alexendros/zedazo/issues/59). Cierre al completar fase 4.
+El PR de fase 4 deja el epic [#59](https://github.com/Iniciativas-Alexendros/zedazo/issues/59) **cerrable** si CI permanece verde. Residuos explícitos (no bloquean): APCA informativo, job `screenshots` opt-in separado, anchos de barra/skeleton como datos inline.
 
 ---
 
@@ -323,8 +323,8 @@ Los títulos siguientes son **sugeridos** para issues/PRs de implementación (no
 | 3b | `GUI DS fase 3: formularios (procesar, reglas, acceso, ajustes)` | Hecho en el PR de fase 3 |
 | 3c | `GUI DS fase 3: tablas, drawer de contacto y duplicados` | Hecho en el PR de fase 3 |
 | 3d | `GUI DS fase 3: jobs, auditoría y estados vacíos/error` | Hecho en el PR de fase 3 |
-| 4a | `GUI DS fase 4: catálogo /documentacion/ds` | Preferido a Storybook |
-| 4b | `GUI DS fase 4: axe en todas las rutas + visual regression Playwright` | Regenerar `docs/screenshots/` |
+| 4a | `GUI DS fase 4: catálogo /documentacion/ds` | Hecho (2026-09-12). Sin Storybook |
+| 4b | `GUI DS fase 4: axe en todas las rutas + visual regression Playwright` | Hecho (2026-09-12). `docs/screenshots/` vía spec opt-in |
 
 Reglas de slicing:
 

@@ -61,7 +61,7 @@ docker compose -f deploy/docker-compose.remote.yml --env-file deploy/.env up --b
 # → https://127.0.0.1:8443
 ```
 
-Docs: [docs/gui/](docs/gui/) · OpenAPI [docs/api/openapi.yaml](docs/api/openapi.yaml) · [deploy.md](docs/gui/deploy.md). Tokens GUI (DTCG, ADR-0019): [`apps/web/tokens/`](apps/web/tokens/) · `pnpm --dir apps/web tokens:build`.
+Docs: [docs/gui/](docs/gui/) · OpenAPI [docs/api/openapi.yaml](docs/api/openapi.yaml) · [deploy.md](docs/gui/deploy.md). Tokens GUI (DTCG, ADR-0019): [`apps/web/tokens/`](apps/web/tokens/) · `pnpm --dir apps/web tokens:build`. Catálogo in-app: `/documentacion/ds` (plan [ejecutado](docs/gui/design-system-plan.md)).
 
 ## Capturas
 
@@ -201,7 +201,7 @@ deploy/                 Docker Compose local + remoto + landing (Caddy)
 | [`ROADMAP.md`](ROADMAP.md)                                     | Hitos y criterios de salida                          |
 | [`DECISIONS.md`](DECISIONS.md)                                 | ADR con IDs estables                                 |
 | [`AGENTS.md`](AGENTS.md)                                       | Contrato para agentes de código                      |
-| [`docs/gui/`](docs/gui/)                                       | Paridad O10, deploy (incl. DNS del dominio de producto), threat-model, retención, [plan design system](docs/gui/design-system-plan.md) |
+| [`docs/gui/`](docs/gui/)                                       | Paridad O10, deploy (incl. DNS del dominio de producto), threat-model, retención, [plan design system](docs/gui/design-system-plan.md) (ejecutado; catálogo GUI `/documentacion/ds`) |
 | [`docs/carddav.md`](docs/carddav.md)                           | CardDAV pull CLI (ADR-0018 / #48)                        |
 | [`docs/api/openapi.yaml`](docs/api/openapi.yaml)               | Contrato HTTP `/api/v1`                              |
 | [`docs/domain.md`](docs/domain.md)                             | Lenguaje ubicuo, entidades, rules                    |

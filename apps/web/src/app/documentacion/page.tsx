@@ -32,7 +32,7 @@ export default function DocumentacionPage() {
           </li>
           <li>ADR-0015: core compartido + API + web self-hosted.</li>
           <li>
-            Catálogo de átomos (fases 2–3, epic{" "}
+            Catálogo del sistema de diseño (átomos y patrones de producto, epic{" "}
             <a href="https://github.com/Iniciativas-Alexendros/zedazo/issues/59">
               #59
             </a>
@@ -51,7 +51,7 @@ export default function DocumentacionPage() {
             className={buttonClassName({ variant: "tertiary" })}
             href="/documentacion/ds"
           >
-            Ver átomos
+            Abrir catálogo
           </Link>
         </p>
       </Card>

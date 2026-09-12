@@ -56,7 +56,15 @@ pnpm --dir apps/web tokens:check      # drift vs artefactos commiteados
 pnpm --dir apps/web tokens:contrast   # WCAG 2.2 AA (pares semánticos)
 ```
 
-Plan: [`docs/gui/design-system-plan.md`](docs/gui/design-system-plan.md). Wordmark: [`docs/brand.md`](docs/brand.md) (`zedazo` en minúsculas).
+Plan: [`docs/gui/design-system-plan.md`](docs/gui/design-system-plan.md) (ejecutado 2026-09-12). Wordmark: [`docs/brand.md`](docs/brand.md) (`zedazo` en minúsculas). Catálogo in-app: `/documentacion/ds`.
+
+Regresión visual (Playwright `toHaveScreenshot`, en `web-ci`):
+
+```bash
+pnpm --dir apps/web test:visual -- --update-snapshots
+# Capturas README (opt-in; no corre en web-ci):
+ZEDAZO_SCREENSHOTS=1 pnpm --dir apps/web test:e2e -- e2e/screenshots.spec.ts
+```
 
 ## Reportar bugs
 
