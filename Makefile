@@ -17,7 +17,7 @@ test: ## Ejecuta todos los tests
 parity: ## Tests de equivalencia CLI↔API HTTP (O10)
 	$(CARGO) test -p zedazo-api --test equivalence_http --all-features
 
-web-ci: ## Tokens check/contraste + lint + typecheck + unit tests + build + Playwright e2e de apps/web
+web-ci: ## Tokens check/contraste + lint + typecheck + unit tests + build + Playwright e2e/a11y/visual de apps/web
 	CI=true $(PNPM) install --frozen-lockfile || CI=true $(PNPM) install
 	cd apps/web && ./node_modules/.bin/tsc --noEmit
 	cd apps/web && ./node_modules/.bin/next lint

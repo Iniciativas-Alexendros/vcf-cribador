@@ -8,6 +8,7 @@ y este proyecto adhiere a [Semantic Versioning](https://semver.org/lang/es/).
 ## [Unreleased]
 
 ### Added
+- GUI DS fase 4: catálogo `/documentacion/ds` de átomos de producto; axe WCAG 2.2 A/AA en todas las rutas + vacío/error/loading/running; regresión visual Playwright (`toHaveScreenshot`, light/dark, desktop + móvil) en `web-ci`; plan marcado ejecutado ([#59](https://github.com/Iniciativas-Alexendros/zedazo/issues/59))
 - GUI DS fase 3: patrones de pantalla (shell, formularios, tablas, drawer, jobs, estados) sobre `--zed-*`; axe en rutas de producto; catálogo `/documentacion/ds` con stepper y empty/error/loading ([#59](https://github.com/Iniciativas-Alexendros/zedazo/issues/59))
 - GUI DS fase 2: átomos (`Button`/`Badge`/`Card`/`Callout`/input) alineados a `--zed-*`; catálogo mínimo `/documentacion/ds`; frontera Web Awesome acotada ([#59](https://github.com/Iniciativas-Alexendros/zedazo/issues/59))
 - GUI DS fase 1: pipeline DTCG → CSS custom properties OKLCH + tipos TS; check de contraste WCAG 2.2 AA en `web-ci` ([ADR-0019](DECISIONS.md), [#59](https://github.com/Iniciativas-Alexendros/zedazo/issues/59))

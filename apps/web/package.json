@@ -13,6 +13,7 @@
     "test": "node --test src/lib/api.test.mjs src/lib/design-tokens-contrast.test.mjs src/lib/atoms-contract.test.mjs",
     "test:e2e": "playwright test",
     "test:a11y": "playwright test e2e/a11y.spec.ts",
+    "test:visual": "playwright test e2e/visual.spec.ts",
     "typecheck": "tsc --noEmit"
   },
   "pnpm": {
