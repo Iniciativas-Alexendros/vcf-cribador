@@ -39,7 +39,7 @@ supersedes: "v0.3.1"
 
 ## 3. No-objetivos
 
-- APIs externas (CardDAV, Proton, Google People) — hito v0.4.0+; red/proveedor **[ADR-0018](./DECISIONS.md)** (aceptada). El primer slice CardDAV es RFC 6352 + Basic; Google People y OAuth de proveedor quedan fuera de ese slice
+- APIs externas (CardDAV, Proton, Google People) — hito v0.4.0+; red/proveedor **[ADR-0018](./DECISIONS.md)** (aceptada). Primer slice CLI: crate `zedazo-carddav` + `zedazo carddav list|pull` ([docs/carddav.md](./docs/carddav.md)); Google People, OAuth de proveedor, write/watch/filtros y GUI CardDAV quedan fuera de ese slice
 - TUI interactiva
 - Multiusuario / colaboración / edición manual de contactos en GUI (pospuesto; no cubierto por ADR-0016)
 - SaaS, cuentas OAuth/OIDC o multi-tenant
