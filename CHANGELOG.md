@@ -8,6 +8,7 @@ y este proyecto adhiere a [Semantic Versioning](https://semver.org/lang/es/).
 ## [Unreleased]
 
 ### Added
+- GUI DS fase 2: átomos (`Button`/`Badge`/`Card`/`Callout`/input) alineados a `--zed-*`; catálogo mínimo `/documentacion/ds`; frontera Web Awesome acotada ([#59](https://github.com/Iniciativas-Alexendros/zedazo/issues/59))
 - GUI DS fase 1: pipeline DTCG → CSS custom properties OKLCH + tipos TS; check de contraste WCAG 2.2 AA en `web-ci` ([ADR-0019](DECISIONS.md), [#59](https://github.com/Iniciativas-Alexendros/zedazo/issues/59))
 - Plan de modernización del design system GUI (OKLCH / DTCG → GUI profesional) en [`docs/gui/design-system-plan.md`](docs/gui/design-system-plan.md) ([#59](https://github.com/Iniciativas-Alexendros/zedazo/issues/59)); sin cambios de UI en este ítem
 - **ADR-0018** (aceptada): red/proveedor CardDAV como precondición de v0.4.0 / [#48](https://github.com/Iniciativas-Alexendros/zedazo/issues/48) — cliente RFC 6352, una cuenta, crate dedicado; sin código de sync en este cambio

@@ -61,6 +61,16 @@
       "$value": 40,
       "$description": "Nav móvil / drawer",
       "$extensions": { "com.zedazo": { "cssVar": "--zed-z-drawer" } }
+    },
+    "overlay": {
+      "$value": 30,
+      "$description": "Scrim del nav móvil",
+      "$extensions": { "com.zedazo": { "cssVar": "--zed-z-overlay" } }
+    },
+    "modal": {
+      "$value": 50,
+      "$description": "Drawer de contacto / diálogo",
+      "$extensions": { "com.zedazo": { "cssVar": "--zed-z-modal" } }
     }
   }
 }

@@ -43,6 +43,7 @@
   --zed-radius-pill: 999px;
   --zed-border-width: 1px;
   --zed-focus-width: 3px;
+  --zed-focus-offset: 3px;
   --zed-shadow-xs: 0 1px 2px oklch(0.18 0.04 255 / 0.06);
   --zed-shadow-sm: 0 2px 8px oklch(0.18 0.04 255 / 0.08);
   --zed-shadow-md: 0 12px 32px oklch(0.18 0.04 255 / 0.12);
@@ -60,4 +61,10 @@
   --zed-bp-lg: 60rem;
   --zed-z-shell: 20;
   --zed-z-drawer: 40;
+  --zed-z-overlay: 30;
+  --zed-z-modal: 50;
+  --zed-control-height: 2.5rem;
+  --zed-disabled-opacity: 0.55;
+  --zed-textarea-min: 10rem;
+  --zed-spin-duration: 700ms;
 }

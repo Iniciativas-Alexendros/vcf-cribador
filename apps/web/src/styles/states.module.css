@@ -45,8 +45,8 @@
   display: inline-flex;
   align-items: center;
   gap: var(--zed-space-2);
-  min-height: 2rem;
-  padding: 0.25rem 0.6rem;
+  min-height: calc(var(--zed-target-min) + var(--zed-space-2));
+  padding: var(--zed-space-1) var(--zed-space-2);
   border-radius: var(--zed-radius-pill);
   border: 1px solid var(--zed-border-default);
   background: var(--zed-bg-subtle);
