@@ -63,6 +63,12 @@
   --zed-z-drawer: 40;
   --zed-z-overlay: 30;
   --zed-z-modal: 50;
+  --zed-z-skip: 60;
+  --zed-prose-max: 36rem;
+  --zed-auth-width: 28rem;
+  --zed-drawer-width: 28rem;
+  --zed-filter-max: 16rem;
+  --zed-nav-indicator: 0.1875rem;
   --zed-control-height: 2.5rem;
   --zed-disabled-opacity: 0.55;
   --zed-textarea-min: 10rem;

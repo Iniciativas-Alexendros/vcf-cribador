@@ -7,7 +7,7 @@ export const ZEDAZO_WORDMARK = "zedazo";
 
 export function ZedazoWordmark({ className }: Props) {
   return (
-    <span className={className} style={{ letterSpacing: "-0.02em" }}>
+    <span className={["zed-wordmark", className].filter(Boolean).join(" ")}>
       {ZEDAZO_WORDMARK}
     </span>
   );

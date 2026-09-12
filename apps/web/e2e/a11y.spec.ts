@@ -37,7 +37,19 @@ test.describe("navegación básica Archivo Vivo", () => {
   });
 });
 
-for (const path of ["/", "/procesar", "/ejecuciones"] as const) {
+const AXE_ROUTES = [
+  "/",
+  "/procesar",
+  "/ejecuciones",
+  "/ejecuciones/job-sintetico",
+  "/auditar",
+  "/reglas",
+  "/ajustes",
+  "/acceso",
+  "/documentacion",
+] as const;
+
+for (const path of AXE_ROUTES) {
   test(`${path} cumple criterios axe wcag2a/aa/22aa`, async ({ page }) => {
     await page.goto(path);
     const result = await new AxeBuilder({ page })

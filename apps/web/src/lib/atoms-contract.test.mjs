@@ -69,4 +69,18 @@ test("shell overlay y z-index apuntan a tokens", async () => {
   assert.ok(css.includes("var(--zed-z-drawer)"));
   assert.ok(css.includes("var(--zed-z-overlay)"));
   assert.ok(css.includes("var(--zed-sidebar-width)"));
+  assert.ok(css.includes("var(--zed-nav-indicator)"));
+  assert.ok(css.includes("prefers-reduced-motion"));
+});
+
+test("patrones de pantalla usan tokens de fase 3", async () => {
+  const utilities = await readCss("src/design-system/utilities.css");
+  const forms = await readCss("src/styles/forms.module.css");
+  const states = await readCss("src/styles/states.module.css");
+  assert.ok(utilities.includes("var(--zed-z-skip)"));
+  assert.ok(utilities.includes("var(--zed-auth-width)"));
+  assert.ok(utilities.includes("var(--zed-drawer-width)"));
+  assert.ok(utilities.includes("var(--zed-filter-max)"));
+  assert.ok(forms.includes("var(--zed-control-height)"));
+  assert.ok(states.includes("var(--zed-prose-max)"));
 });

@@ -101,7 +101,7 @@ supersedes: "v0.3.1"
 
 **Criterio de salida:** O11; despliegue remoto usable sin publicar API/web directamente; CI verde. Tag `v0.5.1` (y bump crates.io) a confirmación humana.
 
-**Nota (v0.5.x, docs):** modernización del design system de la GUI (OKLCH tokenizado → GUI profesional) — plan en [`docs/gui/design-system-plan.md`](./docs/gui/design-system-plan.md), epic [#59](https://github.com/Iniciativas-Alexendros/zedazo/issues/59). **Fases 1–2** aterrizadas (pipeline DTCG + átomos `--zed-*`); fases 3–4 en PRs posteriores, **separados** de CardDAV ([#48](https://github.com/Iniciativas-Alexendros/zedazo/issues/48)).
+**Nota (v0.5.x, docs):** modernización del design system de la GUI (OKLCH tokenizado → GUI profesional) — plan en [`docs/gui/design-system-plan.md`](./docs/gui/design-system-plan.md), epic [#59](https://github.com/Iniciativas-Alexendros/zedazo/issues/59). **Fases 1–3** aterrizadas (pipeline DTCG + átomos + pantallas `--zed-*`); fase 4 (catálogo completo + visual) en PR posterior, **separada** de CardDAV ([#48](https://github.com/Iniciativas-Alexendros/zedazo/issues/48)).
 
 ### Ops — dominio de producto (`zedazo.alexendros.dev`) — S
 

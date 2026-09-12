@@ -19,11 +19,25 @@
   gap: var(--zed-space-3) var(--zed-space-5);
 }
 
+.fieldset {
+  border: 0;
+  margin: 0;
+  padding: 0;
+  min-inline-size: 0;
+}
+
+.choice {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--zed-space-2);
+  cursor: pointer;
+}
+
 .checkbox {
   display: inline-flex;
   align-items: center;
   gap: var(--zed-space-2);
-  min-height: 2.5rem;
+  min-height: var(--zed-control-height);
   font-size: var(--zed-text-sm);
 }
 
