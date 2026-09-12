@@ -45,6 +45,18 @@ make deny        # opcional: cargo-deny (licencias/advisories)
 
 Los hooks viven en [`.githooks/`](.githooks/) y se activan con `make hooks`. Documentos canónicos: [AGENTS.md](AGENTS.md), [SPECS.md](SPECS.md), [ROADMAP.md](ROADMAP.md), [DECISIONS.md](DECISIONS.md).
 
+## Tokens de la GUI (ADR-0019)
+
+Fuente DTCG en [`apps/web/tokens/`](apps/web/tokens/). No editar `apps/web/src/design-system/generated/` ni `apps/web/src/lib/design-tokens.ts`.
+
+```bash
+pnpm --dir apps/web tokens:build      # regenera CSS + tipos
+pnpm --dir apps/web tokens:check      # drift vs artefactos commiteados
+pnpm --dir apps/web tokens:contrast   # WCAG 2.2 AA (pares semánticos)
+```
+
+Plan: [`docs/gui/design-system-plan.md`](docs/gui/design-system-plan.md). Wordmark: [`docs/brand.md`](docs/brand.md) (`zedazo` en minúsculas).
+
 ## Reportar bugs
 
 Usa la plantilla de [bug report](.github/ISSUE_TEMPLATE/bug_report.md). Incluye:

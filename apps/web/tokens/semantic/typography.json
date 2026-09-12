@@ -1,0 +1,15 @@
+{
+  "$description": "Alias semánticos de tipografía. Las custom properties públicas viven en primitive/typography.json.",
+  "typography": {
+    "ui": {
+      "$type": "fontFamily",
+      "$value": "{font.family.ui}",
+      "$description": "Atkinson Hyperlegible Next — UI"
+    },
+    "mono": {
+      "$type": "fontFamily",
+      "$value": "{font.family.mono}",
+      "$description": "IBM Plex Mono — hashes, TOML, código"
+    }
+  }
+}

@@ -279,3 +279,26 @@ supersedes: "v0.3.1"
   - `addressbook-query` y filtros server-side no hacen falta para el MVP de sync.
 
 </details>
+
+<details>
+<summary><strong>ADR-0019</strong> — Fuente DTCG de tokens GUI (script Node, sin Style Dictionary)</summary>
+
+- Estado: **aceptada**
+- Fecha: 2026-09-11
+- Contexto: La GUI (ADR-0015/0016) ya usa custom properties `--zed-*` en OKLCH, escritas a mano. El [plan de design system](./docs/gui/design-system-plan.md) (epic [#59](https://github.com/Iniciativas-Alexendros/zedazo/issues/59)) exige un origen DTCG, CSS/TS generados y contraste WCAG 2.2 AA en CI. Style Dictionary v4 + `@tokens-studio/sd-transforms` era la hipótesis; AGENTS §4 pide confirmación para deps nuevas.
+- Decisión:
+  1. **Fuente DTCG** en [`apps/web/tokens/`](./apps/web/tokens/) (primitivo → semántico; componente = stub en fase 1). Color de origen: objeto `{ colorSpace: "oklch", components: [L, C, H] }`. Sin hex/rgb/hsl en la fuente.
+  2. **Build propio en Node 22** ([`apps/web/scripts/design-tokens/`](./apps/web/scripts/design-tokens/)): passthrough OKLCH → `--zed-*` + `src/lib/design-tokens.ts`. **Sin** `style-dictionary` ni otras deps npm. Revisitar SD solo si aparece sync Figma/Tokens Studio o el volumen de transforms lo justifica.
+  3. **Artefactos commiteados** (`src/design-system/generated/`, `src/lib/design-tokens.ts`) + `pnpm tokens:check` en `web-ci` / job Web. Política única: no generate-on-CI sin el check de drift.
+  4. **Hex solo generado** (`themeColorHex`, `faviconHex`) para `theme-color` del viewport y el favicon (Satori no pinta OKLCH). Los hex huérfanos de `layout.tsx` / `icon.tsx` dejan de ser origen.
+  5. **Contraste:** script `pnpm tokens:contrast` convierte OKLCH → sRGB lineal y aplica ratio WCAG 2.2 AA sobre pares semánticos light y dark. APCA informativo queda fuera (fase 4 / catálogo).
+  6. **Web Awesome:** se conserva la dependencia; el bridge `--wa-*` se genera desde semánticos Zedazo. La decisión A/B (kit opcional vs retirar) se aplaza a fase 2. Este PR no monta componentes `<wa-*>`.
+  7. Nombres públicos `--zed-*` **estables** (sin rename breaking). Tokens aditivos de fase 1: `--zed-bp-md/lg`, `--zed-target-min`, `--zed-z-shell/drawer`, `--zed-badge-*-border`.
+- Alternativas rechazadas (o diferidas):
+  - Style Dictionary v4 + sd-transforms: dos deps nuevas, riesgo de convertir OKLCH a sRGB, y el set actual cabe en un script de decenas de líneas.
+  - Generate-on-CI sin commitear: peor revisión de diffs visuales y CI más opaco.
+  - Retirar Web Awesome ahora: es decisión de inventario (fase 2), no de pipeline.
+- Consecuencias: `make web-ci` incluye check de artefactos + contraste. `apps/landing/` y `zedazo-api` no consumen estos tokens. PRs de CardDAV (#48) no tocan `tokens/` ni `design-system/`.
+- Relacionado: ADR-0015, ADR-0016, [SPECS.md](./SPECS.md) O10, [ROADMAP.md](./ROADMAP.md) v0.5.x, [docs/gui/design-system-plan.md](./docs/gui/design-system-plan.md), [#59](https://github.com/Iniciativas-Alexendros/zedazo/issues/59).
+
+</details>

@@ -61,7 +61,7 @@ docker compose -f deploy/docker-compose.remote.yml --env-file deploy/.env up --b
 # → https://127.0.0.1:8443
 ```
 
-Docs: [docs/gui/](docs/gui/) · OpenAPI [docs/api/openapi.yaml](docs/api/openapi.yaml) · [deploy.md](docs/gui/deploy.md).
+Docs: [docs/gui/](docs/gui/) · OpenAPI [docs/api/openapi.yaml](docs/api/openapi.yaml) · [deploy.md](docs/gui/deploy.md). Tokens GUI (DTCG, ADR-0019): [`apps/web/tokens/`](apps/web/tokens/) · `pnpm --dir apps/web tokens:build`.
 
 ## Capturas
 

@@ -17,11 +17,13 @@ test: ## Ejecuta todos los tests
 parity: ## Tests de equivalencia CLI↔API HTTP (O10)
 	$(CARGO) test -p zedazo-api --test equivalence_http --all-features
 
-web-ci: ## Lint + typecheck + unit tests + build + Playwright e2e de apps/web
+web-ci: ## Tokens check/contraste + lint + typecheck + unit tests + build + Playwright e2e de apps/web
 	CI=true $(PNPM) install --frozen-lockfile || CI=true $(PNPM) install
 	cd apps/web && ./node_modules/.bin/tsc --noEmit
 	cd apps/web && ./node_modules/.bin/next lint
-	cd apps/web && node --test src/lib/api.test.mjs
+	cd apps/web && node scripts/design-tokens/build.mjs --check
+	cd apps/web && node scripts/design-tokens/contrast.mjs
+	cd apps/web && node --test src/lib/api.test.mjs src/lib/design-tokens-contrast.test.mjs
 	cd apps/web && ./node_modules/.bin/next build
 	cd apps/web && ./node_modules/.bin/playwright install --with-deps chromium
 	cd apps/web && ./node_modules/.bin/playwright test --grep-invert screenshots

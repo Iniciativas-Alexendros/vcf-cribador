@@ -125,7 +125,9 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: ./node_modules/.bin/tsc --noEmit
       - run: ./node_modules/.bin/next lint
-      - run: node --test src/lib/api.test.mjs
+      - run: node scripts/design-tokens/build.mjs --check
+      - run: node scripts/design-tokens/contrast.mjs
+      - run: node --test src/lib/api.test.mjs src/lib/design-tokens-contrast.test.mjs
       - run: ./node_modules/.bin/next build
       - name: Install Playwright Chromium
         run: ./node_modules/.bin/playwright install --with-deps chromium

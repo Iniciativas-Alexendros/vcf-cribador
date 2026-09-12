@@ -1,9 +1,9 @@
 # Plan de modernización del design system (GUI browser)
 
-**Versión:** 0.1.0  
+**Versión:** 0.1.1  
 **Fecha:** 2026-09-11  
-**Estado:** Plan (docs). Sin cambios de UI/CSS en esta unidad.  
-**Traza:** ADR-0015 (GUI local), ADR-0016 (remoto HTTPS+token), SPECS O10/O11, identidad «Archivo Vivo», [`docs/brand.md`](../brand.md), epic [#59](https://github.com/Iniciativas-Alexendros/zedazo/issues/59).  
+**Estado:** Plan. **Fase 1 aterrizada** (pipeline DTCG + contraste CI, [ADR-0019](../../DECISIONS.md)). Fases 2–4 pendientes.  
+**Traza:** ADR-0015 (GUI local), ADR-0016 (remoto HTTPS+token), ADR-0019 (tokens), SPECS O10/O11, identidad «Archivo Vivo», [`docs/brand.md`](../brand.md), epic [#59](https://github.com/Iniciativas-Alexendros/zedazo/issues/59).  
 **No mezclar** con CardDAV ([#48](https://github.com/Iniciativas-Alexendros/zedazo/issues/48) / ADR-0018) ni con cambios de dominio.
 
 Este documento es la fuente de verdad para llevar los tokens OKLCH `--zed-*` ya existentes hasta una **GUI de browser profesional, acabada y sin costuras visuales**. La implementación vive en PRs posteriores, uno por fase (o slice menor), con CI verde.
@@ -19,7 +19,7 @@ La GUI V1 (`apps/web`, hitos v0.5.0 / v0.5.1) ya no es un prototipo vacío: cubr
 | Pieza | Estado (2026-09-11) |
 |-------|---------------------|
 | Next.js 15 App Router + React 19 + TypeScript | `apps/web`; `output: "standalone"` |
-| Tokens | CSS custom properties `--zed-*` en `apps/web/src/design-system/` |
+| Tokens | Fuente DTCG `apps/web/tokens/` → `generated/` + `src/lib/design-tokens.ts` (ADR-0019). Import path de `layout.tsx` estable (`tokens.css` / `themes.css`) |
 | Color | **OKLCH** en claro/oscuro (`themes.css`); sombras también OKLCH |
 | Temas | `light` / `dark` / `system` (`data-theme`, `localStorage` `zedazo-theme`, script anti-FOUC) |
 | Tipografía | Atkinson Hyperlegible Next + IBM Plex Mono (self-hosted `@fontsource`, sin CDN) |
@@ -31,12 +31,12 @@ La GUI V1 (`apps/web`, hitos v0.5.0 / v0.5.1) ya no es un prototipo vacío: cubr
 
 Orden de carga en `layout.tsx`: `reset` → `tokens` → `themes` → `typography` → `motion` → `utilities` → `components` → `globals.css`.
 
-- **Primitivos + semánticos mezclados a mano** en `tokens.css` (tipo, espacio, radio, elevación, motion, layout) y `themes.css` (color semántico por tema).
+- **Primitivos + semánticos** viven en JSON DTCG. `tokens.css` / `themes.css` son wrappers que importan `generated/` (fase 1). Recetas de componente siguen siendo CSS humano.
 - **Recetas de componente** en `components.css` (`.zed-button`, `.zed-badge`, `.zed-card`, `.zed-input`, …).
 - **CSS Modules** paralelos: `styles/shell.module.css`, `forms.module.css`, `tables.module.css`, `states.module.css`. Usan `--zed-*` pero conservan magics (`max-width: 272px`, paddings sueltos, breakpoints `900px` / `960px`).
-- **Huecos de tokenización:** `themeColor` del viewport sigue en hex (`#faf8f2` / `#1a1f2e`); estilos inline en `/documentacion`; `color-mix(in oklch, …)` en badges sin token de borde semántico.
+- **Huecos residuales (fase 2+):** estilos inline en `/documentacion`; recetas que aún usan `color-mix` en callouts (los `--zed-badge-*-border` ya existen, sin cablear en fase 1 para no tocar recetas).
 
-No hay JSON DTCG, ni Style Dictionary, ni tipos TS de tokens, ni catálogo vivo (Storybook o `/documentacion/ds`).
+Fase 1 cubre JSON DTCG, build Node, tipos TS y check de contraste. No hay catálogo vivo todavía (fase 4).
 
 ### 1.3 Superficie de producto (rutas y bloques)
 
@@ -60,7 +60,7 @@ Bloques React (inventario de partida para la fase 2):
 
 Motion: `prefers-reduced-motion` ya anula animaciones/transiciones en `motion.css`. No hay tokens de duración/easing en un formato DTCG ni prueba de que el resto de módulos respeten el mismo contrato.
 
-Contraste: no hay check CI sobre pares fg/bg OKLCH. Axe cubre lo que ve en el DOM de tres rutas, no la paleta completa (p. ej. `--zed-fg-subtle` sobre `--zed-bg-canvas`, `--zed-accent-on` sobre `--zed-accent`).
+Contraste: `pnpm tokens:contrast` (fase 1) cubre pares semánticos light/dark en CI. Axe sigue cubriendo el DOM de tres rutas; la paleta completa de componentes queda para fases 2–4.
 
 ### 1.5 Restricciones de producto que el DS no puede romper
 
@@ -124,12 +124,12 @@ apps/web/tokens/                    # fuente DTCG (humano + revisión en PR)
   component/                        # button, badge, input, table, shell, …
         │
         ▼
-Style Dictionary 4 (o equivalente DTCG-nativo)
-        │
+script Node (apps/web/scripts/design-tokens/) — ADR-0019
+        │  (Style Dictionary diferido; sin deps npm nuevas)
         ├─► src/design-system/generated/tokens.css     # :root primitivos + layout
         ├─► src/design-system/generated/themes.css     # [data-theme=light|dark]
         ├─► src/design-system/generated/wa-bridge.css  # --wa-* ← semánticos Zedazo
-        └─► src/lib/design-tokens.ts                   # union types + mapa TS
+        └─► src/lib/design-tokens.ts                   # union types + hex generado
         │
         ▼
 CSS humano (no generado)
@@ -139,7 +139,7 @@ CSS humano (no generado)
 
 Reglas:
 
-1. **`generated/` no se edita a mano.** CI falla si el output no coincide con `style-dictionary build` (o el script se corre en `web-ci` y se commitea el artefacto; elegir una política en el PR de fase 1 y no mezclar).
+1. **`generated/` no se edita a mano.** Artefactos **commiteados** + `pnpm tokens:check` en `web-ci` (ADR-0019). No mezclar con generate-on-CI sin el check.
 2. Recetas (`.zed-button`, etc.) siguen siendo CSS revisable por humanos; consumen semánticos/componente, no primitivos.
 3. Nombres de custom property: `--zed-{layer}-{name}` ya usado (`--zed-accent`, `--zed-space-4`). El build debe **preservar** esos nombres públicos para no romper módulos existentes en el primer slice.
 4. Temas: `data-theme="light|dark"` como hoy; `system` resuelve en boot script. El JSON semántico tiene dos sets; no hay tercer tema «system» en tokens.
@@ -157,7 +157,7 @@ Alias semánticos actuales a conservar (mapeo, no rename breaking en fase 1):
 
 `--zed-bg-{canvas,subtle,muted,raised,inverse}`, `--zed-fg-{strong,default,muted,subtle,inverse}`, `--zed-border-{subtle,default,strong}`, `--zed-accent` + hover/active/soft/on, `--zed-{success,warning,danger,info}` + hover/soft/on-soft, `--zed-focus-ring`, `--zed-selection-*`, `--zed-code-*`, escala `--zed-text-*`, `--zed-space-*`, `--zed-radius-*`, `--zed-shadow-*`, `--zed-transition-*`, `--zed-ease-standard`, layout `--zed-content-*`, `--zed-sidebar-width`, `--zed-topbar-height`, `--zed-statusbar-height`.
 
-Faltan (añadir en fase 1, no en este PR): breakpoints (`--zed-bp-md`), target size (`--zed-target-min`), z-index (`--zed-z-shell`, `--zed-z-drawer`), borde semántico de badge (`--zed-badge-*-border`), `theme-color` derivado.
+Añadidos en fase 1 (aditivos, sin cablear recetas): `--zed-bp-md` / `--zed-bp-lg`, `--zed-target-min`, `--zed-z-shell` / `--zed-z-drawer`, `--zed-badge-*-border`. `theme-color` y favicon usan hex **generado** desde canvas / accent (`themeColorHex`, `faviconHex`).
 
 ### 4.3 Frontera con Web Awesome
 
@@ -192,15 +192,15 @@ Cada fase = uno o más PRs **pequeños**, CI verde, **sin** CardDAV, **sin** cam
 
 **Objetivo:** tokens como producto, no como CSS copiado.
 
-- Árbol `apps/web/tokens/` DTCG que reproduce 1:1 los `--zed-*` actuales (migración sin cambio visual).
-- Build Style Dictionary (o equivalente) → CSS generado + `design-tokens.ts`.
-- Política de artefacto generado documentada (commit vs generate-on-CI).
-- Check de contraste WCAG 2.2 AA sobre pares semánticos light **y** dark; enganchar a `make web-ci`.
-- `theme-color` / favicon derivados del token de canvas (fin del hex huérfano en `layout.tsx`) — *solo si el PR de fase 1 toca layout; si no, slice 1b*.
-- **ADR corto (ADR-0019 Tentative)** *solo si* se añade Style Dictionary u otra dep de build, o si se retira Web Awesome. Si el pipeline es un script sin deps nuevas y WA se aplaza a fase 2, el ADR puede esperar.
-- Tests: snapshot del CSS generado o hash de tokens; unit test del contrast checker con pares sintéticos (no PII).
+- [x] Árbol `apps/web/tokens/` DTCG que reproduce 1:1 los `--zed-*` actuales (migración sin cambio visual de recetas).
+- [x] Build Node (equivalente a Style Dictionary; ADR-0019) → CSS generado + `design-tokens.ts`.
+- [x] Política de artefacto: **commit + `tokens:check`** (no generate-on-CI suelto).
+- [x] Check de contraste WCAG 2.2 AA sobre pares semánticos light **y** dark; enganchado a `make web-ci` y al job Web.
+- [x] `theme-color` / favicon derivados del token (hex generado; fin del hex huérfano en `layout.tsx` / `icon.tsx`).
+- [x] **ADR-0019 aceptada:** script Node sin deps nuevas; WA aplazado a fase 2; `--zed-*` estables.
+- [x] Tests: snapshot de OKLCH públicos + contrast checker con pares sintéticos (no PII).
 
-**Criterio de salida:** `pnpm` build + contrast check verdes; GUI pixel-compatible con main (sin rediseño). Diff de UI accidental = fallo de la fase.
+**Criterio de salida:** `pnpm` build + contrast check verdes; GUI pixel-compatible con main en recetas/módulos (sin rediseño). Diff de UI accidental = fallo de la fase. *Hecho (2026-09-11).*
 
 ### Fase 2 — Componentes atómicos
 
@@ -278,10 +278,10 @@ Fixtures: 100 % sintéticos. Jobs de axe contra API local pueden usar el sample 
 
 Checklist del **programa** (no de este PR de docs). Cada fase tiene su propio DoD local; esto cierra [#59](https://github.com/Iniciativas-Alexendros/zedazo/issues/59).
 
-- [ ] Fuente DTCG única; CSS/TS generados; `--zed-*` públicos documentados.
-- [ ] OKLCH en origen; sin hex/rgb/hsl de producción en componentes o modules.
-- [ ] Temas claro / oscuro / sistema sin FOUC; `theme-color` alineado al canvas.
-- [ ] Contraste WCAG 2.2 AA en CI para pares semánticos.
+- [x] Fuente DTCG única; CSS/TS generados; `--zed-*` públicos documentados. *(fase 1)*
+- [x] OKLCH en origen de tokens; hex solo como fallback generado (`themeColorHex` / `faviconHex`). Los modules aún pueden tener magics (fase 2).
+- [x] Temas claro / oscuro / sistema sin FOUC; `theme-color` alineado al canvas (hex generado).
+- [x] Contraste WCAG 2.2 AA en CI para pares semánticos. *(fase 1)*
 - [ ] Átomos y CSS modules sin magics; un API React por control.
 - [ ] Frontera WA resuelta (bridge generado **o** dependencia retirada).
 - [ ] Pantallas de §5 fase 3 sin costura light/dark; copy ES; wordmark lowercase.
@@ -343,7 +343,7 @@ Reglas de slicing:
 
 ## Referencias
 
-- ADR-0014 marca · ADR-0015 GUI local · ADR-0016 remoto · ADR-0017 OTel (fuera) · ADR-0018 CardDAV (fuera)
+- ADR-0014 marca · ADR-0015 GUI local · ADR-0016 remoto · ADR-0017 OTel (fuera) · ADR-0018 CardDAV (fuera) · ADR-0019 tokens GUI
 - [`docs/brand.md`](../brand.md) · [`docs/gui/functional-parity-matrix.md`](./functional-parity-matrix.md) · [`docs/gui/threat-model.md`](./threat-model.md)
 - [W3C Design Tokens Format Module](https://tr.designtokens.org/format/)
 - [WCAG 2.2](https://www.w3.org/TR/WCAG22/) · [ARIA APG](https://www.w3.org/WAI/ARIA/apg/)
