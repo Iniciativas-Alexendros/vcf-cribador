@@ -68,6 +68,7 @@ const COMMON_ORDER = [
   "--zed-radius-pill",
   "--zed-border-width",
   "--zed-focus-width",
+  "--zed-focus-offset",
   "--zed-shadow-xs",
   "--zed-shadow-sm",
   "--zed-shadow-md",
@@ -85,6 +86,12 @@ const COMMON_ORDER = [
   "--zed-bp-lg",
   "--zed-z-shell",
   "--zed-z-drawer",
+  "--zed-z-overlay",
+  "--zed-z-modal",
+  "--zed-control-height",
+  "--zed-disabled-opacity",
+  "--zed-textarea-min",
+  "--zed-spin-duration",
 ];
 
 const THEME_ORDER = [
@@ -93,6 +100,7 @@ const THEME_ORDER = [
   "--zed-bg-muted",
   "--zed-bg-raised",
   "--zed-bg-inverse",
+  "--zed-overlay",
   "--zed-fg-strong",
   "--zed-fg-default",
   "--zed-fg-muted",
@@ -106,6 +114,7 @@ const THEME_ORDER = [
   "--zed-accent-active",
   "--zed-accent-soft",
   "--zed-accent-on",
+  "--zed-accent-border",
   "--zed-success",
   "--zed-success-hover",
   "--zed-success-soft",

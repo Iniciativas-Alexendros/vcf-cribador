@@ -38,12 +38,7 @@ export function ContactDrawer({ contact, open, onClose }: Props) {
   return (
     <div
       role="presentation"
-      style={{
-        position: "fixed",
-        inset: 0,
-        zIndex: 50,
-        background: "oklch(0.18 0.04 258 / 0.45)",
-      }}
+      className="zed-scrim zed-scrim--modal"
       onClick={onClose}
     >
       <div

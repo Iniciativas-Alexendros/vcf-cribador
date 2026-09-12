@@ -24,29 +24,12 @@ async function copyText(value: string) {
 
 export function MetadataList({ items }: Props) {
   return (
-    <dl
-      style={{
-        display: "grid",
-        gap: "0.85rem",
-        margin: 0,
-      }}
-    >
+    <dl className="zed-metadata">
       {items.map((item) => (
-        <div
-          key={item.label}
-          style={{
-            display: "grid",
-            gap: "0.25rem",
-            gridTemplateColumns: "minmax(8rem, 12rem) 1fr auto",
-            alignItems: "center",
-          }}
-        >
-          <dt className="zed-label" style={{ margin: 0 }}>
-            {item.label}
-          </dt>
+        <div key={item.label} className="zed-metadata__row">
+          <dt className="zed-label zed-metadata__term">{item.label}</dt>
           <dd
-            className={item.mono ? "zed-mono zed-truncate" : "zed-truncate"}
-            style={{ margin: 0 }}
+            className={`${item.mono ? "zed-mono" : ""} zed-truncate zed-metadata__value`.trim()}
             title={item.value}
           >
             {item.value}

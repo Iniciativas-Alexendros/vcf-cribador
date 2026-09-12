@@ -6,7 +6,7 @@ Fuente de verdad de la GUI browser. Contrato: [ADR-0019](../../../DECISIONS.md),
 tokens/                    # humano + revisión en PR
   primitive/               # ramps OKLCH, space, type, radius, motion, z
   semantic/                # color.light / color.dark + alias de tipo/elevación
-  component/               # stub en fase 1
+  component/               # control (altura, disabled, spinner) en fase 2
   contrast-pairs.json      # pares WCAG 2.2 AA
         │
         ▼

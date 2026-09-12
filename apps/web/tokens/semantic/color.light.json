@@ -27,6 +27,12 @@
         "$type": "color",
         "$value": "{color.ink.fg-strong}",
         "$extensions": { "com.zedazo": { "cssVar": "--zed-bg-inverse" } }
+      },
+      "overlay": {
+        "$type": "color",
+        "$value": { "colorSpace": "oklch", "components": [0.18, 0.04, 258], "alpha": 0.45 },
+        "$description": "Scrim de overlay/drawer. Mismo valor en claro y oscuro (fase 2).",
+        "$extensions": { "com.zedazo": { "cssVar": "--zed-overlay" } }
       }
     },
     "fg": {
@@ -98,6 +104,12 @@
         "$type": "color",
         "$value": "{color.paper.50}",
         "$extensions": { "com.zedazo": { "cssVar": "--zed-accent-on" } }
+      },
+      "border": {
+        "$type": "color",
+        "$value": { "colorSpace": "oklch", "components": [0.53, 0.16, 257], "alpha": 0.28 },
+        "$description": "Borde de callout privacy/tabs; equivalente a color-mix(accent 28%, transparent)",
+        "$extensions": { "com.zedazo": { "cssVar": "--zed-accent-border" } }
       }
     },
     "success": {

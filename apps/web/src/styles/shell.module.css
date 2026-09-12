@@ -19,7 +19,7 @@
   padding: 0 var(--zed-space-4);
   border-bottom: 1px solid var(--zed-border-subtle);
   background: var(--zed-bg-raised);
-  z-index: 20;
+  z-index: var(--zed-z-shell);
 }
 
 .sidebar {
@@ -28,7 +28,7 @@
   flex-direction: column;
   gap: var(--zed-space-4);
   width: var(--zed-sidebar-width);
-  max-width: 272px;
+  max-width: var(--zed-sidebar-width);
   padding: var(--zed-space-5) var(--zed-space-4);
   border-right: 1px solid var(--zed-border-subtle);
   background: var(--zed-bg-subtle);
@@ -71,8 +71,8 @@
   display: flex;
   align-items: center;
   gap: var(--zed-space-3);
-  min-height: 2.5rem;
-  padding: 0.4rem 0.75rem;
+  min-height: var(--zed-control-height);
+  padding: var(--zed-space-2) var(--zed-space-3);
   border-radius: var(--zed-radius-sm);
   color: var(--zed-fg-default);
   text-decoration: none;
@@ -118,9 +118,14 @@
 .sidebarFooter {
   margin-top: auto;
   padding-top: var(--zed-space-4);
-  border-top: 1px solid var(--zed-border-subtle);
+  border-top: var(--zed-border-width) solid var(--zed-border-subtle);
   color: var(--zed-fg-muted);
   font-size: var(--zed-text-sm);
+}
+
+.sidebarNote {
+  margin: var(--zed-space-3) 0 0;
+  padding-inline: var(--zed-space-3);
 }
 
 .menuButton {
@@ -129,6 +134,10 @@
 
 .overlay {
   display: none;
+}
+
+.statusLabel {
+  font-size: var(--zed-text-sm);
 }
 
 .statusDot {
@@ -177,7 +186,8 @@
   font-weight: var(--zed-weight-medium);
 }
 
-@media (max-width: 900px) {
+/* 900px = --zed-bp-md (56.25rem). Custom props no aplican en @media. */
+@media (max-width: 56.25rem) {
   .shell {
     grid-template-columns: 1fr;
     grid-template-areas:
@@ -193,7 +203,7 @@
   .sidebar {
     position: fixed;
     inset: 0 auto 0 0;
-    z-index: 40;
+    z-index: var(--zed-z-drawer);
     transform: translateX(-105%);
     transition: transform var(--zed-transition-base) var(--zed-ease-standard);
     box-shadow: var(--zed-shadow-md);
@@ -207,8 +217,8 @@
     display: block;
     position: fixed;
     inset: 0;
-    z-index: 30;
-    background: oklch(0.18 0.04 258 / 0.45);
+    z-index: var(--zed-z-overlay);
+    background: var(--zed-overlay);
     border: 0;
     padding: 0;
   }

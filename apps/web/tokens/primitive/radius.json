@@ -35,6 +35,10 @@
     "focus": {
       "$value": { "value": 3, "unit": "px" },
       "$extensions": { "com.zedazo": { "cssVar": "--zed-focus-width" } }
+    },
+    "focusOffset": {
+      "$value": { "value": 3, "unit": "px" },
+      "$extensions": { "com.zedazo": { "cssVar": "--zed-focus-offset" } }
     }
   }
 }

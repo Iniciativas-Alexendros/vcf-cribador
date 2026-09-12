@@ -27,7 +27,7 @@
 .table th,
 .table td {
   text-align: left;
-  padding: 0.7rem 0.85rem;
+  padding: var(--zed-space-3);
   border-bottom: 1px solid var(--zed-border-subtle);
   vertical-align: top;
 }
@@ -69,7 +69,8 @@
   font-size: var(--zed-text-sm);
 }
 
-@media (max-width: 900px) {
+/* 900px = --zed-bp-md (56.25rem). Custom props no aplican en @media. */
+@media (max-width: 56.25rem) {
   .desktopOnly {
     display: none;
   }

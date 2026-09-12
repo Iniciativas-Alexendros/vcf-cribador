@@ -1,8 +1,8 @@
 # Plan de modernización del design system (GUI browser)
 
-**Versión:** 0.1.1  
-**Fecha:** 2026-09-11  
-**Estado:** Plan. **Fase 1 aterrizada** (pipeline DTCG + contraste CI, [ADR-0019](../../DECISIONS.md)). Fases 2–4 pendientes.  
+**Versión:** 0.1.2  
+**Fecha:** 2026-09-12  
+**Estado:** Plan. **Fases 1 y 2 aterrizadas** (pipeline DTCG + átomos `--zed-*`, [ADR-0019](../../DECISIONS.md)). Fases 3–4 pendientes. Epic [#59](https://github.com/Iniciativas-Alexendros/zedazo/issues/59).  
 **Traza:** ADR-0015 (GUI local), ADR-0016 (remoto HTTPS+token), ADR-0019 (tokens), SPECS O10/O11, identidad «Archivo Vivo», [`docs/brand.md`](../brand.md), epic [#59](https://github.com/Iniciativas-Alexendros/zedazo/issues/59).  
 **No mezclar** con CardDAV ([#48](https://github.com/Iniciativas-Alexendros/zedazo/issues/48) / ADR-0018) ni con cambios de dominio.
 
@@ -33,14 +33,14 @@ Orden de carga en `layout.tsx`: `reset` → `tokens` → `themes` → `typograph
 
 - **Primitivos + semánticos** viven en JSON DTCG. `tokens.css` / `themes.css` son wrappers que importan `generated/` (fase 1). Recetas de componente siguen siendo CSS humano.
 - **Recetas de componente** en `components.css` (`.zed-button`, `.zed-badge`, `.zed-card`, `.zed-input`, …).
-- **CSS Modules** paralelos: `styles/shell.module.css`, `forms.module.css`, `tables.module.css`, `states.module.css`. Usan `--zed-*` pero conservan magics (`max-width: 272px`, paddings sueltos, breakpoints `900px` / `960px`).
-- **Huecos residuales (fase 2+):** estilos inline en `/documentacion`; recetas que aún usan `color-mix` en callouts (los `--zed-badge-*-border` ya existen, sin cablear en fase 1 para no tocar recetas).
+- **CSS Modules** paralelos: `styles/shell.module.css`, `forms.module.css`, `tables.module.css`, `states.module.css`. Fase 2 cableó colores/z-index/overlay/spacing de átomos a `--zed-*`. Breakpoints siguen como literales equivalentes (`56.25rem` / `60rem` = `--zed-bp-md/lg`; custom props no aplican en `@media`) — recablear recetas de pantalla es fase 3.
+- **Huecos residuales (fase 3+):** inline styles en pantallas (jobs, contactos, home); densidad de tablas; drawer de contacto (layout, no color).
 
-Fase 1 cubre JSON DTCG, build Node, tipos TS y check de contraste. No hay catálogo vivo todavía (fase 4).
+Fase 1 cubre JSON DTCG, build Node, tipos TS y check de contraste. Fase 2 añade catálogo mínimo en [`/documentacion/ds`](../../apps/web/src/app/documentacion/ds/page.tsx); el catálogo completo es fase 4.
 
 ### 1.3 Superficie de producto (rutas y bloques)
 
-Rutas App Router: `/`, `/procesar`, `/ejecuciones`, `/ejecuciones/[jobId]`, `/auditar`, `/reglas`, `/acceso`, `/ajustes`, `/documentacion`.
+Rutas App Router: `/`, `/procesar`, `/ejecuciones`, `/ejecuciones/[jobId]`, `/auditar`, `/reglas`, `/acceso`, `/ajustes`, `/documentacion`, `/documentacion/ds` (catálogo mínimo, fase 2).
 
 Bloques React (inventario de partida para la fase 2):
 
@@ -56,7 +56,7 @@ Bloques React (inventario de partida para la fase 2):
 
 ### 1.4 A11y y QA hoy
 
-`e2e/a11y.spec.ts` cubre **solo** `/`, `/procesar`, `/ejecuciones`. Quedan fuera `/acceso`, `/ajustes`, `/reglas`, `/auditar`, `/documentacion`, `/ejecuciones/[jobId]` y estados vacíos/error/job en curso.
+`e2e/a11y.spec.ts` cubre **solo** `/`, `/procesar`, `/ejecuciones`. Fase 2 añade `e2e/atoms.spec.ts` (axe de `/documentacion/ds`). Quedan fuera `/acceso`, `/ajustes`, `/reglas`, `/auditar`, `/documentacion`, `/ejecuciones/[jobId]` y estados vacíos/error/job en curso.
 
 Motion: `prefers-reduced-motion` ya anula animaciones/transiciones en `motion.css`. No hay tokens de duración/easing en un formato DTCG ni prueba de que el resto de módulos respeten el mismo contrato.
 
@@ -159,18 +159,13 @@ Alias semánticos actuales a conservar (mapeo, no rename breaking en fase 1):
 
 Añadidos en fase 1 (aditivos, sin cablear recetas): `--zed-bp-md` / `--zed-bp-lg`, `--zed-target-min`, `--zed-z-shell` / `--zed-z-drawer`, `--zed-badge-*-border`. `theme-color` y favicon usan hex **generado** desde canvas / accent (`themeColorHex`, `faviconHex`).
 
+Añadidos en fase 2 (cableados a recetas): `--zed-overlay`, `--zed-accent-border`, `--zed-disabled-opacity`, `--zed-control-height`, `--zed-textarea-min`, `--zed-spin-duration`, `--zed-focus-offset`, `--zed-z-overlay`, `--zed-z-modal`.
+
 ### 4.3 Frontera con Web Awesome
 
-Web Awesome **no** es la fuente de verdad visual. Hoy ni siquiera pinta controles.
+Web Awesome **no** es la fuente de verdad visual. **Decisión fase 2 (opción A acotada):** se conserva la dependencia y el bridge `--wa-*` generado; clases `wa-light` / `wa-dark` en `<html>`. Iconos: SVG local (`Icon`). **No** se montan componentes compuestos `<wa-*>` salvo que un PR de pantalla posterior lo justifique y replique contraste OKLCH. Sin CDN. Sin CSS de tema WA que pise `--zed-*`.
 
-Decisión a fijar en fase 1 (ADR corto si cambia el contrato):
-
-| Opción | Cuándo |
-|--------|--------|
-| **A. Conservar como kit opcional** | Si fase 2 necesita un primitive WA (p. ej. `wa-select` rico) *y* el bridge `--wa-*` replica contraste OKLCH. Prohibido importar CSS de tema WA que pise `--zed-*`. Sin CDN. |
-| **B. Retirar la dependencia** | Si el inventario de fase 2 confirma cero uso real (estado actual). Menos superficie, menos `transpilePackages`. |
-
-Hasta esa decisión: no montar componentes WA nuevos en PRs de pantalla. El bridge `--wa-*` se genera desde semánticos Zedazo, no al revés.
+No se retira `@awesome.me/webawesome` en este slice (opción B aplazada: menos superficie, pero el inventario no exige el corte).
 
 ### 4.4 Catálogo
 
@@ -206,13 +201,13 @@ Cada fase = uno o más PRs **pequeños**, CI verde, **sin** CardDAV, **sin** cam
 
 **Objetivo:** un inventario y una receta por control.
 
-1. Inventario (tabla en el PR o en este doc, apéndice): cada `components/ui/*` + clases `.zed-*` + CSS modules que estilan átomos.
-2. Unificar: magics → tokens; inline styles → clases; duplicar `.zed-button` vs `<Button>` resuelto (un API React).
-3. Contratos APG: foco visible, `disabled`, `aria-*` mínimos, tamaño de diana ≥ 24 px CSS (`--zed-target-min`).
-4. Decisión A/B sobre Web Awesome (apartado 4.3) ejecutada: o bridge generado estable, o `package.json` sin `@awesome.me/webawesome`.
-5. Sin rediseño de pantallas enteras (eso es fase 3). Permitido ajustar un átomo si todas sus instancias cambian igual.
+- [x] Inventario (apéndice A): cada `components/ui/*` + clases `.zed-*` + CSS modules que estilan átomos.
+- [x] Unificar: magics → tokens; inline de átomos → clases; `buttonClassName()` + `<Button>` como API React (`.zed-button` sigue siendo la receta para `<Link>` / `<label>`).
+- [x] Contratos APG: foco visible (`--zed-focus-ring` / `--zed-focus-offset`), `disabled` (`--zed-disabled-opacity`), `aria-busy` en loading, diana ≥ 24 px (`--zed-target-min`).
+- [x] Decisión A/B Web Awesome (apartado 4.3): **A acotada** — bridge generado + `wa-light`/`wa-dark`; sin `<wa-*>` compuestos.
+- [x] Sin rediseño de pantallas enteras (fase 3). Átomos ajustados de forma uniforme.
 
-**Criterio de salida:** ningún color/spacing hardcodeado en `components/ui`; axe de `/` y `/procesar` sigue a cero violaciones; catálogo mínimo (botón, badge, input, callout, card) aunque `/documentacion/ds` se complete en fase 4.
+**Criterio de salida:** ningún color/spacing hardcodeado en `components/ui`; axe de `/` y `/procesar` sigue a cero violaciones; catálogo mínimo (botón, badge, input, callout, card) en `/documentacion/ds`. *Hecho (2026-09-12).* Epic [#59](https://github.com/Iniciativas-Alexendros/zedazo/issues/59) — no se cierra.
 
 ### Fase 3 — Patrones y pantallas
 
@@ -282,17 +277,17 @@ Checklist del **programa** (no de este PR de docs). Cada fase tiene su propio Do
 - [x] OKLCH en origen de tokens; hex solo como fallback generado (`themeColorHex` / `faviconHex`). Los modules aún pueden tener magics (fase 2).
 - [x] Temas claro / oscuro / sistema sin FOUC; `theme-color` alineado al canvas (hex generado).
 - [x] Contraste WCAG 2.2 AA en CI para pares semánticos. *(fase 1)*
-- [ ] Átomos y CSS modules sin magics; un API React por control.
-- [ ] Frontera WA resuelta (bridge generado **o** dependencia retirada).
+- [x] Átomos sin color/spacing hardcodeado; un API React por control (`buttonClassName`). Modules de átomos/chrome cableados; magics de pantalla → fase 3. *(fase 2)*
+- [x] Frontera WA resuelta: bridge generado + kit opcional acotado (sin `<wa-*>`). *(fase 2)*
 - [ ] Pantallas de §5 fase 3 sin costura light/dark; copy ES; wordmark lowercase.
-- [ ] Catálogo `/documentacion/ds` (o Storybook justificado).
+- [ ] Catálogo `/documentacion/ds` completo (fase 4). Mínimo de átomos ya en fase 2.
 - [ ] Axe 2.2 AA en todas las rutas de la matriz; reduced-motion cubierto.
 - [ ] Regresión visual light+dark en CI; capturas README regeneradas.
 - [ ] `make ci` verde; O10/O11 intactos; sin secretos en el diff.
 - [ ] PRs de implementación **no** mezclan CardDAV, dominio ni majors de parser.
 - [ ] Docs canónicos: este plan marcado ejecutado; `docs/brand.md` sigue siendo wordmark, no paleta.
 
-**Este PR de documentación** cierra solo el ancla escrita: el archivo existe, ROADMAP/brand enlazan, y el epic [#59](https://github.com/Iniciativas-Alexendros/zedazo/issues/59) apunta aquí. No cierra el epic.
+Los PRs de fase 1–2 no cierran el epic [#59](https://github.com/Iniciativas-Alexendros/zedazo/issues/59). Cierre al completar fase 4.
 
 ---
 
@@ -323,8 +318,8 @@ Los títulos siguientes son **sugeridos** para issues/PRs de implementación (no
 | 1 | `GUI DS fase 1: pipeline DTCG → CSS custom properties + tipos TS` | Dep Style Dictionary (o script) + confirmación AGENTS §4 |
 | 1b | `GUI DS: check CI de contraste WCAG 2.2 sobre tokens OKLCH` | Puede ir en el mismo PR que 1 si el diff cabe |
 | 1c | `docs: ADR-0019 fuente de tokens GUI (DTCG + frontera Web Awesome)` | Solo si hay dep nueva o se retira WA |
-| 2 | `GUI DS fase 2: inventario atómico y unificar CSS modules a --zed-*` | Sin rediseño de rutas |
-| 2b | `GUI DS: retirar Web Awesome` **o** `GUI DS: bridge --wa-* generado` | Una de las dos, no ambas |
+| 2 | `GUI DS fase 2: inventario atómico y unificar CSS modules a --zed-*` | Hecho (2026-09-12). Sin rediseño de rutas |
+| 2b | `GUI DS: retirar Web Awesome` **o** `GUI DS: bridge --wa-* generado` | Hecho como **A acotada**: bridge ya generado (fase 1); no se retira WA; no se montan `<wa-*>` |
 | 3a | `GUI DS fase 3: shell (topbar, nav, statusbar, skip link)` | Breakpoints tokenizados |
 | 3b | `GUI DS fase 3: formularios (procesar, reglas, acceso, ajustes)` | |
 | 3c | `GUI DS fase 3: tablas, drawer de contacto y duplicados` | |
@@ -348,3 +343,31 @@ Reglas de slicing:
 - [W3C Design Tokens Format Module](https://tr.designtokens.org/format/)
 - [WCAG 2.2](https://www.w3.org/TR/WCAG22/) · [ARIA APG](https://www.w3.org/WAI/ARIA/apg/)
 - Código de partida: `apps/web/src/design-system/`, `apps/web/src/components/`, `apps/web/e2e/a11y.spec.ts`
+
+---
+
+## Apéndice A — Inventario atómico (fase 2)
+
+Receta visual = clase `.zed-*` en `components.css`. API React = un componente en `components/ui` (o helper `buttonClassName` para `<Link>` / `<label>`). Shell y módulos solo se listan cuando estilan el átomo o el chrome compartido.
+
+| Átomo / primitivo | React | Receta CSS | Variantes / estados | Módulo colindante |
+|-------------------|-------|------------|---------------------|-------------------|
+| Botón | `Button`, `buttonClassName()` | `.zed-button`, `--primary/secondary/tertiary/danger/icon`, `--sm` | hover, active, `:focus-visible`, `:disabled`, `aria-busy` + `.zed-spinner` | — |
+| Icon button | `IconButton` | `.zed-button--icon` (+ `--sm`) | `aria-label` obligatorio; mismos estados que botón | chips en `states.module.css` |
+| Badge | `Badge` | `.zed-badge--neutral/info/success/warning/danger/technical` | bordes `--zed-badge-*-border` | — |
+| Card | `Card` | `.zed-card--document/action/metric/outlined/interactive` | hover/foco en interactive | — |
+| Callout | `Callout` | `.zed-callout--info/success/warning/danger/privacy/verification` | `role="note"` | — |
+| Input / textarea | nativo + receta | `.zed-input`, `.zed-textarea`, `.zed-field` | disabled, `:focus-visible` | `forms.module.css` |
+| Dropzone | nativo | `.zed-dropzone` | `data-active`, `:focus-within` | `forms.module.css` |
+| Icono | `Icon` | `.zed-icon` (SVG local; no `<wa-icon>`) | `currentColor` | — |
+| Empty / error / loading | `EmptyState`, `ErrorState`, `LoadingState` | `.zed-spinner` + `states.module.css` | `role="status"` / `role="alert"` | `states.module.css` |
+| Filter chips | `FilterBar` | chip en `states` + `IconButton` sm | live region | `states.module.css` |
+| Stat / heading / metadata / artifact | `StatCard`, `SectionHeading`, `MetadataList`, `ArtifactDownload` | `.zed-stat-card*`, `.zed-section-heading`, `.zed-metadata`, `.zed-artifact` | — | — |
+| Stepper | `ProgressStepper` | `.zed-stepper__step` | `todo/current/done`, `aria-current` | — |
+| Visually hidden | `VisuallyHidden` | `.zed-sr-only` | — | — |
+| Page header | `PageHeader` | `.zed-page-header` | — | shell |
+| Scrim / overlay | clase | `.zed-scrim`, `.zed-scrim--modal` | `--zed-overlay`, `--zed-z-overlay/modal` | `shell.module.css`, drawer |
+| Nav / chrome | `AppShell`, `Topbar`, `AppSidebar` | `.navLink`, tokens de z/sidebar | `:focus-visible` global | `shell.module.css` |
+| Tabla (no átomo; colindante) | `contact-table` | — | hover de fila | `tables.module.css` |
+
+Tokens aditivos de fase 2: `--zed-overlay`, `--zed-accent-border`, `--zed-disabled-opacity`, `--zed-control-height`, `--zed-textarea-min`, `--zed-spin-duration`, `--zed-focus-offset`, `--zed-z-overlay`, `--zed-z-modal`.

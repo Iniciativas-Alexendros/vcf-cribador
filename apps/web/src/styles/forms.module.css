@@ -28,8 +28,8 @@
 }
 
 .checkbox input {
-  width: 1.1rem;
-  height: 1.1rem;
+  width: var(--zed-space-4);
+  height: var(--zed-space-4);
   accent-color: var(--zed-accent);
 }
 
@@ -45,7 +45,8 @@
   gap: var(--zed-space-5);
 }
 
-@media (min-width: 960px) {
+/* 960px = --zed-bp-lg (60rem). Custom props no aplican en @media. */
+@media (min-width: 60rem) {
   .split {
     grid-template-columns: 1.4fr 1fr;
   }
