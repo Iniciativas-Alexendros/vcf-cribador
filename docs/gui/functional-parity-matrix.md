@@ -29,7 +29,7 @@ O11 (auth remoto) no altera la semántica del pipeline: O10 sigue válido con `Z
 | Preservación PHOTO/folding | writer | Artifact VCF | Roundtrip como CLI |
 | Cancelación | N/A (CTRL-C) | `POST .../cancel` | Artefactos incompletos no descargables como definitivos |
 | Shell completions | `completions` | Solo documentación | Sin pantalla equivalente |
-| CardDAV pull/list (ADR-0018) | `zedazo carddav` | N/A (CLI only) | Sin pantalla ni `/api/v1` CardDAV en este slice |
+| CardDAV pull/list/write/watch (ADR-0018) | `zedazo carddav` | N/A (CLI only) | Sin pantalla ni `/api/v1` CardDAV |
 
 ## Test de equivalencia (CI)
 

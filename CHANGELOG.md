@@ -8,6 +8,7 @@ y este proyecto adhiere a [Semantic Versioning](https://semver.org/lang/es/).
 ## [Unreleased]
 
 ### Added
+- CardDAV v0.4.0 restante ([#48](https://github.com/Iniciativas-Alexendros/zedazo/issues/48), ADR-0018): write opt-in (`zedazo carddav put|delete --confirm`, `If-Match` / ETag, HTTP 412 = conflicto), watch (`CTag` / `sync-token`, sin auto-sync al arrancar) y filtros `--category` N1/N2 client-side; tests con servidor DAV mockeado; [`docs/carddav.md`](docs/carddav.md)
 - GUI DS fase 4: catálogo `/documentacion/ds` de átomos de producto; axe WCAG 2.2 A/AA en todas las rutas + vacío/error/loading/running; regresión visual Playwright (`toHaveScreenshot`, light/dark, desktop + móvil) en `web-ci`; plan marcado ejecutado ([#59](https://github.com/Iniciativas-Alexendros/zedazo/issues/59))
 - GUI DS fase 3: patrones de pantalla (shell, formularios, tablas, drawer, jobs, estados) sobre `--zed-*`; axe en rutas de producto; catálogo `/documentacion/ds` con stepper y empty/error/loading ([#59](https://github.com/Iniciativas-Alexendros/zedazo/issues/59))
 - GUI DS fase 2: átomos (`Button`/`Badge`/`Card`/`Callout`/input) alineados a `--zed-*`; catálogo mínimo `/documentacion/ds`; frontera Web Awesome acotada ([#59](https://github.com/Iniciativas-Alexendros/zedazo/issues/59))

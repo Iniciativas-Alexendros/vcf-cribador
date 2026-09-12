@@ -2,7 +2,7 @@
 
 **Versión:** 0.2.0  
 **Fecha:** 2026-09-09  
-**Traza:** ADR-0015, ADR-0016; egreso CardDAV: ADR-0018 (aceptada; primer slice CLI)
+**Traza:** ADR-0015, ADR-0016; egreso CardDAV: ADR-0018 (aceptada; CLI)
 
 ## Activos
 

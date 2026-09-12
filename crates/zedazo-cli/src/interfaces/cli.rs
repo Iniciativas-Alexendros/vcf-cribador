@@ -87,14 +87,14 @@ pub enum Command {
         shell: clap_complete::Shell,
     },
 
-    /// CardDAV: descubrimiento y pull de solo lectura (ADR-0018; sin GUI)
+    /// CardDAV: sync CLI (ADR-0018; sin GUI ni API)
     Carddav {
         #[command(subcommand)]
         action: CarddavAction,
     },
 }
 
-/// Subcomandos CardDAV (primer slice: list + pull).
+/// Subcomandos CardDAV. Write es opt-in (`put`/`delete` + `--confirm`); no forma parte de `cribar`.
 #[derive(Subcommand)]
 pub enum CarddavAction {
     /// Lista addressbooks (descubrimiento RFC 6764 / URL explícita)
@@ -102,13 +102,70 @@ pub enum CarddavAction {
         #[command(flatten)]
         opts: CarddavOpts,
     },
-    /// Descarga vCards a un fichero VCF local (GET; sin PUT/DELETE)
+    /// Descarga vCards a un fichero VCF local (GET; I7: no sobrescribe el origen remoto)
     Pull {
         #[command(flatten)]
         opts: CarddavOpts,
         /// Fichero VCF de salida
         #[arg(short = 'o', long)]
         output: PathBuf,
+        /// Filtra por categoría N1/N2 (client-side; repetible; OR)
+        #[arg(long = "category")]
+        categories: Vec<String>,
+    },
+    /// PUT remoto con If-Match / ETag (exige `--confirm`; HTTP 412 = conflicto)
+    Put {
+        #[command(flatten)]
+        opts: CarddavOpts,
+        /// Href del objeto (URL o path bajo el addressbook)
+        #[arg(long)]
+        href: String,
+        /// VCF local de origen (solo lectura; I7)
+        #[arg(short = 'i', long)]
+        input: PathBuf,
+        /// ETag actual para If-Match (obligatorio salvo `--create`)
+        #[arg(long)]
+        etag: Option<String>,
+        /// Alta: If-None-Match: * (falla si el href ya existe)
+        #[arg(long)]
+        create: bool,
+        /// Confirmación explícita de escritura remota (opt-in; ADR-0018)
+        #[arg(long)]
+        confirm: bool,
+    },
+    /// DELETE remoto con If-Match / ETag (exige `--confirm`; HTTP 412 = conflicto)
+    Delete {
+        #[command(flatten)]
+        opts: CarddavOpts,
+        /// Href del objeto (URL o path)
+        #[arg(long)]
+        href: String,
+        /// ETag actual para If-Match
+        #[arg(long)]
+        etag: String,
+        /// Confirmación explícita de borrado remoto
+        #[arg(long)]
+        confirm: bool,
+    },
+    /// Polling de CTag / sync-token. No se arranca solo: hay que invocarlo.
+    Watch {
+        #[command(flatten)]
+        opts: CarddavOpts,
+        /// Segundos entre sondeos (un request en vuelo)
+        #[arg(long, default_value_t = 30)]
+        interval: u64,
+        /// Máximo de sondeos tras la línea base (0 = infinito)
+        #[arg(long, default_value_t = 0)]
+        max_cycles: u32,
+        /// Línea base + un sondeo y salir
+        #[arg(long)]
+        once: bool,
+        /// Si el token cambia, escribe el pull (opcional) en este VCF
+        #[arg(short = 'o', long)]
+        output: Option<PathBuf>,
+        /// Filtra el pull de watch por categoría N1/N2 (repetible)
+        #[arg(long = "category")]
+        categories: Vec<String>,
     },
 }
 
@@ -144,6 +201,9 @@ mod tests {
         let names: Vec<_> = carddav.get_subcommands().map(|s| s.get_name()).collect();
         assert!(names.contains(&"list"));
         assert!(names.contains(&"pull"));
+        assert!(names.contains(&"put"));
+        assert!(names.contains(&"delete"));
+        assert!(names.contains(&"watch"));
         assert!(!names.contains(&"push"));
     }
 }
