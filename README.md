@@ -126,20 +126,23 @@ zedazo cribar contactos.vcf --config zedazo.toml
 
 La sección `[cribado]` sigue aceptándose con un warning de deprecación.
 
-## CardDAV (primer slice, ADR-0018)
+## CardDAV (ADR-0018 / v0.4.0)
 
-Pull de solo lectura contra un servidor RFC 6352 (Nextcloud, DAV genérico). Sin GUI. Guía: [`docs/carddav.md`](docs/carddav.md).
+Cliente RFC 6352 en CLI (`zedazo carddav`): pull, write opt-in, watch (CTag/sync-token) y filtros N1/N2. Sin GUI ni API. Guía: [`docs/carddav.md`](docs/carddav.md).
 
 ```bash
 export ZEDAZO_CARDDAV_URL=https://cloud.example.test
 export ZEDAZO_CARDDAV_USERNAME=ada
 export ZEDAZO_CARDDAV_PASSWORD='contraseña-de-aplicación'
 zedazo carddav list
-zedazo carddav pull -o contactos.vcf
+zedazo carddav pull -o contactos.vcf --category PROF
 zedazo cribar contactos.vcf -o limpio.vcf
+# escritura remota: exige --confirm (no forma parte de cribar)
+zedazo carddav put --href "$HREF" --input ada.vcf --etag "$ETAG" --confirm
+zedazo carddav watch --interval 30 -o contactos.vcf
 ```
 
-No uses `ZEDAZO_AUTH_TOKEN` (eso es de la GUI). Write/watch/filtros no están en este slice ([#48](https://github.com/Iniciativas-Alexendros/zedazo/issues/48)).
+No uses `ZEDAZO_AUTH_TOKEN` (eso es de la GUI). HTTP 412 se reporta como conflicto; no hay overwrite silencioso.
 
 ## Pipeline
 
@@ -184,7 +187,7 @@ Por categoría:
 crates/zedazo-core/     Dominio + application + infra I/O (sin HTTP)
 crates/zedazo-cli/      Binario `zedazo` (Clap)
 crates/zedazo-api/      API Axum `/api/v1` (+ auth ADR-0016)
-crates/zedazo-carddav/  Cliente CardDAV pull (ADR-0018; publish = false)
+crates/zedazo-carddav/  Cliente CardDAV (ADR-0018; publish = false)
 apps/web/               GUI Next.js (solo HTTP; sin lógica de cribado)
 apps/landing/           Ficha pública estática (zedazo.alexendros.dev)
 deploy/                 Docker Compose local + remoto + landing (Caddy)
@@ -202,7 +205,7 @@ deploy/                 Docker Compose local + remoto + landing (Caddy)
 | [`DECISIONS.md`](DECISIONS.md)                                 | ADR con IDs estables                                 |
 | [`AGENTS.md`](AGENTS.md)                                       | Contrato para agentes de código                      |
 | [`docs/gui/`](docs/gui/)                                       | Paridad O10, deploy (incl. DNS del dominio de producto), threat-model, retención, [plan design system](docs/gui/design-system-plan.md) (ejecutado; catálogo GUI `/documentacion/ds`) |
-| [`docs/carddav.md`](docs/carddav.md)                           | CardDAV pull CLI (ADR-0018 / #48)                        |
+| [`docs/carddav.md`](docs/carddav.md)                           | CardDAV CLI pull/write/watch (ADR-0018 / #48)            |
 | [`docs/api/openapi.yaml`](docs/api/openapi.yaml)               | Contrato HTTP `/api/v1`                              |
 | [`docs/domain.md`](docs/domain.md)                             | Lenguaje ubicuo, entidades, rules                    |
 | [`docs/implementation-guide.md`](docs/implementation-guide.md) | Guía de implementación (histórico MVP)               |

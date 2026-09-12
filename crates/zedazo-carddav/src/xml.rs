@@ -18,6 +18,10 @@ pub struct DavResponse {
     pub is_addressbook: bool,
     pub current_user_principal: Option<String>,
     pub addressbook_home_set: Option<String>,
+    /// Calendar-server `getctag` (polling de colección).
+    pub ctag: Option<String>,
+    /// RFC 6578 `DAV:sync-token`.
+    pub sync_token: Option<String>,
 }
 
 /// Parsea un documento `multistatus`.
@@ -97,6 +101,12 @@ fn merge_prop(parsed: &mut DavResponse, prop: Node<'_, '_>) {
             }
             "addressbook-home-set" => {
                 parsed.addressbook_home_set = nested_href(child);
+            }
+            "getctag" => {
+                parsed.ctag = node_text(child).map(unquote_etag);
+            }
+            "sync-token" => {
+                parsed.sync_token = node_text(child);
             }
             _ => {}
         }
@@ -188,6 +198,20 @@ pub fn propfind_collection() -> &'static str {
     <d:getetag/>
     <d:getcontenttype/>
     <c:addressbook-description/>
+    <cs:getctag xmlns:cs="http://calendarserver.org/ns/"/>
+    <d:sync-token/>
+  </d:prop>
+</d:propfind>"#
+}
+
+/// PROPFIND acotado a CTag / sync-token / ETag de la colección.
+pub fn propfind_sync_state() -> &'static str {
+    r#"<?xml version="1.0" encoding="utf-8"?>
+<d:propfind xmlns:d="DAV:" xmlns:cs="http://calendarserver.org/ns/">
+  <d:prop>
+    <d:getetag/>
+    <cs:getctag/>
+    <d:sync-token/>
   </d:prop>
 </d:propfind>"#
 }
@@ -239,6 +263,8 @@ mod tests {
       <d:prop>
         <d:displayname>Contactos</d:displayname>
         <d:getetag>"abc123"</d:getetag>
+        <cs:getctag xmlns:cs="http://calendarserver.org/ns/">ctag-9</cs:getctag>
+        <d:sync-token>https://example.test/sync/9</d:sync-token>
         <d:resourcetype>
           <d:collection/>
           <card:addressbook/>
@@ -275,6 +301,11 @@ mod tests {
         assert!(all[1].is_addressbook);
         assert_eq!(all[1].displayname.as_deref(), Some("Contactos"));
         assert_eq!(all[1].etag.as_deref(), Some("abc123"));
+        assert_eq!(all[1].ctag.as_deref(), Some("ctag-9"));
+        assert_eq!(
+            all[1].sync_token.as_deref(),
+            Some("https://example.test/sync/9")
+        );
         assert!(looks_like_vcard(&all[2]));
         assert!(!looks_like_vcard(&all[1]));
     }

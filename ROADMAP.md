@@ -72,11 +72,11 @@ supersedes: "v0.3.1"
 
 - CardDAV sync, watch mode, filtros por categoría
 - Precondición: **[ADR-0018](./DECISIONS.md)** (aceptada 2026-09-11) — red/proveedor **antes** de código ([#48](https://github.com/Iniciativas-Alexendros/zedazo/issues/48))
-- [x] Primer slice (no cierra #48): crate `zedazo-carddav` (`publish = false`); CLI `zedazo carddav list|pull`; RFC 6352 + Basic/app-password; una cuenta; HTTPS TLS 1.2+; ver [docs/carddav.md](./docs/carddav.md)
-- [ ] Write opt-in (PUT/DELETE, If-Match/ETag)
-- [ ] Watch mode (CTag / sync-token)
-- [ ] Filtros por categoría sobre el set sincronizado
-- Fuera del primer slice: OAuth Google / People API, proveedor Proton de primera clase (Proton no expone CardDAV nativo; sigue export VCF)
+- [x] Primer slice: crate `zedazo-carddav` (`publish = false`); CLI `zedazo carddav list|pull`; RFC 6352 + Basic/app-password; una cuenta; HTTPS TLS 1.2+; ver [docs/carddav.md](./docs/carddav.md)
+- [x] Write opt-in (PUT/DELETE, If-Match/ETag; HTTP 412 = conflicto; `--confirm`)
+- [x] Watch mode (polling CTag / sync-token; sin auto-sync al arrancar)
+- [x] Filtros por categoría N1/N2 client-side sobre el set sincronizado
+- Fuera de v0.4.0: OAuth Google / People API, proveedor Proton de primera clase (Proton no expone CardDAV nativo; sigue export VCF)
 - OTel permanece post-v1.0 (ADR-0017)
 
 ### v0.5.0 — Web self-hosted (GUI + API) — L

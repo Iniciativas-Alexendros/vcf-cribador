@@ -88,6 +88,26 @@ pub enum CardDavError {
         attempts: u32,
         retry_after: Option<Duration>,
     },
+
+    /// PUT/DELETE exige `If-Match` con ETag concreto; nunca `*` (ADR-0018).
+    #[error(
+        "escritura CardDAV sin ETag: PUT/DELETE exige --etag / If-Match (no se permite \
+         If-Match: * ni overwrite silencioso)"
+    )]
+    MissingEtag,
+
+    /// HTTP 412: el ETag remoto cambió; conflicto reportado, no overwrite.
+    #[error(
+        "conflicto CardDAV (HTTP 412 Precondition Failed) en {url}: el ETag remoto \
+         no coincide con If-Match {etag:?}; no se sobrescribió"
+    )]
+    PreconditionFailed { url: String, etag: String },
+
+    /// Filtro `--category` que no parece código N1/N2 de la taxonomía.
+    #[error(
+        "categoría CardDAV desconocida o mal formada: {0} (usa códigos N1/N2 como PROF, PROF-JUD, FIN-CRYPTO)"
+    )]
+    UnknownCategory(String),
 }
 
 impl From<reqwest::Error> for CardDavError {
