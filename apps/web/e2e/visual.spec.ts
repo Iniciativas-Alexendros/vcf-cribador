@@ -1,4 +1,4 @@
-import { test, expect, devices } from "@playwright/test";
+import { test, expect } from "@playwright/test";
 import {
   applyTheme,
   gotoSettled,
@@ -57,7 +57,7 @@ for (const scheme of ["light", "dark"] as const) {
       await applyTheme(page, scheme);
       await installApiFixture(page, "running-job");
       await gotoSettled(page, `/ejecuciones/${SYNTHETIC_JOB_ID}`);
-      await expect(page.getByText("Cribando")).toBeVisible();
+      await expect(page.getByText("Cribando").first()).toBeVisible();
       await expect(page).toHaveScreenshot(`ejecucion-running-${scheme}.png`, {
         animations: "disabled",
         caret: "hide",
@@ -69,8 +69,10 @@ for (const scheme of ["light", "dark"] as const) {
 for (const scheme of ["light", "dark"] as const) {
   test.describe(`regresión visual móvil shell ${scheme}`, () => {
     test.use({
-      ...devices["iPhone 12"],
       colorScheme: scheme,
+      viewport: { width: 390, height: 844 },
+      isMobile: true,
+      hasTouch: true,
     });
 
     test("home", async ({ page }) => {

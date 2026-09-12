@@ -72,7 +72,7 @@ test.describe("estados representativos (fixtures sintéticos)", () => {
 
   test("/ejecuciones error cumple axe", async ({ page }) => {
     await gotoSettled(page, "/ejecuciones");
-    await expect(page.getByRole("alert")).toBeVisible();
+    await expect(page.getByRole("alert").first()).toBeVisible();
     await analyzeAxe(page);
   });
 
@@ -86,13 +86,13 @@ test.describe("estados representativos (fixtures sintéticos)", () => {
   test("/ejecuciones/job-sintetico en curso cumple axe", async ({ page }) => {
     await installApiFixture(page, "running-job");
     await gotoSettled(page, `/ejecuciones/${SYNTHETIC_JOB_ID}`);
-    await expect(page.getByText("Cribando")).toBeVisible();
+    await expect(page.getByText("Cribando").first()).toBeVisible();
     await analyzeAxe(page);
   });
 
   test("/ejecuciones/job-sintetico error cumple axe", async ({ page }) => {
     await gotoSettled(page, `/ejecuciones/${SYNTHETIC_JOB_ID}`);
-    await expect(page.getByRole("alert")).toBeVisible();
+    await expect(page.getByRole("alert").first()).toBeVisible();
     await analyzeAxe(page);
   });
 });

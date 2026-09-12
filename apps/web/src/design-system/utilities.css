@@ -235,7 +235,7 @@
 }
 
 .zed-phase-list__item--todo {
-  opacity: var(--zed-disabled-opacity);
+  color: var(--zed-fg-muted);
 }
 
 .zed-phase-list__item--current {

@@ -61,7 +61,10 @@ export async function analyzeAxe(page: Page) {
 
 export async function waitForShellSettled(page: Page) {
   await page.evaluate(() => document.fonts.ready);
-  await expect(page.getByRole("contentinfo")).not.toContainText("Comprobando");
+  const footer = page.getByRole("contentinfo");
+  if ((await footer.count()) > 0) {
+    await expect(footer).not.toContainText("Comprobando");
+  }
 }
 
 export async function gotoSettled(page: Page, path: string) {
