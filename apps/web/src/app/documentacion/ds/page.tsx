@@ -15,15 +15,15 @@ export default function DesignSystemCatalogPage() {
     <div className="zed-stack zed-catalog-grid">
       <PageHeader
         title="Átomos"
-        eyebrow="design system"
+        eyebrow="sistema de diseño"
         description="Catálogo mínimo de controles alineados a tokens --zed-*. Sin rediseño de pantallas. Wordmark: zedazo."
       />
 
       <Card variant="document">
         <h2 className="zed-title-section">Botón</h2>
         <p className="zed-muted">
-          Variantes primary / secondary / tertiary / danger; tamaños md / sm;
-          estados hover, foco visible, disabled y loading.
+          Variantes primario / secundario / terciario / peligro; tamaños md / sm;
+          estados hover, foco visible, deshabilitado y carga.
         </p>
         <div className="zed-catalog-swatch">
           <Button variant="primary">Primario</Button>
