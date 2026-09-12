@@ -432,13 +432,20 @@
 .zed-metadata__row {
   display: grid;
   gap: var(--zed-space-1);
-  grid-template-columns: minmax(8rem, 12rem) 1fr auto;
+  grid-template-columns: minmax(8rem, 12rem) 1fr;
   align-items: center;
 }
 
 .zed-metadata__term,
 .zed-metadata__value {
   margin: 0;
+}
+
+.zed-metadata__value {
+  display: flex;
+  align-items: center;
+  gap: var(--zed-space-2);
+  min-width: 0;
 }
 
 .zed-artifact {

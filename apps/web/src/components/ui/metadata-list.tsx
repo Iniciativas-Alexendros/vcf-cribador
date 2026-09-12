@@ -29,21 +29,19 @@ export function MetadataList({ items }: Props) {
         <div key={item.label} className="zed-metadata__row">
           <dt className="zed-label zed-metadata__term">{item.label}</dt>
           <dd
-            className={`${item.mono ? "zed-mono" : ""} zed-truncate zed-metadata__value`.trim()}
+            className={`${item.mono ? "zed-mono" : ""} zed-metadata__value`.trim()}
             title={item.value}
           >
-            {item.value}
+            <span className="zed-truncate">{item.value}</span>
+            {item.copyable ? (
+              <IconButton
+                label={`Copiar ${item.label}`}
+                onClick={() => void copyText(item.value)}
+              >
+                <Icon name="copy" aria-hidden={true} />
+              </IconButton>
+            ) : null}
           </dd>
-          {item.copyable ? (
-            <IconButton
-              label={`Copiar ${item.label}`}
-              onClick={() => void copyText(item.value)}
-            >
-              <Icon name="copy" aria-hidden={true} />
-            </IconButton>
-          ) : (
-            <span />
-          )}
         </div>
       ))}
     </dl>
