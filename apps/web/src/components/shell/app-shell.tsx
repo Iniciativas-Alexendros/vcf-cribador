@@ -39,7 +39,7 @@ export function AppShell({ children }: Props) {
         storageMode={health?.storage_mode}
         apiVersion={health?.api_version}
         coreVersion={health?.core_version}
-        retentionHint="Retención: configurable por job"
+        retentionHint="Retención: configurable por ejecución"
       />
     </div>
   );

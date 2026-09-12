@@ -470,5 +470,5 @@
 
 .zed-page-header__lead {
   margin: 0;
-  max-width: 42rem;
+  max-width: var(--zed-prose-max);
 }

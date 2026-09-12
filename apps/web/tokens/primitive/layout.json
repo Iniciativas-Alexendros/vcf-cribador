@@ -71,6 +71,11 @@
       "$value": 50,
       "$description": "Drawer de contacto / diálogo",
       "$extensions": { "com.zedazo": { "cssVar": "--zed-z-modal" } }
+    },
+    "skip": {
+      "$value": 60,
+      "$description": "Skip link por encima del modal",
+      "$extensions": { "com.zedazo": { "cssVar": "--zed-z-skip" } }
     }
   }
 }

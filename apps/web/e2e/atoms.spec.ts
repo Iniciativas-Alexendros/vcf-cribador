@@ -18,6 +18,8 @@ test.describe("catálogo mínimo de átomos", () => {
     await expect(page.getByText("Neutral", { exact: true })).toBeVisible();
     await expect(page.getByLabel("Campo de ejemplo")).toBeVisible();
     await expect(page.getByRole("note").first()).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Estados" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Vacío" })).toBeVisible();
   });
 
   test("/documentacion/ds cumple axe wcag2a/aa/22aa", async ({ page }) => {

@@ -3,11 +3,16 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Callout } from "@/components/ui/callout";
 import { Card } from "@/components/ui/card";
+import { EmptyState } from "@/components/ui/empty-state";
+import { ErrorState } from "@/components/ui/error-state";
 import { Icon } from "@/components/ui/icon";
 import { IconButton } from "@/components/ui/icon-button";
+import { LoadingState } from "@/components/ui/loading-state";
+import { ProgressStepper } from "@/components/ui/progress-stepper";
 
 /**
- * Catálogo mínimo de átomos (fase 2). El catálogo completo vive en fase 4.
+ * Catálogo de átomos (fase 2) y patrones de estado (fase 3).
+ * El catálogo visual completo vive en fase 4.
  * Traza: docs/gui/design-system-plan.md · epic #59.
  */
 export default function DesignSystemCatalogPage() {
@@ -16,7 +21,7 @@ export default function DesignSystemCatalogPage() {
       <PageHeader
         title="Átomos"
         eyebrow="sistema de diseño"
-        description="Catálogo mínimo de controles alineados a tokens --zed-*. Sin rediseño de pantallas. Wordmark: zedazo."
+        description="Controles y estados alineados a tokens --zed-*. Wordmark: zedazo."
       />
 
       <Card variant="document">
@@ -84,6 +89,29 @@ export default function DesignSystemCatalogPage() {
       <Callout variant="warning" title="Aviso" icon="triangle-exclamation">
         El foco visible usa --zed-focus-ring; no se retira el outline.
       </Callout>
+
+      <Card variant="document">
+        <h2 className="zed-title-section">Stepper</h2>
+        <ProgressStepper
+          steps={[
+            { id: "archivo", label: "Archivo" },
+            { id: "reglas", label: "Reglas" },
+            { id: "salidas", label: "Salidas" },
+          ]}
+          current={1}
+        />
+      </Card>
+
+      <Card variant="document">
+        <h2 className="zed-title-section">Estados</h2>
+        <EmptyState
+          compact
+          title="Vacío"
+          description="Misma ilustración tipográfica en listados y fichas."
+        />
+        <LoadingState label="Cargando ejemplo…" lines={2} />
+        <ErrorState title="Error de ejemplo" message="Mensaje sintético de fallo." />
+      </Card>
     </div>
   );
 }

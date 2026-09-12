@@ -67,7 +67,7 @@ export default function AjustesPage() {
             <option value="dark">Oscuro</option>
           </select>
         </div>
-        <p className="zed-muted" style={{ margin: 0 }}>
+        <p className="zed-muted zed-flush">
           La tipografía base ya es más amplia en tablas y fichas. El tamaño
           global sigue el zoom del sistema o del navegador (sin toggle de
           densidad).
@@ -90,7 +90,7 @@ export default function AjustesPage() {
             },
             {
               label: "Retención",
-              value: "Configurable por job (horas)",
+              value: "Configurable por ejecución (horas)",
             },
           ]}
         />
@@ -161,14 +161,10 @@ export default function AjustesPage() {
             },
           ]}
         />
-        <div style={{ display: "flex", gap: "0.75rem", flexWrap: "wrap" }}>
-          <button
-            type="button"
-            className="zed-button zed-button--secondary"
-            onClick={() => void refresh()}
-          >
+        <div className="zed-row">
+          <Button variant="secondary" onClick={() => void refresh()}>
             Comprobar salud
-          </button>
+          </Button>
           <Button
             variant="secondary"
             loading={logoutBusy}
@@ -187,7 +183,7 @@ export default function AjustesPage() {
             Cerrar sesión
           </Button>
         </div>
-        <pre className="zed-mono" style={{ overflow: "auto" }}>
+        <pre className="zed-mono zed-pre">
           {raw || "…"}
         </pre>
       </Card>

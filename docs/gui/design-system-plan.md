@@ -1,8 +1,8 @@
 # Plan de modernización del design system (GUI browser)
 
-**Versión:** 0.1.2  
+**Versión:** 0.1.3  
 **Fecha:** 2026-09-12  
-**Estado:** Plan. **Fases 1 y 2 aterrizadas** (pipeline DTCG + átomos `--zed-*`, [ADR-0019](../../DECISIONS.md)). Fases 3–4 pendientes. Epic [#59](https://github.com/Iniciativas-Alexendros/zedazo/issues/59).  
+**Estado:** Plan. **Fases 1–3 aterrizadas** (pipeline DTCG + átomos + pantallas `--zed-*`, [ADR-0019](../../DECISIONS.md)). Fase 4 pendiente. Epic [#59](https://github.com/Iniciativas-Alexendros/zedazo/issues/59).  
 **Traza:** ADR-0015 (GUI local), ADR-0016 (remoto HTTPS+token), ADR-0019 (tokens), SPECS O10/O11, identidad «Archivo Vivo», [`docs/brand.md`](../brand.md), epic [#59](https://github.com/Iniciativas-Alexendros/zedazo/issues/59).  
 **No mezclar** con CardDAV ([#48](https://github.com/Iniciativas-Alexendros/zedazo/issues/48) / ADR-0018) ni con cambios de dominio.
 
@@ -33,8 +33,8 @@ Orden de carga en `layout.tsx`: `reset` → `tokens` → `themes` → `typograph
 
 - **Primitivos + semánticos** viven en JSON DTCG. `tokens.css` / `themes.css` son wrappers que importan `generated/` (fase 1). Recetas de componente siguen siendo CSS humano.
 - **Recetas de componente** en `components.css` (`.zed-button`, `.zed-badge`, `.zed-card`, `.zed-input`, …).
-- **CSS Modules** paralelos: `styles/shell.module.css`, `forms.module.css`, `tables.module.css`, `states.module.css`. Fase 2 cableó colores/z-index/overlay/spacing de átomos a `--zed-*`. Breakpoints siguen como literales equivalentes (`56.25rem` / `60rem` = `--zed-bp-md/lg`; custom props no aplican en `@media`) — recablear recetas de pantalla es fase 3.
-- **Huecos residuales (fase 3+):** inline styles en pantallas (jobs, contactos, home); densidad de tablas; drawer de contacto (layout, no color).
+- **CSS Modules** paralelos: `styles/shell.module.css`, `forms.module.css`, `tables.module.css`, `states.module.css`. Fases 2–3 cablean colores, z-index, overlay, spacing y patrones de pantalla a `--zed-*`. Breakpoints siguen como literales equivalentes (`56.25rem` / `60rem` = `--zed-bp-md/lg`; custom props no aplican en `@media`).
+- **Huecos residuales (fase 4):** catálogo visual completo, axe de estados representativos extra, regresión visual en CI. Anchos dinámicos (barra de stats, skeleton) siguen en inline porque son datos, no receta.
 
 Fase 1 cubre JSON DTCG, build Node, tipos TS y check de contraste. Fase 2 añade catálogo mínimo en [`/documentacion/ds`](../../apps/web/src/app/documentacion/ds/page.tsx); el catálogo completo es fase 4.
 
@@ -56,7 +56,7 @@ Bloques React (inventario de partida para la fase 2):
 
 ### 1.4 A11y y QA hoy
 
-`e2e/a11y.spec.ts` cubre **solo** `/`, `/procesar`, `/ejecuciones`. Fase 2 añade `e2e/atoms.spec.ts` (axe de `/documentacion/ds`). Quedan fuera `/acceso`, `/ajustes`, `/reglas`, `/auditar`, `/documentacion`, `/ejecuciones/[jobId]` y estados vacíos/error/job en curso.
+`e2e/a11y.spec.ts` cubre `/`, `/procesar`, `/ejecuciones`, `/ejecuciones/[jobId]` (empty/error sintético), `/auditar`, `/reglas`, `/ajustes`, `/acceso`, `/documentacion`. Fase 2 añade `e2e/atoms.spec.ts` (axe de `/documentacion/ds`). Estados extra (job running con fixture) quedan para fase 4.
 
 Motion: `prefers-reduced-motion` ya anula animaciones/transiciones en `motion.css`. No hay tokens de duración/easing en un formato DTCG ni prueba de que el resto de módulos respeten el mismo contrato.
 
@@ -213,17 +213,16 @@ Cada fase = uno o más PRs **pequeños**, CI verde, **sin** CardDAV, **sin** cam
 
 **Objetivo:** shell y flujos sin costuras.
 
-Orden sugerido (PRs separados si el diff crece):
+- [x] **Shell:** topbar, sidebar, statusbar, skip link, nav móvil, page header. `--zed-nav-indicator`, `--zed-z-skip`, `min-height` de chrome, `prefers-reduced-motion` en el drawer móvil.
+- [x] **Formularios:** `/procesar`, `/reglas`, `/acceso`, `/ajustes`. `FileDropzone` compartido; fieldset/checkbox/radio con el mismo foco; `ErrorState` en login y validación.
+- [x] **Tablas y fichas:** contactos, duplicados, drawer (`.zed-drawer` + `--zed-drawer-width`). Densidad `--zed-text-sm` / space tokens; `EmptyState` cuando no hay filas.
+- [x] **Jobs y auditoría:** stepper, `JobProgress`, timeline, `JobRowActions`, retención; copy «ejecución» (no «job» en UI).
+- [x] **Estados:** empty / loading / error / privacy callouts con la misma receta tipográfica (`states.module.css` + `compact`).
+- [x] Axe ampliado a las rutas de §1.3 (salvo fixture running, fase 4). Catálogo `/documentacion/ds` muestra stepper y estados.
 
-1. **Shell:** topbar, sidebar, statusbar, skip link, nav móvil, page header. Breakpoints tokenizados. Comportamiento `prefers-reduced-motion` en el drawer móvil.
-2. **Formularios:** `/procesar`, `/reglas`, `/acceso`, `/ajustes` (tema, wipe, login). `zed-input` / select / file / checkbox con el mismo foco y error.
-3. **Tablas y fichas:** contactos, duplicados, drawer. Densidad de `contact-table` alineada a `--zed-text-sm` / space tokens (Ajustes ya avisa que no hay toggle de densidad).
-4. **Jobs y auditoría:** stepper, timeline, estados `queued|running|succeeded|failed|canceled`, retención.
-5. **Estados:** empty / loading / error / privacy callouts — misma ilustración tipográfica, no tres empty-states distintos.
+Copy: español, tono archivo (preciso, no marketing). Wordmark intocable (`zedazo` en chrome; prosa «Zedazo»).
 
-Copy: español, tono archivo (preciso, no marketing). Wordmark intocable.
-
-**Criterio de salida:** las nueve rutas se sienten del mismo producto en light y dark; O10 y O11 sin cambios de comportamiento.
+**Criterio de salida:** las nueve rutas se sienten del mismo producto en light y dark; O10 y O11 sin cambios de comportamiento. *Hecho (2026-09-12).* Epic [#59](https://github.com/Iniciativas-Alexendros/zedazo/issues/59) — no se cierra.
 
 ### Fase 4 — Acabado y QA
 
@@ -279,7 +278,7 @@ Checklist del **programa** (no de este PR de docs). Cada fase tiene su propio Do
 - [x] Contraste WCAG 2.2 AA en CI para pares semánticos. *(fase 1)*
 - [x] Átomos sin color/spacing hardcodeado; un API React por control (`buttonClassName`). Modules de átomos/chrome cableados; magics de pantalla → fase 3. *(fase 2)*
 - [x] Frontera WA resuelta: bridge generado + kit opcional acotado (sin `<wa-*>`). *(fase 2)*
-- [ ] Pantallas de §5 fase 3 sin costura light/dark; copy ES; wordmark lowercase.
+- [x] Pantallas de §5 fase 3 sin costura light/dark; copy ES; wordmark lowercase. *(fase 3)*
 - [ ] Catálogo `/documentacion/ds` completo (fase 4). Mínimo de átomos ya en fase 2.
 - [ ] Axe 2.2 AA en todas las rutas de la matriz; reduced-motion cubierto.
 - [ ] Regresión visual light+dark en CI; capturas README regeneradas.
@@ -320,10 +319,10 @@ Los títulos siguientes son **sugeridos** para issues/PRs de implementación (no
 | 1c | `docs: ADR-0019 fuente de tokens GUI (DTCG + frontera Web Awesome)` | Solo si hay dep nueva o se retira WA |
 | 2 | `GUI DS fase 2: inventario atómico y unificar CSS modules a --zed-*` | Hecho (2026-09-12). Sin rediseño de rutas |
 | 2b | `GUI DS: retirar Web Awesome` **o** `GUI DS: bridge --wa-* generado` | Hecho como **A acotada**: bridge ya generado (fase 1); no se retira WA; no se montan `<wa-*>` |
-| 3a | `GUI DS fase 3: shell (topbar, nav, statusbar, skip link)` | Breakpoints tokenizados |
-| 3b | `GUI DS fase 3: formularios (procesar, reglas, acceso, ajustes)` | |
-| 3c | `GUI DS fase 3: tablas, drawer de contacto y duplicados` | |
-| 3d | `GUI DS fase 3: jobs, auditoría y estados vacíos/error` | |
+| 3a | `GUI DS fase 3: shell (topbar, nav, statusbar, skip link)` | Hecho en el PR de fase 3 (mismo slice) |
+| 3b | `GUI DS fase 3: formularios (procesar, reglas, acceso, ajustes)` | Hecho en el PR de fase 3 |
+| 3c | `GUI DS fase 3: tablas, drawer de contacto y duplicados` | Hecho en el PR de fase 3 |
+| 3d | `GUI DS fase 3: jobs, auditoría y estados vacíos/error` | Hecho en el PR de fase 3 |
 | 4a | `GUI DS fase 4: catálogo /documentacion/ds` | Preferido a Storybook |
 | 4b | `GUI DS fase 4: axe en todas las rutas + visual regression Playwright` | Regenerar `docs/screenshots/` |
 
@@ -371,3 +370,5 @@ Receta visual = clase `.zed-*` en `components.css`. API React = un componente en
 | Tabla (no átomo; colindante) | `contact-table` | — | hover de fila | `tables.module.css` |
 
 Tokens aditivos de fase 2: `--zed-overlay`, `--zed-accent-border`, `--zed-disabled-opacity`, `--zed-control-height`, `--zed-textarea-min`, `--zed-spin-duration`, `--zed-focus-offset`, `--zed-z-overlay`, `--zed-z-modal`.
+
+Tokens aditivos de fase 3: `--zed-z-skip`, `--zed-prose-max`, `--zed-auth-width`, `--zed-drawer-width`, `--zed-filter-max`, `--zed-nav-indicator`. Recetas nuevas: `.zed-auth-layout`, `.zed-drawer`, `.zed-lockup*`, `.zed-dropzone__*`, `FileDropzone`, `JobRowActions`.
